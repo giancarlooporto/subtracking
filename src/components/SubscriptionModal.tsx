@@ -1,0 +1,301 @@
+import { useState, useEffect } from 'react';
+import { X, Plus, Calendar, DollarSign, Tag, RotateCcw } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Subscription, DEFAULT_CATEGORIES } from '../types';
+import { cn } from '../lib/utils';
+import { siteConfig } from '../../siteConfig';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
+interface SubscriptionModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSave: (data: Omit<Subscription, 'id' | 'lastPaidDate' | 'hasEverBeenPaid'>) => void;
+    initialData?: Subscription | null;
+    userCategories?: string[];
+}
+
+export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCategories = DEFAULT_CATEGORIES }: SubscriptionModalProps) {
+    const [name, setName] = useState('');
+    const [price, setPrice] = useState('');
+    const [category, setCategory] = useState('Other');
+    const [customCategory, setCustomCategory] = useState('');
+    const [isAddingCustom, setIsAddingCustom] = useState(false);
+    const [renewalDate, setRenewalDate] = useState(new Date());
+    const [billingCycle, setBillingCycle] = useState<Subscription['billingCycle']>('monthly');
+
+    // Validation errors
+    const [errors, setErrors] = useState<{
+        name?: string;
+        price?: string;
+        renewalDate?: string;
+    }>({});
+
+    useEffect(() => {
+        if (initialData) {
+            setName(initialData.name);
+            setPrice(initialData.price.toString());
+            setCategory(initialData.category);
+            setRenewalDate(new Date(initialData.renewalDate));
+            setBillingCycle(initialData.billingCycle);
+            setIsAddingCustom(false);
+        } else {
+            // Reset defaults
+            setName('');
+            setPrice('');
+            setCategory('Other');
+            setRenewalDate(new Date());
+            setBillingCycle('monthly');
+            setIsAddingCustom(false);
+            setErrors({});
+        }
+    }, [initialData, isOpen]);
+
+    // Validation function
+    const validateForm = () => {
+        const newErrors: typeof errors = {};
+
+        // Name validation
+        if (!name.trim()) {
+            newErrors.name = 'Service name is required';
+        } else if (name.length > 50) {
+            newErrors.name = 'Name must be 50 characters or less';
+        }
+
+        // Price validation
+        if (!price) {
+            newErrors.price = 'Price is required';
+        } else if (parseFloat(price) <= 0) {
+            newErrors.price = 'Price must be greater than 0';
+        } else if (parseFloat(price) > 999999) {
+            newErrors.price = 'Price cannot exceed $999,999';
+        }
+
+        // Date validation
+        if (!renewalDate) {
+            newErrors.renewalDate = 'Renewal date is required';
+        } else if (!(renewalDate instanceof Date) || isNaN(renewalDate.getTime())) {
+            newErrors.renewalDate = 'Invalid date format';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!validateForm()) return;
+
+        const finalCategory = (isAddingCustom && customCategory.trim()) ? customCategory.trim() : category;
+
+        onSave({
+            name,
+            price: parseFloat(price),
+            category: finalCategory,
+            renewalDate: renewalDate.toISOString().split('T')[0],
+            billingCycle
+        });
+        onClose();
+    };
+
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-all"
+                    />
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none p-4 overflow-y-auto"
+                    >
+                        <div className="bg-slate-900 border border-slate-700 w-full max-w-md rounded-2xl shadow-2xl pointer-events-auto my-8 max-h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar">
+                            <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+                                <h2 className="text-xl font-bold text-white">
+                                    {initialData ? 'Edit Subscription' : 'Add New Subscription'}
+                                </h2>
+                                <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                                {/* Name Input */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Service Name</label>
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => {
+                                            setName(e.target.value);
+                                            if (errors.name) setErrors({ ...errors, name: undefined });
+                                        }}
+                                        className={cn(
+                                            "w-full bg-slate-950 border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none transition-all",
+                                            errors.name
+                                                ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                                                : "border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                                        )}
+                                        placeholder="e.g. Netflix"
+                                        autoFocus
+                                    />
+                                    {errors.name && (
+                                        <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+                                            <span>⚠</span> {errors.name}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Price & Cycle */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Price</label>
+                                        <div className="relative">
+                                            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={price}
+                                                onChange={(e) => {
+                                                    setPrice(e.target.value);
+                                                    if (errors.price) setErrors({ ...errors, price: undefined });
+                                                }}
+                                                className={cn(
+                                                    "w-full bg-slate-950 border rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none transition-all",
+                                                    errors.price
+                                                        ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                                                        : "border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                                                )}
+                                                placeholder="0.00"
+                                            />
+                                        </div>
+                                        {errors.price && (
+                                            <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+                                                <span>⚠</span> {errors.price}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Billing Cycle</label>
+                                        <div className="relative">
+                                            <RotateCcw className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                            <select
+                                                value={billingCycle}
+                                                onChange={(e) => setBillingCycle(e.target.value as Subscription['billingCycle'])}
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white appearance-none focus:outline-none focus:border-indigo-500 transition-all"
+                                            >
+                                                <option value="weekly">Weekly</option>
+                                                <option value="biweekly">Bi-weekly</option>
+                                                <option value="monthly">Monthly</option>
+                                                <option value="quarterly">Quarterly</option>
+                                                <option value="yearly">Yearly</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Category */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Category</label>
+                                    <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto custom-scrollbar pr-1">
+                                        {userCategories.map((cat) => (
+                                            <button
+                                                key={cat}
+                                                type="button"
+                                                onClick={() => { setCategory(cat); setIsAddingCustom(false); }}
+                                                className={cn(
+                                                    "px-3 py-2 rounded-lg text-xs font-bold border transition-all text-left",
+                                                    category === cat && !isAddingCustom
+                                                        ? "bg-indigo-600/20 border-indigo-500 text-indigo-300"
+                                                        : "bg-slate-900 border-slate-800 text-slate-500 hover:border-slate-600"
+                                                )}
+                                            >
+                                                {cat}
+                                            </button>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsAddingCustom(true)}
+                                            className={cn(
+                                                "px-3 py-2 rounded-lg text-xs font-bold border transition-all text-left flex items-center gap-1",
+                                                isAddingCustom
+                                                    ? "bg-indigo-600/20 border-indigo-500 text-indigo-300"
+                                                    : "bg-slate-900 border-slate-800 text-slate-500 hover:border-slate-600"
+                                            )}
+                                        >
+                                            <Plus className="w-3 h-3" /> Custom...
+                                        </button>
+                                    </div>
+
+                                    {isAddingCustom && (
+                                        <motion.input
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            type="text"
+                                            value={customCategory}
+                                            onChange={(e) => setCustomCategory(e.target.value)}
+                                            placeholder="Enter new category name..."
+                                            className="w-full bg-slate-800 border-2 border-indigo-500/50 rounded-xl px-4 py-2 text-sm text-white focus:outline-none mt-2"
+                                            autoFocus
+                                        />
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Next Renewal</label>
+                                    <div className="relative">
+                                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none z-10" />
+                                        <DatePicker
+                                            selected={renewalDate}
+                                            onChange={(date: Date | null) => {
+                                                if (date) {
+                                                    setRenewalDate(date);
+                                                    if (errors.renewalDate) setErrors({ ...errors, renewalDate: undefined });
+                                                }
+                                            }}
+                                            dateFormat="MM/dd/yyyy"
+                                            popperPlacement="top"
+                                            className={cn(
+                                                "w-full bg-slate-950 border rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none transition-all",
+                                                errors.renewalDate
+                                                    ? "border-red-500 focus:border-red-500"
+                                                    : "border-slate-800 focus:border-indigo-500"
+                                            )}
+                                            calendarClassName="custom-datepicker"
+                                        />
+                                    </div>
+                                    {errors.renewalDate && (
+                                        <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+                                            <span>⚠</span> {errors.renewalDate}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={Object.keys(errors).length > 0 && (errors.name || errors.price || errors.renewalDate) !== undefined}
+                                    className={cn(
+                                        "w-full font-bold py-4 rounded-xl shadow-lg transform transition-all",
+                                        Object.keys(errors).length > 0 && (errors.name || errors.price || errors.renewalDate)
+                                            ? "bg-slate-700 text-slate-500 cursor-not-allowed"
+                                            : "bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-indigo-500/25 hover:scale-[1.02] active:scale-[0.98]"
+                                    )}
+                                >
+                                    {initialData ? 'Save Changes' : 'Add Subscription'}
+                                </button>
+                            </form>
+                        </div>
+                    </motion.div>
+                </>
+            )}
+        </AnimatePresence>
+    );
+}
