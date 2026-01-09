@@ -108,13 +108,13 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-all"
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] transition-all"
                     />
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none p-4 overflow-y-auto"
+                        className="fixed inset-0 flex items-center justify-center z-[100] pointer-events-none p-4 overflow-y-auto"
                     >
                         <div className="bg-slate-900 border border-slate-700 w-full max-w-md rounded-2xl shadow-2xl pointer-events-auto my-8 max-h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar">
                             <div className="p-6 border-b border-slate-800 flex justify-between items-center">

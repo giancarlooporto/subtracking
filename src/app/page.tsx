@@ -859,7 +859,7 @@ function HomeContent() {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setShowAddModal(true)}
-        className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)] z-[60] group border border-white/20"
+        className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)] z-40 group border border-white/20"
         aria-label="Add new subscription"
       >
         <Plus className="w-8 h-8 text-white transition-transform group-hover:rotate-90 duration-300" />

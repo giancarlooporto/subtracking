@@ -15,7 +15,7 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onImp
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-sm w-full space-y-8 animate-in zoom-in-95 duration-300 shadow-2xl">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
