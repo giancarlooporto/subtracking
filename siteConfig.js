@@ -21,10 +21,13 @@ export const siteConfig = {
     initialCategories: [
         'Streaming',
         'Software & Apps',
-        'Gaming',
+        'Shopping & Retail',
+        'Food & Dining',
+        'Transport & Uber',
+        'Finance & Insurance',
         'Health & Wellness',
-        'Meal Kits',
-        'Content & News',
+        'Gaming & Social',
+        'News & Education',
         'Other'
     ],
 
