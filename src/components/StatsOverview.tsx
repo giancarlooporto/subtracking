@@ -27,9 +27,12 @@ export function StatsOverview({
             <div className="relative z-10 flex flex-col items-center space-y-6">
 
                 {/* Title / Brand */}
-                <h1 className="text-2xl font-medium tracking-tight text-slate-200">
-                    {siteConfig.heroTitle}
-                </h1>
+                <div className="flex items-center gap-3">
+                    <img src="/logo.png" alt="SubTracking Logo" className="w-8 h-8 rounded-lg shadow-lg" />
+                    <h1 className="text-2xl font-medium tracking-tight text-slate-200">
+                        {siteConfig.heroTitle}
+                    </h1>
+                </div>
 
                 {/* The Big Number */}
                 <div className="relative group">

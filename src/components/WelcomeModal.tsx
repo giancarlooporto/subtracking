@@ -77,13 +77,17 @@ export const WelcomeModal = ({ isOpen, onClose }: WelcomeModalProps) => {
                             <X className="w-5 h-5 text-slate-400 hover:text-white" />
                         </button>
 
-                        {/* Icon */}
+                        {/* Icon/Logo */}
                         <div className="flex justify-center">
                             <div className={cn(
-                                "w-20 h-20 rounded-2xl bg-gradient-to-tr flex items-center justify-center shadow-lg",
+                                "w-24 h-24 rounded-3xl bg-gradient-to-tr flex items-center justify-center shadow-xl p-1",
                                 currentStepData.color
                             )}>
-                                <Icon className="w-10 h-10 text-white" />
+                                {currentStep === 0 ? (
+                                    <img src="/logo.png" alt="SubTracking Logo" className="w-full h-full rounded-2xl object-cover" />
+                                ) : (
+                                    <Icon className="w-12 h-12 text-white" />
+                                )}
                             </div>
                         </div>
 
