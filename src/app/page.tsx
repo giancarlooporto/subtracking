@@ -62,8 +62,11 @@ function HomeContent() {
     if (savedCats) {
       try {
         let loadedCats = JSON.parse(savedCats);
-        // Migration: Force update to new Digital Declutter categories if old ones exist
-        if (loadedCats.includes('Household Utilities') || loadedCats.includes('Insurance')) {
+        // Migration: Force update to new SubTracking categories if on the old 7-item list
+        const oldDefaults = ['Streaming', 'Software & Apps', 'Gaming', 'Health & Wellness', 'Meal Kits', 'Content & News', 'Other'];
+        const isOldList = loadedCats.length === 7 && loadedCats.every((c: string, i: number) => c === oldDefaults[i]);
+
+        if (isOldList || loadedCats.includes('Household Utilities')) {
           loadedCats = DEFAULT_CATEGORIES;
         }
         setUserCategories(loadedCats);
