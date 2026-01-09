@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "SubTracking - Track smarter. Spend less.",
   description: "Track and manage your subscriptions with ease. See when bills renew, find unused subscriptions, and take control of your spending.",
+  appleWebApp: {
+    title: 'SubTracking',
+    statusBarStyle: 'default',
+    capable: true,
+  },
 };
 
 export default function RootLayout({
