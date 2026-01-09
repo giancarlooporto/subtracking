@@ -11,7 +11,7 @@ import { SubscriptionCard } from '../components/SubscriptionCard';
 import { StatsOverview } from '../components/StatsOverview';
 import { SubscriptionModal } from '../components/SubscriptionModal';
 import { SettingsModal } from '../components/SettingsModal';
-import { DeclutterWizard } from '../components/DeclutterWizard';
+import { SubTrackingWizard } from '../components/SubTrackingWizard';
 import { GhostMeter } from '../components/GhostMeter';
 import { BillingPulse } from '../components/BillingPulse';
 import { ToastProvider, useToast } from '../hooks/useToast';
@@ -47,9 +47,9 @@ function HomeContent() {
 
   // Load from localStorage on mount
   useEffect(() => {
-    const savedData = localStorage.getItem('digital-declutter-data');
-    const savedCats = localStorage.getItem('digital-declutter-categories');
-    const savedSavings = localStorage.getItem('digital-declutter-savings');
+    const savedData = localStorage.getItem('subtracking-data') || localStorage.getItem('digital-declutter-data');
+    const savedCats = localStorage.getItem('subtracking-categories') || localStorage.getItem('digital-declutter-categories');
+    const savedSavings = localStorage.getItem('subtracking-savings') || localStorage.getItem('digital-declutter-savings');
 
     if (savedData) {
       try {
@@ -86,9 +86,9 @@ function HomeContent() {
   // Save to localStorage
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('digital-declutter-data', JSON.stringify(subscriptions));
-      localStorage.setItem('digital-declutter-categories', JSON.stringify(userCategories));
-      localStorage.setItem('digital-declutter-savings', cancelledSavings.toString());
+      localStorage.setItem('subtracking-data', JSON.stringify(subscriptions));
+      localStorage.setItem('subtracking-categories', JSON.stringify(userCategories));
+      localStorage.setItem('subtracking-savings', cancelledSavings.toString());
     }
   }, [subscriptions, userCategories, cancelledSavings, isLoaded]);
 
@@ -292,7 +292,7 @@ function HomeContent() {
       exportDate: new Date().toISOString(),
       version: '1.0'
     };
-    const fileName = "declutter_backup.json";
+    const fileName = "subtracking_backup.json";
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
 
@@ -362,7 +362,7 @@ function HomeContent() {
     setSubscriptions(newSubs);
     if (totalSavings > 0) {
       setCancelledSavings(prev => prev + totalSavings);
-      showToast(`Decluttered! You're saving $${totalSavings.toFixed(2)}/month`, 'success');
+      showToast(`Audit complete! You're saving $${totalSavings.toFixed(2)}/month`, 'success');
     }
   };
 
@@ -730,7 +730,7 @@ function HomeContent() {
         onImport={importData}
       />
 
-      <DeclutterWizard
+      <SubTrackingWizard
         isOpen={showWizard}
         onClose={() => setShowWizard(false)}
         subscriptions={subscriptions}

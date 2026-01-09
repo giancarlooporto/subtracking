@@ -63,7 +63,7 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onImp
                             />
                         </div>
                         <p className="text-[10px] text-slate-500 text-center leading-relaxed">
-                            Backup your data to a secure file. Digital Declutter does not store your data on any server.
+                            Backup your data to a secure file. SubTracking does not store your data on any server.
                         </p>
                     </div>
 

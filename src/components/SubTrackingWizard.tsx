@@ -5,14 +5,14 @@ import { Subscription } from '../types';
 import { cn, getCategoryColorHex, getCategoryIcon } from '../lib/utils';
 import { siteConfig } from '../../siteConfig';
 
-interface DeclutterWizardProps {
+interface SubTrackingWizardProps {
     isOpen: boolean;
     onClose: () => void;
     subscriptions: Subscription[];
     onFinish: (idsToDelete: string[]) => void;
 }
 
-export function DeclutterWizard({ isOpen, onClose, subscriptions, onFinish }: DeclutterWizardProps) {
+export function SubTrackingWizard({ isOpen, onClose, subscriptions, onFinish }: SubTrackingWizardProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [toDeleteIds, setToDeleteIds] = useState<string[]>([]);
     const [direction, setDirection] = useState<'left' | 'right' | null>(null);

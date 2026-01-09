@@ -10,7 +10,7 @@ interface WelcomeModalProps {
 
 const steps = [
     {
-        title: 'Welcome to Digital Declutter',
+        title: 'Welcome to SubTracking!',
         subtitle: 'Your journey to financial clarity starts here',
         icon: Sparkles,
         content: 'Track all your subscriptions in one beautiful dashboard. Get insights, reduce wasteful spending, and take control of your digital life.',
