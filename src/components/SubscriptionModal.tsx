@@ -190,6 +190,7 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
                                             <select
                                                 value={billingCycle}
                                                 onChange={(e) => setBillingCycle(e.target.value as Subscription['billingCycle'])}
+                                                autoComplete="off"
                                                 className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white appearance-none focus:outline-none focus:border-indigo-500 transition-all"
                                             >
                                                 <option value="weekly">Weekly</option>
