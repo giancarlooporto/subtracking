@@ -527,10 +527,6 @@ function HomeContent() {
                       ))}
                       <circle cx="50" cy="50" r="32" fill="transparent" />
                     </svg>
-                    <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
-                      <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Top Spend</span>
-                      <span className="text-sm font-bold text-white max-w-[80px] truncate text-center">{categorySpending[0]?.name}</span>
-                    </div>
                   </div>
 
                   <div className="w-full grid grid-cols-2 gap-2 mt-4">
@@ -544,8 +540,15 @@ function HomeContent() {
                   </div>
 
                   {categorySpending.length > 0 && (
-                    <div className="mt-4 w-full p-2 bg-indigo-500/5 rounded-lg border border-indigo-500/10 text-[9px] text-indigo-300 italic text-center">
-                      Tip: Consider a "One-at-a-time" rule for {categorySpending[0]?.name}.
+                    <div className="mt-4 w-full p-3 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-xl border border-indigo-500/20 flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: getCategoryColorHex(categorySpending[0]?.name) }}>
+                        <span className="text-white text-xs font-bold">1</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-[9px] text-indigo-300 uppercase font-bold tracking-wider">Top Spend</span>
+                        <p className="text-sm font-bold text-white truncate">{categorySpending[0]?.name}</p>
+                      </div>
+                      <span className="text-lg font-bold text-white">${categorySpending[0]?.value.toFixed(0)}</span>
                     </div>
                   )}
                 </>
