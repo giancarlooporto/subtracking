@@ -539,18 +539,7 @@ function HomeContent() {
                     ))}
                   </div>
 
-                  {categorySpending.length > 0 && (
-                    <div className="mt-4 w-full p-3 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-xl border border-indigo-500/20 flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: getCategoryColorHex(categorySpending[0]?.name) }}>
-                        <span className="text-white text-xs font-bold">1</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-[9px] text-indigo-300 uppercase font-bold tracking-wider">Top Spend</span>
-                        <p className="text-sm font-bold text-white truncate">{categorySpending[0]?.name}</p>
-                      </div>
-                      <span className="text-lg font-bold text-white">${categorySpending[0]?.value.toFixed(0)}</span>
-                    </div>
-                  )}
+
                 </>
               ) : (
                 <div className="text-slate-500 text-sm">Add subscriptions to see stats</div>
