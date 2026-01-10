@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     capable: true,
   },
   icons: {
-    icon: '/icon-v2.png',
-    apple: '/apple-icon-v2.png',
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
   },
 };
 

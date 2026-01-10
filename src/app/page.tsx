@@ -403,11 +403,9 @@ function HomeContent() {
         />
 
         {/* HOUSEHOLD PULSE (Timeline) */}
-        {subscriptions.length > 0 && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
-            <BillingPulse subscriptions={subscriptions} />
-          </div>
-        )}
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+          <BillingPulse subscriptions={subscriptions} />
+        </div>
 
         {/* ACTION DECK (3-Column Grid) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
