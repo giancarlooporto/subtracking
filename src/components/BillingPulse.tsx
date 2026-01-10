@@ -21,19 +21,57 @@ export function BillingPulse({ subscriptions }: BillingPulseProps) {
     const hoursProgress = (now.getHours() + now.getMinutes() / 60) / 24;
     const todayWithProgress = today - 1 + hoursProgress;
 
-    // Map subscriptions to days of the month (1-31)
+    // Map subscriptions to days of the current month only
     const pulseData = useMemo(() => {
         const map: Record<number, Subscription[]> = {};
 
+        // Define the current month's boundaries
+        const monthStart = new Date(currentYear, currentMonth, 1);
+        const monthEnd = new Date(currentYear, currentMonth + 1, 0); // Last day of current month
+
         subscriptions.forEach(sub => {
-            const nextDateStr = getNextOccurrence(sub.renewalDate, sub.billingCycle);
-            const [year, month, day] = nextDateStr.split('-').map(Number);
-            if (!map[day]) map[day] = [];
-            map[day].push(sub);
+            // Get the first occurrence on or after today
+            let nextDateStr = getNextOccurrence(sub.renewalDate, sub.billingCycle);
+            let [year, month, day] = nextDateStr.split('-').map(Number);
+            let nextDate = new Date(year, month - 1, day);
+
+            // For weekly/biweekly, we need to find all occurrences in the current month
+            if (sub.billingCycle === 'weekly' || sub.billingCycle === 'biweekly') {
+                // First, rewind to find the first occurrence in or before the current month
+                const incrementDays = sub.billingCycle === 'weekly' ? 7 : 14;
+
+                // Go back to find the very first occurrence in this month
+                let checkDate = new Date(nextDate);
+                while (checkDate > monthStart) {
+                    const prevDate = new Date(checkDate);
+                    prevDate.setDate(prevDate.getDate() - incrementDays);
+                    if (prevDate < monthStart) break;
+                    checkDate = prevDate;
+                }
+
+                // Now iterate forward and add all occurrences within this month
+                while (checkDate <= monthEnd) {
+                    if (checkDate >= monthStart && checkDate <= monthEnd) {
+                        const dayOfMonth = checkDate.getDate();
+                        if (!map[dayOfMonth]) map[dayOfMonth] = [];
+                        // Avoid duplicates
+                        if (!map[dayOfMonth].some(s => s.id === sub.id)) {
+                            map[dayOfMonth].push(sub);
+                        }
+                    }
+                    checkDate.setDate(checkDate.getDate() + incrementDays);
+                }
+            } else {
+                // For monthly, quarterly, yearly - only show if renewal is in the current month
+                if (nextDate.getFullYear() === currentYear && nextDate.getMonth() === currentMonth) {
+                    if (!map[day]) map[day] = [];
+                    map[day].push(sub);
+                }
+            }
         });
 
         return map;
-    }, [subscriptions]);
+    }, [subscriptions, currentYear, currentMonth]);
 
     // Calculate max spend to normalize pulse heights
     const { maxSpend, dayTotals } = useMemo(() => {
