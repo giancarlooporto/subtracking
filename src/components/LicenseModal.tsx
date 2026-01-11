@@ -30,16 +30,13 @@ export function LicenseModal({ isOpen, onClose, onSuccess }: LicenseModalProps) 
                 return;
             }
 
-            // Real Gumroad API Verification
-            const response = await fetch(GUMROAD_CONFIG.apiUrl, {
+            // Real Gumroad API Verification (via internal proxy to avoid CORS)
+            const response = await fetch('/api/verify-license', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/json',
                 },
-                body: new URLSearchParams({
-                    'product_permalink': GUMROAD_CONFIG.productPermalink,
-                    'license_key': cleanKey,
-                }),
+                body: JSON.stringify({ license_key: cleanKey }),
             });
 
             const data = await response.json();
