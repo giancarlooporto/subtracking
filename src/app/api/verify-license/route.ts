@@ -12,6 +12,7 @@ export async function POST(request: Request) {
 
         const formData = new URLSearchParams();
         formData.append('product_permalink', GUMROAD_CONFIG.productPermalink);
+        formData.append('product_id', GUMROAD_CONFIG.productId); // Added as per API requirement
         formData.append('license_key', license_key);
 
         const response = await fetch(GUMROAD_CONFIG.apiUrl, {
