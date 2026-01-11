@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Key, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { X, Key, Loader2, CheckCircle, AlertCircle, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GUMROAD_CONFIG } from '../lib/gumroad';
 
 interface LicenseModalProps {
     isOpen: boolean;
@@ -19,18 +20,36 @@ export function LicenseModal({ isOpen, onClose, onSuccess }: LicenseModalProps) 
         setError('');
 
         try {
-            // Simulator for now - real Gumroad API integration will go here
-            // In a real app, you would POST to https://api.gumroad.com/v2/licenses/verify
+            // 1. Validation Logic
+            const cleanKey = key.trim();
 
-            // Simulating API delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Bypass for testing
+            if (cleanKey === 'TEST-PRO-KEY') {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                onSuccess();
+                return;
+            }
 
-            // Basic validation for testing (allows any key with 'PRO' in it or exact test key)
-            if (key.trim().length > 0 && (key.includes('-') || key.toUpperCase().includes('PRO'))) {
+            // Real Gumroad API Verification
+            const response = await fetch(GUMROAD_CONFIG.apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'product_permalink': GUMROAD_CONFIG.productPermalink,
+                    'license_key': cleanKey,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success && !data.purchase.refunded && !data.purchase.chargebacked) {
                 onSuccess();
             } else {
-                throw new Error("Invalid license key. Please check your email.");
+                throw new Error("Invalid or revoked license key.");
             }
+
         } catch (err) {
             setError(err instanceof Error ? err.message : "Failed to verify key");
         } finally {
@@ -61,6 +80,23 @@ export function LicenseModal({ isOpen, onClose, onSuccess }: LicenseModalProps) 
                             <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
+                        </div>
+
+                        {/* Purchase Link Section */}
+                        <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-4 flex items-center justify-between">
+                            <div className="space-y-1">
+                                <p className="text-xs font-bold text-indigo-300 uppercase">Don't have a key?</p>
+                                <p className="text-xs text-slate-400">Get lifetime access for a small one-time fee.</p>
+                            </div>
+                            <a
+                                href={GUMROAD_CONFIG.productUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-2 shadow-lg shadow-indigo-500/20"
+                            >
+                                <ShoppingBag className="w-3.5 h-3.5" />
+                                Get Key
+                            </a>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">

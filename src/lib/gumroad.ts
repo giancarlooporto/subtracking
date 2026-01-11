@@ -1,4 +1,5 @@
 export const GUMROAD_CONFIG = {
-    productUrl: "https://gumroad.com/l/YOUR_PRODUCT_SLUG", // TODO: Replace with actual Gumroad product URL
-    isTestMode: true // Set to false in production
+    productUrl: "https://giancarlooporto.gumroad.com/l/pzhzs",
+    productPermalink: "pzhzs", // Extracted from the URL
+    apiUrl: "https://api.gumroad.com/v2/licenses/verify"
 };
