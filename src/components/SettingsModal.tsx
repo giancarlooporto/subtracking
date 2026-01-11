@@ -1,5 +1,6 @@
-import { Settings, X, Zap, Download, Upload, ShieldCheck } from 'lucide-react';
+import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key } from 'lucide-react';
 import { useRef, ChangeEvent } from 'react';
+import { cn } from '../lib/utils';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -7,9 +8,11 @@ interface SettingsModalProps {
     onFactoryReset: () => void;
     onExport: () => void;
     onImport: (e: ChangeEvent<HTMLInputElement>) => void;
+    isPro: boolean;
+    onActivatePro: () => void;
 }
 
-export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onImport }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onImport, isPro, onActivatePro }: SettingsModalProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     if (!isOpen) return null;
@@ -33,24 +36,56 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onImp
                 </div>
 
                 <div className="space-y-6">
+                    {/* Pro Status Section */}
+                    {!isPro && (
+                        <div className="p-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-2xl space-y-3">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Free Plan</span>
+                                <span className="text-[10px] font-bold bg-indigo-500 text-white px-2 py-0.5 rounded-full">Limited</span>
+                            </div>
+                            <p className="text-sm text-slate-300">Unlock Data Vault, Ghost Meter, and unlimited tracking.</p>
+                            <button
+                                onClick={() => {
+                                    onClose();
+                                    onActivatePro();
+                                }}
+                                className="w-full py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+                            >
+                                <Key className="w-3 h-3" />
+                                Enter License Key
+                            </button>
+                        </div>
+                    )}
+
                     {/* Data Vault Section */}
                     <div className="space-y-3">
-                        <div className="flex items-center space-x-2 text-indigo-400">
-                            <ShieldCheck className="w-4 h-4" />
-                            <h3 className="text-xs font-bold uppercase tracking-widest">Data Vault</h3>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2 text-indigo-400">
+                                <ShieldCheck className="w-4 h-4" />
+                                <h3 className="text-xs font-bold uppercase tracking-widest">Data Vault</h3>
+                            </div>
+                            {!isPro && <Lock className="w-3 h-3 text-slate-600" />}
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <button
-                                onClick={onExport}
-                                className="flex flex-col items-center justify-center p-4 bg-slate-800/40 border border-slate-700/50 rounded-2xl hover:bg-slate-800 transition-all group"
+                                onClick={isPro ? onExport : onActivatePro}
+                                className={cn(
+                                    "flex flex-col items-center justify-center p-4 bg-slate-800/40 border border-slate-700/50 rounded-2xl transition-all group relative overflow-hidden",
+                                    isPro ? "hover:bg-slate-800" : "opacity-60 hover:opacity-100 hover:bg-slate-800/60"
+                                )}
                             >
+                                {!isPro && <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10"><Lock className="w-4 h-4 text-slate-400" /></div>}
                                 <Download className="w-5 h-5 text-indigo-400 mb-2 group-hover:scale-110 transition-transform" />
                                 <span className="text-xs font-bold text-white">Export Vault</span>
                             </button>
                             <button
-                                onClick={() => fileInputRef.current?.click()}
-                                className="flex flex-col items-center justify-center p-4 bg-slate-800/40 border border-slate-700/50 rounded-2xl hover:bg-slate-800 transition-all group"
+                                onClick={() => isPro ? fileInputRef.current?.click() : onActivatePro()}
+                                className={cn(
+                                    "flex flex-col items-center justify-center p-4 bg-slate-800/40 border border-slate-700/50 rounded-2xl transition-all group relative overflow-hidden",
+                                    isPro ? "hover:bg-slate-800" : "opacity-60 hover:opacity-100 hover:bg-slate-800/60"
+                                )}
                             >
+                                {!isPro && <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10"><Lock className="w-4 h-4 text-slate-400" /></div>}
                                 <Upload className="w-5 h-5 text-indigo-400 mb-2 group-hover:scale-110 transition-transform" />
                                 <span className="text-xs font-bold text-white">Import Vault</span>
                             </button>
@@ -63,7 +98,7 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onImp
                             />
                         </div>
                         <p className="text-[10px] text-slate-500 text-center leading-relaxed">
-                            Backup your data to a secure file. SubTracking does not store your data on any server.
+                            {isPro ? "Backup your data to a secure file. SubTracking doesn't store your data." : "Upgrade to Pro to backup and transfer your data."}
                         </p>
                     </div>
 

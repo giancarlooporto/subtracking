@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type } from 'lucide-react';
+import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type, Ghost } from 'lucide-react';
 import { Subscription, DEFAULT_CATEGORIES } from '../types';
 import { getDaysRemaining, getNextOccurrence, getCategoryColorHex, getCategoryIcon, cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,6 +17,7 @@ import { BillingPulse } from '../components/BillingPulse';
 import { ToastProvider, useToast } from '../hooks/useToast';
 import ToastContainer from '../components/ToastContainer';
 import { WelcomeModal } from '../components/WelcomeModal';
+import { LicenseModal } from '../components/LicenseModal';
 import { Footer } from '../components/Footer';
 
 function HomeContent() {
@@ -25,11 +26,13 @@ function HomeContent() {
   const [userCategories, setUserCategories] = useState<string[]>(DEFAULT_CATEGORIES);
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
+  const [isPro, setIsPro] = useState(false);
 
   // Modals & UI State
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showLicenseModal, setShowLicenseModal] = useState(false);
   const [showFactoryResetConfirm, setShowFactoryResetConfirm] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
@@ -76,6 +79,10 @@ function HomeContent() {
     }
 
     if (savedSavings) setCancelledSavings(parseFloat(savedSavings));
+
+    // Check Pro Status
+    const savedPro = localStorage.getItem('subtracking-pro');
+    if (savedPro === 'true') setIsPro(true);
 
     setIsLoaded(true);
 
@@ -228,6 +235,13 @@ function HomeContent() {
 
 
   const handleSaveSubscription = (data: Omit<Subscription, 'id' | 'lastPaidDate' | 'hasEverBeenPaid'>) => {
+    // Check Limits for Free Users
+    if (!isPro && !editingId && subscriptions.length >= 5) {
+      setShowLicenseModal(true);
+      showToast('Free limit reached. Unlock Pro for unlimited tracking!', 'error');
+      return;
+    }
+
     // Add custom category if needed
     if (!userCategories.includes(data.category)) {
       setUserCategories(prev => [...prev, data.category]);
@@ -247,6 +261,13 @@ function HomeContent() {
       };
       setSubscriptions([...subscriptions, newSub]);
     }
+  };
+
+  const handleProSuccess = () => {
+    setIsPro(true);
+    localStorage.setItem('subtracking-pro', 'true');
+    setShowLicenseModal(false);
+    showToast('Pro features unlocked! Welcome to the club 🚀', 'success');
   };
 
   const confirmDelete = () => {
@@ -403,8 +424,20 @@ function HomeContent() {
         />
 
         {/* HOUSEHOLD PULSE (Timeline) */}
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+        {/* HOUSEHOLD PULSE (Timeline) */}
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 relative group">
           <BillingPulse subscriptions={subscriptions} />
+          {!isPro && (
+            <div className="absolute inset-x-0 bottom-0 top-12 backdrop-blur-[2px] bg-slate-900/40 z-20 flex items-center justify-center rounded-b-2xl transition-all group-hover:backdrop-blur-[4px]">
+              <button
+                onClick={() => setShowLicenseModal(true)}
+                className="bg-slate-900 border border-indigo-500/30 px-5 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 hover:scale-105 transition-transform group-hover:bg-slate-800"
+              >
+                <Zap className="w-4 h-4 text-indigo-400 fill-indigo-400" />
+                <span className="text-white font-bold text-sm">Unlock Billing Pulse</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* ACTION DECK (3-Column Grid) */}
@@ -547,9 +580,22 @@ function HomeContent() {
             <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-pink-500/5 rounded-full blur-3xl pointer-events-none" />
           </div>
 
-          <GhostMeter
-            subscriptions={subscriptions}
-          />
+          <div className="relative group">
+            <GhostMeter
+              subscriptions={subscriptions}
+            />
+            {!isPro && (
+              <div className="absolute inset-0 top-12 backdrop-blur-[6px] bg-slate-900/20 z-20 flex items-center justify-center rounded-b-2xl">
+                <button
+                  onClick={() => setShowLicenseModal(true)}
+                  className="bg-slate-900 border border-purple-500/30 px-5 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 hover:scale-105 transition-transform"
+                >
+                  <Ghost className="w-4 h-4 text-purple-400 fill-purple-400" />
+                  <span className="text-white font-bold text-sm">Unlock Ghost Meter</span>
+                </button>
+              </div>
+            )}
+          </div>
 
         </div>
 
@@ -721,6 +767,14 @@ function HomeContent() {
         onFactoryReset={() => setShowFactoryResetConfirm(true)}
         onExport={exportData}
         onImport={importData}
+        isPro={isPro}
+        onActivatePro={() => setShowLicenseModal(true)}
+      />
+
+      <LicenseModal
+        isOpen={showLicenseModal}
+        onClose={() => setShowLicenseModal(false)}
+        onSuccess={handleProSuccess}
       />
 
       <SubTrackingWizard
@@ -865,7 +919,10 @@ function HomeContent() {
 
       <ToastContainer />
 
-      <Footer />
+      <Footer
+        isPro={isPro}
+        onUnlockPro={() => setShowLicenseModal(true)}
+      />
     </main>
   );
 }

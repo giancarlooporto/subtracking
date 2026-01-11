@@ -1,12 +1,36 @@
 import Link from 'next/link';
 import { siteConfig } from '../../siteConfig';
+import { Zap } from 'lucide-react';
 
-export function Footer() {
+interface FooterProps {
+    isPro?: boolean;
+    onUnlockPro?: () => void;
+}
+
+export function Footer({ isPro, onUnlockPro }: FooterProps) {
     const currentYear = new Date().getFullYear();
 
     return (
         <footer className="w-full py-8 mt-24 border-t border-slate-900/50 relative z-10 text-center">
             <div className="max-w-4xl mx-auto px-4 flex flex-col items-center gap-4">
+
+                {/* Pro Badge / Action */}
+                <div className="mb-2">
+                    {isPro ? (
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/50 border border-indigo-500/30 text-xs font-bold text-indigo-400">
+                            <Zap className="w-3 h-3 fill-indigo-400" />
+                            Pro Active
+                        </div>
+                    ) : (
+                        <button
+                            onClick={onUnlockPro}
+                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold hover:scale-105 active:scale-95 transition-all shadow-lg shadow-indigo-500/25"
+                        >
+                            <Zap className="w-3.5 h-3.5 fill-white/20" />
+                            Unlock Pro Features
+                        </button>
+                    )}
+                </div>
 
                 {/* Copyright */}
                 <p className="text-slate-600 text-sm">
