@@ -352,7 +352,7 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
                                                 </div>
                                                 <div>
                                                     <p className="text-[11px] font-bold text-indigo-300">Calendar Bridge Included</p>
-                                                    <p className="text-[10px] text-slate-400">Save to get an alert 2 days before the trial ends.</p>
+                                                    <p className="text-[10px] text-slate-400">Save to get an alert 1 day before the trial ends.</p>
                                                 </div>
                                             </div>
                                         </motion.div>

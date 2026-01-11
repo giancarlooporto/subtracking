@@ -1,5 +1,5 @@
 export function generateICSFile(name: string, price: number, date: string) {
-    // Set alert 2 days before
+    // Set alert 1 day before
     const trialDate = new Date(date);
     const eventDate = new Date(trialDate);
 
@@ -17,11 +17,11 @@ export function generateICSFile(name: string, price: number, date: string) {
         'PROID:-//SubTracking//NONSGML v1.0//EN',
         'BEGIN:VEVENT',
         `SUMMARY:🚨 Trial Ending: ${name}`,
-        `DESCRIPTION:Your trial for ${name} ends in 2 days. It will renew at $${price.toFixed(2)}.`,
+        `DESCRIPTION:Your trial for ${name} ends tomorrow. It will renew at $${price.toFixed(2)}.`,
         `DTSTART:${start}`,
         `DTEND:${end}`,
         'BEGIN:VALERT',
-        'TRIGGER:-P2D', // 2 days before
+        'TRIGGER:-P1D', // 1 day before
         'ACTION:DISPLAY',
         `DESCRIPTION:Reminder: ${name} Trial Ending`,
         'END:VALERT',
