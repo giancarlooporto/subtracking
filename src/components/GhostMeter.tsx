@@ -11,11 +11,11 @@ interface GhostMeterProps {
 export function GhostMeter({ subscriptions }: GhostMeterProps) {
     const metrics = useMemo(() => {
         const monthlyTotal = subscriptions.reduce((sum, sub) => {
-            let monthlyPrice = sub.price;
-            if (sub.billingCycle === 'weekly') monthlyPrice = sub.price * 4.33;
-            else if (sub.billingCycle === 'biweekly') monthlyPrice = sub.price * 2.16;
-            else if (sub.billingCycle === 'quarterly') monthlyPrice = sub.price / 3;
-            else if (sub.billingCycle === 'yearly') monthlyPrice = sub.price / 12;
+            let monthlyPrice = sub.regularPrice || sub.price;
+            if (sub.billingCycle === 'weekly') monthlyPrice = (sub.regularPrice || sub.price) * 4.33;
+            else if (sub.billingCycle === 'biweekly') monthlyPrice = (sub.regularPrice || sub.price) * 2.16;
+            else if (sub.billingCycle === 'quarterly') monthlyPrice = (sub.regularPrice || sub.price) / 3;
+            else if (sub.billingCycle === 'yearly') monthlyPrice = (sub.regularPrice || sub.price) / 12;
             return sum + monthlyPrice;
         }, 0);
 

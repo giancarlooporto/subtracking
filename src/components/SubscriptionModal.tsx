@@ -26,7 +26,7 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
 
     // Trial / Intro Logic
     const [isTrial, setIsTrial] = useState(false);
-    const [regularPrice, setRegularPrice] = useState('');
+    const [trialPrice, setTrialPrice] = useState('');
 
     // Validation errors
     const [errors, setErrors] = useState<{
@@ -38,12 +38,18 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
     useEffect(() => {
         if (initialData) {
             setName(initialData.name);
-            setPrice(initialData.price.toString());
+            // Inverted Logic: If trial, initialData.price is the trial price, initialData.regularPrice is the main price
+            if (initialData.isTrial) {
+                setPrice(initialData.regularPrice?.toString() || '');
+                setTrialPrice(initialData.price.toString());
+            } else {
+                setPrice(initialData.price.toString());
+                setTrialPrice('');
+            }
             setCategory(initialData.category);
             setRenewalDate(new Date(initialData.renewalDate));
             setBillingCycle(initialData.billingCycle);
             setIsTrial(initialData.isTrial || false);
-            setRegularPrice(initialData.regularPrice?.toString() || '');
             setIsAddingCustom(false);
         } else {
             // Reset defaults
@@ -53,7 +59,7 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
             setRenewalDate(new Date());
             setBillingCycle('monthly');
             setIsTrial(false);
-            setRegularPrice('');
+            setTrialPrice('');
             setIsAddingCustom(false);
             setErrors({});
         }
@@ -97,14 +103,18 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
 
         const finalCategory = (isAddingCustom && customCategory.trim()) ? customCategory.trim() : category;
 
+        // Inverted Logic for Saving
+        const savedPrice = isTrial ? (parseFloat(trialPrice) || 0) : parseFloat(price);
+        const savedRegularPrice = isTrial ? parseFloat(price) : undefined;
+
         onSave({
             name,
-            price: parseFloat(price),
+            price: savedPrice,
             category: finalCategory,
             renewalDate: renewalDate.toISOString().split('T')[0],
             billingCycle,
             isTrial,
-            regularPrice: isTrial ? parseFloat(regularPrice) : undefined,
+            regularPrice: savedRegularPrice,
         });
         onClose();
     };
@@ -166,7 +176,7 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
                                 {/* Price & Cycle */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Price</label>
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Regular Price</label>
                                         <div className="relative">
                                             <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                             <input
@@ -183,7 +193,7 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
                                                         ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
                                                         : "border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                                                 )}
-                                                placeholder="0.00"
+                                                placeholder="e.g. 14.99"
                                             />
                                         </div>
                                         {errors.price && (
@@ -328,21 +338,21 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
                                         >
                                             <div className="space-y-2">
                                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                                                    Jump to Regular Price
+                                                    Intro / Trial Price
                                                 </label>
                                                 <div className="relative">
                                                     <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                                     <input
                                                         type="number"
                                                         step="0.01"
-                                                        value={regularPrice}
-                                                        onChange={(e) => setRegularPrice(e.target.value)}
+                                                        value={trialPrice}
+                                                        onChange={(e) => setTrialPrice(e.target.value)}
                                                         className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all text-sm"
-                                                        placeholder="Standard price after trial..."
+                                                        placeholder="0.00 (Free Trial)"
                                                     />
                                                 </div>
                                                 <p className="text-[10px] text-slate-500 italic">
-                                                    The price you'll pay once the trial period ends.
+                                                    This price applies until the renewal date. Set to 0 for free trials.
                                                 </p>
                                             </div>
 
