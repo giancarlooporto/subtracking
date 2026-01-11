@@ -44,7 +44,7 @@ export function LicenseModal({ isOpen, onClose, onSuccess }: LicenseModalProps) 
             if (data.success && !data.purchase.refunded && !data.purchase.chargebacked) {
                 onSuccess();
             } else {
-                throw new Error("Invalid or revoked license key.");
+                throw new Error(data.message || "Invalid or revoked license key.");
             }
 
         } catch (err) {

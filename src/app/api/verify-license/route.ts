@@ -30,7 +30,7 @@ export async function POST(request: Request) {
         } else {
             return NextResponse.json({
                 success: false,
-                message: "Invalid or revoked license key."
+                message: data.message || "Invalid or revoked license key."
             }, { status: 400 });
         }
 
