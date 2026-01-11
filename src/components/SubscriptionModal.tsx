@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Plus, Calendar, DollarSign, Tag, RotateCcw } from 'lucide-react';
+import { X, Plus, Calendar, DollarSign, Tag, RotateCcw, ShieldAlert, Sparkles, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Subscription, DEFAULT_CATEGORIES } from '../types';
 import { cn } from '../lib/utils';
@@ -24,6 +24,10 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
     const [renewalDate, setRenewalDate] = useState(new Date());
     const [billingCycle, setBillingCycle] = useState<Subscription['billingCycle']>('monthly');
 
+    // Trial / Intro Logic
+    const [isTrial, setIsTrial] = useState(false);
+    const [regularPrice, setRegularPrice] = useState('');
+
     // Validation errors
     const [errors, setErrors] = useState<{
         name?: string;
@@ -38,6 +42,8 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
             setCategory(initialData.category);
             setRenewalDate(new Date(initialData.renewalDate));
             setBillingCycle(initialData.billingCycle);
+            setIsTrial(initialData.isTrial || false);
+            setRegularPrice(initialData.regularPrice?.toString() || '');
             setIsAddingCustom(false);
         } else {
             // Reset defaults
@@ -46,6 +52,8 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
             setCategory('Other');
             setRenewalDate(new Date());
             setBillingCycle('monthly');
+            setIsTrial(false);
+            setRegularPrice('');
             setIsAddingCustom(false);
             setErrors({});
         }
@@ -94,7 +102,9 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
             price: parseFloat(price),
             category: finalCategory,
             renewalDate: renewalDate.toISOString().split('T')[0],
-            billingCycle
+            billingCycle,
+            isTrial,
+            regularPrice: isTrial ? parseFloat(regularPrice) : undefined,
         });
         onClose();
     };
@@ -277,6 +287,75 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
                                         <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
                                             <span>⚠</span> {errors.renewalDate}
                                         </p>
+                                    )}
+                                </div>
+
+                                {/* Trial Shield Section */}
+                                <div className="space-y-4 p-4 rounded-2xl bg-slate-950/50 border border-slate-800/50 relative overflow-hidden group">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400">
+                                                <ShieldAlert className="w-4 h-4" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold text-white flex items-center gap-1.5">
+                                                    Trial Shield
+                                                    <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded-full uppercase tracking-wider">New</span>
+                                                </p>
+                                                <p className="text-[11px] text-slate-500">Track free trials & intro offers</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsTrial(!isTrial)}
+                                            className={cn(
+                                                "w-10 h-6 rounded-full relative transition-colors duration-200",
+                                                isTrial ? "bg-indigo-600" : "bg-slate-800"
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 shadow-sm",
+                                                isTrial ? "left-5" : "left-1"
+                                            )} />
+                                        </button>
+                                    </div>
+
+                                    {isTrial && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            className="space-y-4 pt-2"
+                                        >
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                                                    Jump to Regular Price
+                                                </label>
+                                                <div className="relative">
+                                                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        value={regularPrice}
+                                                        onChange={(e) => setRegularPrice(e.target.value)}
+                                                        className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all text-sm"
+                                                        placeholder="Standard price after trial..."
+                                                    />
+                                                </div>
+                                                <p className="text-[10px] text-slate-500 italic">
+                                                    The price you'll pay once the trial period ends.
+                                                </p>
+                                            </div>
+
+                                            <div className="bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10 rounded-xl p-3 flex items-center gap-3">
+                                                <div className="p-2 rounded-lg bg-indigo-500/10">
+                                                    <Sparkles className="w-4 h-4 text-indigo-400" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[11px] font-bold text-indigo-300">Calendar Bridge Included</p>
+                                                    <p className="text-[10px] text-slate-400">Save to get an alert 2 days before the trial ends.</p>
+                                                </div>
+                                            </div>
+                                        </motion.div>
                                     )}
                                 </div>
 

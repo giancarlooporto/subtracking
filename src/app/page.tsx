@@ -19,6 +19,7 @@ import ToastContainer from '../components/ToastContainer';
 import { WelcomeModal } from '../components/WelcomeModal';
 import { LicenseModal } from '../components/LicenseModal';
 import { Footer } from '../components/Footer';
+import { generateICSFile } from '../lib/calendar';
 
 function HomeContent() {
   const { showToast } = useToast();
@@ -260,6 +261,12 @@ function HomeContent() {
         ...data
       };
       setSubscriptions([...subscriptions, newSub]);
+
+      // Calendar Bridge: Trigger alert download for new trials
+      if (data.isTrial) {
+        generateICSFile(data.name, data.regularPrice || data.price, data.renewalDate);
+        showToast('Trial Shield Active: Calendar Alert Generated! 🗓️', 'success');
+      }
     }
   };
 

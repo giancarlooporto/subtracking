@@ -7,6 +7,9 @@ export interface Subscription {
     billingCycle: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly';
     lastPaidDate?: string;
     hasEverBeenPaid?: boolean;
+    isTrial?: boolean;
+    trialEndDate?: string;
+    regularPrice?: number;
 }
 
 export const DEFAULT_CATEGORIES = [

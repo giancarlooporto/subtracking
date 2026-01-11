@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertCircle, MoreVertical, Edit3, Trash2, Check, ExternalLink } from 'lucide-react';
+import { AlertCircle, MoreVertical, Edit3, Trash2, Check, ExternalLink, ShieldAlert, Calendar } from 'lucide-react';
+import { generateICSFile } from '../lib/calendar';
 import { Subscription } from '../types';
 import { cn, getCategoryColorHex, getCategoryIcon, getDaysRemaining, getNextOccurrence } from '../lib/utils';
 
@@ -77,6 +78,12 @@ export function SubscriptionCard({ subscription, viewMode = 'monthly', onEdit, o
                             <span className="px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700/50 backdrop-blur-sm">
                                 {subscription.category}
                             </span>
+                            {subscription.isTrial && (
+                                <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold flex items-center gap-1">
+                                    <ShieldAlert className="w-3 h-3" />
+                                    Trial
+                                </span>
+                            )}
                             <span className="text-slate-600">•</span>
                             <span className="capitalize">{subscription.billingCycle} billing</span>
 
@@ -105,6 +112,11 @@ export function SubscriptionCard({ subscription, viewMode = 'monthly', onEdit, o
                         <div className="text-indigo-400 text-[10px] font-bold uppercase tracking-widest leading-none mt-1 opacity-80">
                             {viewMode === 'monthly' ? '/ mo' : '/ yr'}
                         </div>
+                        {subscription.isTrial && subscription.regularPrice !== undefined && (
+                            <div className="text-[9px] text-slate-500 mt-1.5 font-bold uppercase tracking-tighter bg-slate-800/50 px-1.5 py-0.5 rounded border border-slate-700/50">
+                                ➔ ${subscription.regularPrice.toFixed(2)} soon
+                            </div>
+                        )}
                     </div>
 
                     {/* Menu */}
@@ -130,6 +142,19 @@ export function SubscriptionCard({ subscription, viewMode = 'monthly', onEdit, o
                                     className="absolute right-0 top-full mt-2 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
                                 >
                                     <div className="py-1">
+                                        {subscription.isTrial && (
+                                            <button
+                                                onClick={() => {
+                                                    generateICSFile(subscription.name, subscription.regularPrice || subscription.price, subscription.renewalDate);
+                                                    setIsMenuOpen(false);
+                                                }}
+                                                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-indigo-400 hover:text-indigo-300 text-sm font-bold"
+                                            >
+                                                <Calendar className="w-4 h-4" />
+                                                <span>Sync to Calendar</span>
+                                            </button>
+                                        )}
+
                                         <button
                                             onClick={() => {
                                                 onEdit(subscription);
