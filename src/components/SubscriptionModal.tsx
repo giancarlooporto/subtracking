@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Plus, Calendar, DollarSign, Tag, RotateCcw, ShieldAlert, Sparkles, Bell } from 'lucide-react';
+import { X, Plus, Calendar, DollarSign, Tag, RotateCcw, ShieldAlert, Sparkles, Bell, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Subscription, DEFAULT_CATEGORIES } from '../types';
 import { cn } from '../lib/utils';
@@ -13,9 +13,17 @@ interface SubscriptionModalProps {
     onSave: (data: Omit<Subscription, 'id' | 'lastPaidDate' | 'hasEverBeenPaid'>) => void;
     initialData?: Subscription | null;
     userCategories?: string[];
+    isPro?: boolean;
 }
 
-export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCategories = DEFAULT_CATEGORIES }: SubscriptionModalProps) {
+export function SubscriptionModal({
+    isOpen,
+    onClose,
+    onSave,
+    initialData,
+    userCategories = DEFAULT_CATEGORIES,
+    isPro = false
+}: SubscriptionModalProps) {
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [category, setCategory] = useState('Other');
@@ -34,6 +42,8 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
         price?: string;
         renewalDate?: string;
     }>({});
+
+    const [showProPrompt, setShowProPrompt] = useState(false);
 
     useEffect(() => {
         if (initialData) {
@@ -62,6 +72,7 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
             setTrialPrice('');
             setIsAddingCustom(false);
             setErrors({});
+            setShowProPrompt(false);
         }
     }, [initialData, isOpen]);
 
@@ -244,19 +255,41 @@ export function SubscriptionModal({ isOpen, onClose, onSave, initialData, userCa
                                         ))}
                                         <button
                                             type="button"
-                                            onClick={() => setIsAddingCustom(true)}
+                                            onClick={() => {
+                                                if (isPro) {
+                                                    setIsAddingCustom(true);
+                                                } else {
+                                                    setShowProPrompt(true);
+                                                }
+                                            }}
                                             className={cn(
-                                                "px-3 py-2 rounded-lg text-xs font-bold border transition-all text-left flex items-center gap-1",
+                                                "px-3 py-2 rounded-lg text-xs font-bold border transition-all text-left flex items-center justify-between gap-1",
                                                 isAddingCustom
                                                     ? "bg-indigo-600/20 border-indigo-500 text-indigo-300"
                                                     : "bg-slate-900 border-slate-800 text-slate-500 hover:border-slate-600"
                                             )}
                                         >
-                                            <Plus className="w-3 h-3" /> Custom...
+                                            <span className="flex items-center gap-1">
+                                                <Plus className="w-3 h-3" /> Custom...
+                                            </span>
+                                            {!isPro && <Zap className="w-3 h-3 text-indigo-400 fill-indigo-400" />}
                                         </button>
                                     </div>
 
-                                    {isAddingCustom && (
+                                    {showProPrompt && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 flex items-center justify-between gap-3 mt-2"
+                                        >
+                                            <p className="text-[10px] font-bold text-indigo-300 leading-tight">
+                                                Custom categories are a PRO feature. Unlock to personalize your spending.
+                                            </p>
+                                            <Zap className="w-4 h-4 text-indigo-400 shrink-0 animate-pulse" />
+                                        </motion.div>
+                                    )}
+
+                                    {isAddingCustom && isPro && (
                                         <motion.input
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: 'auto' }}

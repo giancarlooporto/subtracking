@@ -1,8 +1,110 @@
-import { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Subscription } from '../types';
 import { getNextOccurrence, getCategoryColorHex } from '../lib/utils';
 import { Activity } from 'lucide-react';
+
+const PulseDot = memo(({
+    day,
+    today,
+    hasSubs,
+    pulseOffset,
+    dotColor,
+    subs,
+    totalOnDay,
+    tooltipPositionClass,
+    baselineY
+}: {
+    day: number,
+    today: number,
+    hasSubs: boolean,
+    pulseOffset: number,
+    dotColor: string,
+    subs: Subscription[],
+    totalOnDay: number,
+    tooltipPositionClass: string,
+    baselineY: number
+}) => {
+    return (
+        <div
+            className="relative group/day flex flex-col items-center"
+            style={{
+                width: '3%',
+                height: '100%'
+            }}
+        >
+            {/* The Dot */}
+            <motion.div
+                initial={false}
+                animate={{
+                    y: hasSubs ? -pulseOffset : 0,
+                    scale: hasSubs ? 1 : 0.6,
+                    backgroundColor: dotColor,
+                    opacity: hasSubs ? 1 : (day === today ? 0.8 : 0.3)
+                }}
+                transition={{ duration: 0.2 }}
+                className={`absolute rounded-full cursor-pointer transition-shadow
+                    ${hasSubs
+                        ? 'w-2.5 h-2.5 sm:w-3 sm:h-3 shadow-lg hover:shadow-xl'
+                        : 'w-1.5 h-1.5'
+                    }
+                    ${day === today && !hasSubs ? 'ring-2 ring-indigo-500/50' : ''}
+                `}
+                style={{
+                    top: `${baselineY}%`,
+                    transform: `translateY(-50%)`,
+                    boxShadow: hasSubs ? `0 0 12px ${dotColor}40` : 'none'
+                }}
+            />
+
+            {/* Pulse Line */}
+            {hasSubs && pulseOffset > 2 && (
+                <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: pulseOffset }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute w-0.5 rounded-full opacity-40"
+                    style={{
+                        top: `calc(${baselineY}% - ${pulseOffset}px)`,
+                        backgroundColor: dotColor,
+                        height: `${pulseOffset}px`
+                    }}
+                />
+            )}
+
+            {/* Tooltip on Hover */}
+            {hasSubs && (
+                <div className={`absolute ${tooltipPositionClass} w-auto min-w-[10rem] max-w-[200px] sm:max-w-none bg-slate-900/95 backdrop-blur-sm border border-slate-700 p-3 rounded-xl shadow-2xl opacity-0 scale-95 group-hover/day:opacity-100 group-hover/day:scale-100 transition-all pointer-events-none z-50`}
+                    style={{ bottom: `calc(50% + ${pulseOffset + 16}px)` }}
+                >
+                    <div className="text-[10px] uppercase font-bold text-slate-400 mb-2 border-b border-slate-800 pb-1 whitespace-nowrap text-center">
+                        Day {day} • ${totalOnDay.toFixed(0)}
+                    </div>
+                    <div className="space-y-1.5">
+                        {subs.map(sub => (
+                            <div key={sub.id} className="flex items-center justify-between text-xs text-slate-200 gap-3">
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                    <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: getCategoryColorHex(sub.category) }}></div>
+                                    <span className="truncate font-medium">{sub.name}</span>
+                                </div>
+                                <span className="font-mono opacity-80 whitespace-nowrap">${sub.price.toFixed(0)}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Day Number Labels */}
+            {(day === 1 || day === 10 || day === 20 || day === 30) && (
+                <div className="absolute text-[9px] text-slate-600 font-medium" style={{ top: `calc(${baselineY}% + 16px)` }}>
+                    {day}
+                </div>
+            )}
+        </div>
+    );
+});
+
+PulseDot.displayName = 'PulseDot';
 
 interface BillingPulseProps {
     subscriptions: Subscription[];
@@ -134,106 +236,34 @@ export function BillingPulse({ subscriptions }: BillingPulseProps) {
                         const hasSubs = subs.length > 0;
                         const isToday = day === today;
                         const totalOnDay = dayTotals[day] || 0;
-
-                        // Calculate pulse offset (negative = up from baseline)
                         const pulseOffset = maxSpend > 0 ? (totalOnDay / maxSpend) * maxPulseHeight : 0;
-
-                        // Intensity color based on spend
                         const intensity = maxSpend > 0 ? totalOnDay / maxSpend : 0;
+
                         const dotColor = hasSubs
                             ? intensity > 0.7
-                                ? '#ef4444' // red for high spend
+                                ? '#ef4444'
                                 : intensity > 0.4
-                                    ? '#f97316' // orange for medium
-                                    : '#22c55e' // green for low
+                                    ? '#f97316'
+                                    : '#22c55e'
                             : (isToday ? '#6366f1' : '#334155');
 
-                        // Dynamic Tooltip Positioning
                         let tooltipPositionClass = "left-1/2 -translate-x-1/2 origin-bottom";
                         if (day <= 10) tooltipPositionClass = "left-0 origin-bottom-left";
                         if (day >= 22) tooltipPositionClass = "right-0 origin-bottom-right";
 
                         return (
-                            <div
+                            <PulseDot
                                 key={day}
-                                className="relative group/day flex flex-col items-center"
-                                style={{
-                                    width: '3%',
-                                    height: '100%'
-                                }}
-                            >
-                                {/* The Dot - positioned vertically based on spend */}
-                                <motion.div
-                                    initial={false}
-                                    animate={{
-                                        y: hasSubs ? -pulseOffset : 0,
-                                        scale: hasSubs ? 1 : 0.6,
-                                        backgroundColor: dotColor,
-                                        opacity: hasSubs ? 1 : (isToday ? 0.8 : 0.3)
-                                    }}
-                                    transition={{
-                                        type: "spring",
-                                        stiffness: 300,
-                                        damping: 20
-                                    }}
-                                    className={`absolute rounded-full cursor-pointer transition-shadow
-                                        ${hasSubs
-                                            ? 'w-2.5 h-2.5 sm:w-3 sm:h-3 shadow-lg hover:shadow-xl'
-                                            : 'w-1.5 h-1.5'
-                                        }
-                                        ${isToday && !hasSubs ? 'ring-2 ring-indigo-500/50' : ''}
-                                    `}
-                                    style={{
-                                        top: `${baselineY}%`,
-                                        transform: `translateY(-50%)`,
-                                        boxShadow: hasSubs ? `0 0 12px ${dotColor}40` : 'none'
-                                    }}
-                                />
-
-                                {/* Pulse Line (vertical line from baseline to dot) */}
-                                {hasSubs && pulseOffset > 2 && (
-                                    <motion.div
-                                        initial={{ height: 0 }}
-                                        animate={{ height: pulseOffset }}
-                                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                        className="absolute w-0.5 rounded-full opacity-40"
-                                        style={{
-                                            top: `calc(${baselineY}% - ${pulseOffset}px)`,
-                                            backgroundColor: dotColor,
-                                            height: `${pulseOffset}px`
-                                        }}
-                                    />
-                                )}
-
-                                {/* Tooltip on Hover */}
-                                {hasSubs && (
-                                    <div className={`absolute ${tooltipPositionClass} w-auto min-w-[10rem] max-w-[200px] sm:max-w-none bg-slate-900/95 backdrop-blur-sm border border-slate-700 p-3 rounded-xl shadow-2xl opacity-0 scale-95 group-hover/day:opacity-100 group-hover/day:scale-100 transition-all pointer-events-none z-50`}
-                                        style={{ bottom: `calc(50% + ${pulseOffset + 16}px)` }}
-                                    >
-                                        <div className="text-[10px] uppercase font-bold text-slate-400 mb-2 border-b border-slate-800 pb-1 whitespace-nowrap text-center">
-                                            Day {day} • ${totalOnDay.toFixed(0)}
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            {subs.map(sub => (
-                                                <div key={sub.id} className="flex items-center justify-between text-xs text-slate-200 gap-3">
-                                                    <div className="flex items-center gap-1.5 min-w-0">
-                                                        <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: getCategoryColorHex(sub.category) }}></div>
-                                                        <span className="truncate font-medium">{sub.name}</span>
-                                                    </div>
-                                                    <span className="font-mono opacity-80 whitespace-nowrap">${sub.price.toFixed(0)}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Day Number Labels */}
-                                {(day === 1 || day === 10 || day === 20 || day === 30) && (
-                                    <div className="absolute text-[9px] text-slate-600 font-medium" style={{ top: `calc(${baselineY}% + 16px)` }}>
-                                        {day}
-                                    </div>
-                                )}
-                            </div>
+                                day={day}
+                                today={today}
+                                hasSubs={hasSubs}
+                                pulseOffset={pulseOffset}
+                                dotColor={dotColor}
+                                subs={subs}
+                                totalOnDay={totalOnDay}
+                                tooltipPositionClass={tooltipPositionClass}
+                                baselineY={baselineY}
+                            />
                         );
                     })}
                 </div>

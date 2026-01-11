@@ -1,22 +1,18 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Ghost, TrendingUp, AlertCircle, Info } from 'lucide-react';
 import { Subscription } from '../types';
-import { cn } from '../lib/utils';
+import { cn, calculateMonthlyPrice } from '../lib/utils';
 
 interface GhostMeterProps {
     subscriptions: Subscription[];
 }
 
-export function GhostMeter({ subscriptions }: GhostMeterProps) {
+export const GhostMeter = memo(({ subscriptions }: GhostMeterProps) => {
     const metrics = useMemo(() => {
         const monthlyTotal = subscriptions.reduce((sum, sub) => {
-            let monthlyPrice = sub.regularPrice || sub.price;
-            if (sub.billingCycle === 'weekly') monthlyPrice = (sub.regularPrice || sub.price) * 4.33;
-            else if (sub.billingCycle === 'biweekly') monthlyPrice = (sub.regularPrice || sub.price) * 2.16;
-            else if (sub.billingCycle === 'quarterly') monthlyPrice = (sub.regularPrice || sub.price) / 3;
-            else if (sub.billingCycle === 'yearly') monthlyPrice = (sub.regularPrice || sub.price) / 12;
-            return sum + monthlyPrice;
+            const rawPrice = sub.regularPrice || sub.price;
+            return sum + calculateMonthlyPrice(rawPrice, sub.billingCycle);
         }, 0);
 
         return {
@@ -100,4 +96,6 @@ export function GhostMeter({ subscriptions }: GhostMeterProps) {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-purple-500/5 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-500/10 transition-all duration-700" />
         </div>
     );
-}
+});
+
+GhostMeter.displayName = 'GhostMeter';

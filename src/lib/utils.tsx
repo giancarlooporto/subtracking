@@ -72,4 +72,12 @@ export const getCategoryIcon = (category: string) => {
         default: return <Tag className="w-4 h-4" />;
     }
 };
-
+export const calculateMonthlyPrice = (price: number, cycle: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly') => {
+    switch (cycle) {
+        case 'weekly': return price * 4.33;
+        case 'biweekly': return price * 2.16;
+        case 'quarterly': return price / 3;
+        case 'yearly': return price / 12;
+        default: return price;
+    }
+};

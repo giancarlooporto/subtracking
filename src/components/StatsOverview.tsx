@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Settings, Sparkles, ArrowRightLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { siteConfig } from '../../siteConfig';
@@ -10,13 +11,13 @@ interface StatsOverviewProps {
     onStartAudit: () => void;
 }
 
-export function StatsOverview({
+export const StatsOverview = memo(({
     monthlyTotal,
     viewMode,
     onViewModeChange,
     onOpenSettings,
     onStartAudit
-}: StatsOverviewProps) {
+}: StatsOverviewProps) => {
     const displayAmount = viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12;
 
     return (
@@ -98,4 +99,6 @@ export function StatsOverview({
             </div>
         </section>
     );
-}
+});
+
+StatsOverview.displayName = 'StatsOverview';

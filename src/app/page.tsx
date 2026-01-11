@@ -1,943 +1,396 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type, Ghost } from 'lucide-react';
-import { Subscription, DEFAULT_CATEGORIES } from '../types';
-import { getDaysRemaining, getNextOccurrence, getCategoryColorHex, getCategoryIcon, cn } from '../lib/utils';
+import React, { useState } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-
-// Components
-import { SubscriptionCard } from '../components/SubscriptionCard';
-import { StatsOverview } from '../components/StatsOverview';
-import { SubscriptionModal } from '../components/SubscriptionModal';
-import { SettingsModal } from '../components/SettingsModal';
-import { SubTrackingWizard } from '../components/SubTrackingWizard';
-import { GhostMeter } from '../components/GhostMeter';
-import { BillingPulse } from '../components/BillingPulse';
-import { ToastProvider, useToast } from '../hooks/useToast';
-import ToastContainer from '../components/ToastContainer';
-import { WelcomeModal } from '../components/WelcomeModal';
-import { LicenseModal } from '../components/LicenseModal';
-import { Footer } from '../components/Footer';
-import { generateICSFile } from '../lib/calendar';
-
-function HomeContent() {
-  const { showToast } = useToast();
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
-  const [userCategories, setUserCategories] = useState<string[]>(DEFAULT_CATEGORIES);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
-  const [isPro, setIsPro] = useState(false);
-
-  // Modals & UI State
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [showLicenseModal, setShowLicenseModal] = useState(false);
-  const [showFactoryResetConfirm, setShowFactoryResetConfirm] = useState(false);
-  const [showWizard, setShowWizard] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
-
-  // Filtering & Sorting
-  const [sortBy, setSortBy] = useState('price-desc');
-  const [filterCategory, setFilterCategory] = useState('All');
-  const [isSortOpen, setIsSortOpen] = useState(false);
-
-  // Stats
-  const [cancelledSavings, setCancelledSavings] = useState(0);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
-  const [showUrgentBanner, setShowUrgentBanner] = useState(true);
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    const savedData = localStorage.getItem('subtracking-data') || localStorage.getItem('digital-declutter-data');
-    const savedCats = localStorage.getItem('subtracking-categories') || localStorage.getItem('digital-declutter-categories');
-    const savedSavings = localStorage.getItem('subtracking-savings') || localStorage.getItem('digital-declutter-savings');
-
-    if (savedData) {
-      try {
-        setSubscriptions(JSON.parse(savedData));
-      } catch (e) {
-        console.error('Failed to parse subscriptions', e);
-      }
-    }
-
-    if (savedCats) {
-      try {
-        let loadedCats = JSON.parse(savedCats);
-        // Migration: Force update to new SubTracking categories if on the old 7-item list
-        const oldDefaults = ['Streaming', 'Software & Apps', 'Gaming', 'Health & Wellness', 'Meal Kits', 'Content & News', 'Other'];
-        const isOldList = loadedCats.length === 7 && loadedCats.every((c: string, i: number) => c === oldDefaults[i]);
-
-        if (isOldList || loadedCats.includes('Household Utilities')) {
-          loadedCats = DEFAULT_CATEGORIES;
-        }
-        setUserCategories(loadedCats);
-      } catch (e) {
-        console.error('Failed to parse categories', e);
-      }
-    }
-
-    if (savedSavings) setCancelledSavings(parseFloat(savedSavings));
-
-    // Check Pro Status
-    const savedPro = localStorage.getItem('subtracking-pro');
-    if (savedPro === 'true') setIsPro(true);
-
-    setIsLoaded(true);
-
-    // Check if first-time user
-    const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
-    if (!hasSeenWelcome) {
-      setShowWelcome(true);
-    }
-  }, []);
-
-  // Save to localStorage
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('subtracking-data', JSON.stringify(subscriptions));
-      localStorage.setItem('subtracking-categories', JSON.stringify(userCategories));
-      localStorage.setItem('subtracking-savings', cancelledSavings.toString());
-    }
-  }, [subscriptions, userCategories, cancelledSavings, isLoaded]);
-
-  const monthlyTotal = useMemo(() => {
-    return subscriptions.reduce((sum, sub) => {
-      let monthlyPrice = sub.price;
-      if (sub.billingCycle === 'weekly') monthlyPrice = sub.price * 4.33;
-      else if (sub.billingCycle === 'biweekly') monthlyPrice = sub.price * 2.16;
-      else if (sub.billingCycle === 'quarterly') monthlyPrice = sub.price / 3;
-      else if (sub.billingCycle === 'yearly') monthlyPrice = sub.price / 12;
-      return sum + monthlyPrice;
-    }, 0);
-  }, [subscriptions]);
-
-  const sortedSubscriptions = useMemo(() => {
-    let result = [...subscriptions];
-    if (filterCategory !== 'All') {
-      result = result.filter(sub => sub.category === filterCategory);
-    }
-    return result.sort((a, b) => {
-      switch (sortBy) {
-        case 'price-desc': return b.price - a.price;
-        case 'price-asc': return a.price - b.price;
-        case 'renewal-asc':
-          const nextA = getNextOccurrence(a.renewalDate, a.billingCycle);
-          const nextB = getNextOccurrence(b.renewalDate, b.billingCycle);
-          return new Date(nextA).getTime() - new Date(nextB).getTime();
-        case 'name-asc': return a.name.localeCompare(b.name);
-        default: return b.price - a.price;
-      }
-    });
-  }, [subscriptions, sortBy, filterCategory]);
-
-  const categorySpending = useMemo(() => {
-    const spending: Record<string, number> = {};
-    subscriptions.forEach(sub => {
-      let monthlyPrice = sub.price;
-      if (sub.billingCycle === 'weekly') monthlyPrice = sub.price * 4.33;
-      else if (sub.billingCycle === 'biweekly') monthlyPrice = sub.price * 2.16;
-      else if (sub.billingCycle === 'quarterly') monthlyPrice = sub.price / 3;
-      else if (sub.billingCycle === 'yearly') monthlyPrice = sub.price / 12;
-
-      spending[sub.category] = (spending[sub.category] || 0) + monthlyPrice;
-    });
-    return Object.entries(spending)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value);
-  }, [subscriptions]);
-
-  const isPaidThisCycle = (sub: Subscription) => {
-    if (!sub.lastPaidDate) return false;
-    const todayStr = new Date().toISOString().split('T')[0];
-    return sub.lastPaidDate === todayStr;
-  };
-
-  const urgentSubscriptions = useMemo(() => {
-    return subscriptions.filter(sub => {
-      const nextRenewal = getNextOccurrence(sub.renewalDate, sub.billingCycle);
-      const days = getDaysRemaining(nextRenewal);
-      return days <= 2;
-    }).sort((a, b) => new Date(getNextOccurrence(a.renewalDate, a.billingCycle)).getTime() - new Date(getNextOccurrence(b.renewalDate, b.billingCycle)).getTime());
-  }, [subscriptions]);
-
-  const upcomingBills = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0];
-    return [...subscriptions]
-      .filter(sub => {
-        // Use raw renewalDate. If it's in the past and not paid, it stays as 'Past Due'
-        const days = getDaysRemaining(sub.renewalDate);
-        const isPaid = isPaidThisCycle(sub);
-
-        // Keep items if:
-        // 1. They are due in the next 7 days
-        // 2. They are past due (negative days)
-        // 3. They were just paid today (persistence)
-        // Note: isPaid is only true if sub.lastPaidDate === today
-        return (days <= 7) || isPaid;
-      })
-      .sort((a, b) => {
-        // Sort by raw renewal date so overdue items appear at the very top
-        return new Date(a.renewalDate).getTime() - new Date(b.renewalDate).getTime();
-      });
-  }, [subscriptions]);
-
-  const markAsPaid = (id: string) => {
-    const today = new Date().toISOString().split('T')[0];
-    setSubscriptions(prev => prev.map(sub => {
-      if (sub.id !== id) return sub;
-      const [year, month, day] = sub.renewalDate.split('-').map(Number);
-      let nextDate = new Date(year, month - 1, day);
-      nextDate.setHours(0, 0, 0, 0);
-
-      if (sub.billingCycle === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
-      else if (sub.billingCycle === 'biweekly') nextDate.setDate(nextDate.getDate() + 14);
-      else if (sub.billingCycle === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
-      else if (sub.billingCycle === 'quarterly') nextDate.setMonth(nextDate.getMonth() + 3);
-      else if (sub.billingCycle === 'yearly') nextDate.setFullYear(nextDate.getFullYear() + 1);
-
-      return {
-        ...sub,
-        renewalDate: nextDate.toISOString().split('T')[0],
-        lastPaidDate: today,
-        hasEverBeenPaid: true
-      };
-    }));
-  };
-
-  const unmarkAsPaid = (id: string) => {
-    setSubscriptions(prev => prev.map(sub => {
-      if (sub.id !== id) return sub;
-
-      // Revert date logic
-      const [year, month, day] = sub.renewalDate.split('-').map(Number);
-      let prevDate = new Date(year, month - 1, day);
-      prevDate.setHours(0, 0, 0, 0);
-
-      if (sub.billingCycle === 'weekly') prevDate.setDate(prevDate.getDate() - 7);
-      else if (sub.billingCycle === 'biweekly') prevDate.setDate(prevDate.getDate() - 14);
-      else if (sub.billingCycle === 'monthly') prevDate.setMonth(prevDate.getMonth() - 1);
-      else if (sub.billingCycle === 'quarterly') prevDate.setMonth(prevDate.getMonth() - 3);
-      else if (sub.billingCycle === 'yearly') prevDate.setFullYear(prevDate.getFullYear() - 1);
-
-      // If the reverted date is in the past, use getNextOccurrence to find the next valid date
-      const revertedDateStr = prevDate.toISOString().split('T')[0];
-      const nextValidDate = getNextOccurrence(revertedDateStr, sub.billingCycle);
-
-      return {
-        ...sub,
-        renewalDate: nextValidDate,
-        lastPaidDate: undefined
-      };
-    }));
-  };
-
-
-  const handleSaveSubscription = (data: Omit<Subscription, 'id' | 'lastPaidDate' | 'hasEverBeenPaid'>) => {
-    // Check Limits for Free Users
-    if (!isPro && !editingId && subscriptions.length >= 5) {
-      setShowLicenseModal(true);
-      showToast('Free limit reached. Unlock Pro for unlimited tracking!', 'error');
-      return;
-    }
-
-    // Add custom category if needed
-    if (!userCategories.includes(data.category)) {
-      setUserCategories(prev => [...prev, data.category]);
-    }
-
-    if (editingId) {
-      setSubscriptions(subscriptions.map(sub =>
-        sub.id === editingId
-          ? { ...sub, ...data }
-          : sub
-      ));
-      setEditingId(null);
-    } else {
-      const newSub: Subscription = {
-        id: crypto.randomUUID(),
-        ...data
-      };
-      setSubscriptions([...subscriptions, newSub]);
-
-      // Calendar Bridge: Trigger alert download for new trials
-      if (data.isTrial) {
-        generateICSFile(data.name, data.regularPrice || data.price, data.renewalDate);
-        showToast('Trial Shield Active: Calendar Alert Generated! 🗓️', 'success');
-      }
-    }
-  };
-
-  const handleProSuccess = () => {
-    setIsPro(true);
-    localStorage.setItem('subtracking-pro', 'true');
-    setShowLicenseModal(false);
-    showToast('Pro features unlocked! Welcome to the club 🚀', 'success');
-  };
-
-  const confirmDelete = () => {
-    if (deleteId) {
-      const subToDelete = subscriptions.find(s => s.id === deleteId);
-      if (subToDelete && subToDelete.hasEverBeenPaid) {
-        // Celebration logic simplified for now
-        let monthlyEquivalent = subToDelete.price;
-        if (subToDelete.billingCycle === 'weekly') monthlyEquivalent = (subToDelete.price * 52) / 12;
-        else if (subToDelete.billingCycle === 'biweekly') monthlyEquivalent = (subToDelete.price * 26) / 12;
-        else if (subToDelete.billingCycle === 'quarterly') monthlyEquivalent = subToDelete.price / 3;
-        else if (subToDelete.billingCycle === 'yearly') monthlyEquivalent = subToDelete.price / 12;
-        setCancelledSavings(prev => prev + monthlyEquivalent);
-      }
-      setSubscriptions(subscriptions.filter(s => s.id !== deleteId));
-      setDeleteId(null);
-    }
-  };
-
-
-
-  const factoryReset = () => {
-    localStorage.clear();
-    window.location.reload();
-  };
-
-  const deleteCategory = (catName: string) => {
-    setCategoryToDelete(catName);
-  };
-
-  const confirmCategoryDelete = () => {
-    if (categoryToDelete) {
-      setSubscriptions(subscriptions.map(sub =>
-        sub.category === categoryToDelete ? { ...sub, category: 'Other' } : sub
-      ));
-      setUserCategories(userCategories.filter(cat => cat !== categoryToDelete));
-      setCategoryToDelete(null);
-    }
-  };
-
-  const exportData = () => {
-    const data = {
-      subscriptions,
-      userCategories,
-      cancelledSavings,
-      exportDate: new Date().toISOString(),
-      version: '1.0'
-    };
-    const fileName = "subtracking_backup.json";
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = fileName;
-
-    document.body.appendChild(a);
-    a.click();
-
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-
-    // Feedback
-    showToast(`Vault exported successfully! Check Downloads for "${fileName}"`, 'success');
-  };
-
-  const importData = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const content = event.target?.result as string;
-        const data = JSON.parse(content);
-
-        if (!data.subscriptions || !Array.isArray(data.subscriptions)) {
-          throw new Error('Invalid data format');
-        }
-
-        if (confirm('Importing this vault will replace all your current data. This cannot be undone. Proceed?')) {
-          setSubscriptions(data.subscriptions);
-          if (data.userCategories) setUserCategories(data.userCategories);
-          if (data.cancelledSavings) setCancelledSavings(data.cancelledSavings);
-          showToast('Vault restored successfully!', 'success');
-        }
-      } catch (err) {
-        showToast('Error importing vault. Please check the file format.', 'error');
-        console.error(err);
-      }
-    };
-    reader.readAsText(file);
-    // Reset input so the same file can be uploaded again if needed
-    e.target.value = '';
-  };
-
-  const handleAuditFinish = (idsToDelete: string[]) => {
-    setShowWizard(false);
-
-    // Calculate total savings for toast/celebration (logic could be enhanced)
-    let totalSavings = 0;
-    const newSubs = subscriptions.filter(sub => {
-      if (idsToDelete.includes(sub.id)) {
-        let monthly = sub.price;
-        if (sub.billingCycle === 'weekly') monthly = sub.price * 4.33;
-        else if (sub.billingCycle === 'biweekly') monthly = sub.price * 2.16;
-        else if (sub.billingCycle === 'quarterly') monthly = sub.price / 3;
-        else if (sub.billingCycle === 'yearly') monthly = sub.price / 12;
-        totalSavings += monthly;
-        return false; // Remove
-      }
-      return true; // Keep
-    });
-
-    setSubscriptions(newSubs);
-    if (totalSavings > 0) {
-      setCancelledSavings(prev => prev + totalSavings);
-      showToast(`Audit complete! You're saving $${totalSavings.toFixed(2)}/month`, 'success');
-    }
-  };
-
-  if (!isLoaded) return null;
-
-  return (
-    <main className="min-h-screen bg-aurora text-slate-100 font-[family-name:var(--font-geist-sans)] relative overflow-x-hidden">
-
-      {/* 1. Urgent Renovals Banner */}
-      {urgentSubscriptions.length > 0 && showUrgentBanner && (
-        <div className="bg-red-500/10 border-b border-red-500/20 animate-in slide-in-from-top duration-500 backdrop-blur-md relative z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <AlertCircle className="w-5 h-5 text-red-500 animate-pulse" />
-              <p className="text-sm font-medium text-red-200">
-                <span className="font-bold text-white">{urgentSubscriptions.length} services</span> renewing within 48 hours.
-              </p>
-            </div>
-            <button onClick={() => setShowUrgentBanner(false)} className="text-red-400 hover:text-white transition-colors">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div className="max-w-7xl mx-auto p-4 sm:p-8 space-y-8 relative z-10">
-
-        {/* HERO SECTION */}
-        <StatsOverview
-          monthlyTotal={monthlyTotal}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          onOpenSettings={() => setShowSettingsModal(true)}
-          onStartAudit={() => setShowWizard(true)}
-        />
-
-        {/* HOUSEHOLD PULSE (Timeline) */}
-        {/* HOUSEHOLD PULSE (Timeline) */}
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 relative group">
-          <BillingPulse subscriptions={subscriptions} />
-          {!isPro && (
-            <div className="absolute inset-x-0 bottom-0 top-12 backdrop-blur-[2px] bg-slate-900/40 z-20 flex items-center justify-center rounded-b-2xl transition-all group-hover:backdrop-blur-[4px]">
-              <button
-                onClick={() => setShowLicenseModal(true)}
-                className="bg-slate-900 border border-indigo-500/30 px-5 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 hover:scale-105 transition-transform group-hover:bg-slate-800"
-              >
-                <Zap className="w-4 h-4 text-indigo-400 fill-indigo-400" />
-                <span className="text-white font-bold text-sm">Unlock Billing Pulse</span>
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* ACTION DECK (3-Column Grid) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-
-          {/* 1. Upcoming Bills Card */}
-          <div className="glass-panel rounded-2xl p-6 flex flex-col h-[380px] relative overflow-hidden">
-            <div className="flex items-center justify-between mb-4 z-10">
-              <div className="flex items-center space-x-2 text-indigo-400">
-                <Calendar className="w-5 h-5" />
-                <h3 className="font-bold text-white">Upcoming (7 Days)</h3>
-              </div>
-              <span className="bg-indigo-500/10 text-indigo-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-500/20">
-                {upcomingBills.length} Due
-              </span>
-            </div>
-
-            <div className="flex-1 overflow-y-auto pr-1 space-y-2 custom-scrollbar z-10">
-              {upcomingBills.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-3 opacity-50">
-                  <div className="w-12 h-12 rounded-full bg-slate-800/50 flex items-center justify-center">
-                    <Check className="w-6 h-6" />
-                  </div>
-                  <span className="text-xs font-medium">All caught up!</span>
-                </div>
-              ) : (
-                upcomingBills.map((sub) => {
-                  const days = getDaysRemaining(sub.renewalDate);
-                  const isPaid = isPaidThisCycle(sub);
-                  const isOverdue = days < 0 && !isPaid;
-
-                  return (
-                    <div key={sub.id} className={cn("flex items-center justify-between p-3 bg-slate-800/40 rounded-xl border border-slate-700/30 transition-all group", isPaid ? "opacity-50 grayscale hover:opacity-75" : "hover:bg-slate-800/60", isOverdue && "border-red-500/30 bg-red-500/5")}>
-                      <div className="flex items-center space-x-3">
-                        {isPaid ? (
-                          <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                            <Check className="w-4 h-4 text-emerald-500" />
-                          </div>
-                        ) : (
-                          <div className={cn("w-1.5 h-8 rounded-full transition-colors", isOverdue || days <= 2 ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse" : "bg-indigo-500")} />
-                        )}
-                        <div>
-                          <div className={cn("font-bold text-sm transition-colors", isPaid ? "text-slate-500 line-through decoration-slate-600" : isOverdue ? "text-red-400" : "text-slate-200 group-hover:text-white")}>
-                            {sub.name}
-                          </div>
-                          <div className="text-[10px] text-slate-400">
-                            {isPaid ? (
-                              <span className="text-emerald-500 font-medium">Payment Complete</span>
-                            ) : isOverdue ? (
-                              <span className="text-red-500 font-bold uppercase tracking-wider">Past Due ({Math.abs(days)}d)</span>
-                            ) : days === 0 ? (
-                              <span className="text-red-400 font-bold animate-pulse">Due Today</span>
-                            ) : (
-                              `Due in ${days} days`
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className={cn("font-bold text-sm", isPaid ? "text-slate-600 line-through" : "text-slate-300")}>
-                          ${sub.price.toFixed(0)}
-                        </span>
-                        {!isPaid && (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); markAsPaid(sub.id); }}
-                            className="p-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/20 rounded-lg transition-colors border border-transparent hover:border-emerald-500/30 shadow-lg"
-                            aria-label={`Mark ${sub.name} as paid`}
-                          >
-                            <Check className="w-4 h-4" />
-                          </button>
-                        )}
-                        {isPaid && (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); unmarkAsPaid(sub.id); }}
-                            className="p-1.5 text-slate-500 hover:text-white hover:bg-slate-600 rounded-lg transition-colors z-20"
-                            aria-label={`Undo payment for ${sub.name}`}
-                          >
-                            <Undo2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
-          </div>
-
-          {/* 2. Category Split Card */}
-          <div className="glass-panel rounded-2xl p-6 h-[380px] flex flex-col relative overflow-hidden">
-            <div className="flex items-center space-x-2 text-indigo-400 mb-2 z-10">
-              <PieChart className="w-5 h-5" />
-              <h3 className="font-bold text-white">Spend by Category</h3>
-            </div>
-
-            <div className="flex-1 flex flex-col items-center justify-center z-10 w-full">
-              {categorySpending.length > 0 ? (
-                <>
-                  <div className="flex-1 w-full flex items-center justify-center relative min-h-[180px]">
-                    <svg viewBox="0 0 100 100" className="transform -rotate-90 h-full max-h-[200px]">
-                      {categorySpending.reduce((acc: any[], cat, i) => {
-                        const total = categorySpending.reduce((s, c) => s + c.value, 0);
-                        const startAngle = acc.length > 0 ? acc[acc.length - 1].endAngle : 0;
-                        const angle = (cat.value / total) * 360;
-                        const endAngle = startAngle + angle;
-                        const x1 = 50 + 42 * Math.cos(Math.PI * startAngle / 180);
-                        const y1 = 50 + 42 * Math.sin(Math.PI * startAngle / 180);
-                        const x2 = 50 + 42 * Math.cos(Math.PI * endAngle / 180);
-                        const y2 = 50 + 42 * Math.sin(Math.PI * endAngle / 180);
-                        const largeArc = angle > 180 ? 1 : 0;
-                        const pathData = `M 50 50 L ${x1} ${y1} A 42 42 0 ${largeArc} 1 ${x2} ${y2} Z`;
-                        acc.push({ pathData, color: getCategoryColorHex(cat.name), endAngle });
-                        return acc;
-                      }, []).map((slice: any, i) => (
-                        <path key={i} d={slice.pathData} fill={slice.color} className="opacity-80 hover:opacity-100 transition-opacity cursor-help" />
-                      ))}
-                      <circle cx="50" cy="50" r="32" fill="transparent" />
-                    </svg>
-                  </div>
-
-                  <div className="w-full grid grid-cols-2 gap-2 mt-4">
-                    {categorySpending.slice(0, 4).map(cat => (
-                      <div key={cat.name} className="flex items-center text-[10px] text-slate-400 bg-slate-800/30 px-2 py-1.5 rounded-lg border border-slate-700/30">
-                        <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ backgroundColor: getCategoryColorHex(cat.name) }}></span>
-                        <span className="truncate flex-1">{cat.name}</span>
-                        <span className="font-mono ml-1 text-slate-300">${cat.value.toFixed(0)}</span>
-                      </div>
-                    ))}
-                  </div>
-
-
-                </>
-              ) : (
-                <div className="text-slate-500 text-sm">Add subscriptions to see stats</div>
-              )}
-            </div>
-
-            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-pink-500/5 rounded-full blur-3xl pointer-events-none" />
-          </div>
-
-          <div className="relative group">
-            <GhostMeter
-              subscriptions={subscriptions}
+import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock, MousePointer2, X, Play, Globe, HardDrive } from 'lucide-react';
+import { cn } from '../lib/utils';
+
+import { VideoModal } from '../components/VideoModal';
+
+export default function LandingPage() {
+    const [isVideoOpen, setIsVideoOpen] = useState(false);
+    return (
+        <div className="min-h-screen bg-slate-950 text-slate-100 font-[family-name:var(--font-geist-sans)] selection:bg-indigo-500/30 overflow-x-hidden">
+            <VideoModal
+                isOpen={isVideoOpen}
+                onClose={() => setIsVideoOpen(false)}
+                videoSrc="/assets/demo.webp"
             />
-            {!isPro && (
-              <div className="absolute inset-0 top-12 backdrop-blur-[6px] bg-slate-900/20 z-20 flex items-center justify-center rounded-b-2xl">
-                <button
-                  onClick={() => setShowLicenseModal(true)}
-                  className="bg-slate-900 border border-purple-500/30 px-5 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 hover:scale-105 transition-transform"
-                >
-                  <Ghost className="w-4 h-4 text-purple-400 fill-purple-400" />
-                  <span className="text-white font-bold text-sm">Unlock Ghost Meter</span>
-                </button>
-              </div>
-            )}
-          </div>
 
-        </div>
-
-        {/* FULL LIST SECTION */}
-        <section id="subscriptions-list" className="py-12 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="space-y-1 shrink-0">
-              <h2 className="text-3xl font-bold text-white flex items-center gap-3">
-                <Wallet className="w-8 h-8 text-indigo-400" />
-                All Subscriptions
-                <span className="bg-indigo-500/10 text-indigo-400 text-xs font-black px-2.5 py-1 rounded-full border border-indigo-500/20 ml-2">
-                  {subscriptions.length}
-                </span>
-              </h2>
-              <p className="text-slate-500 text-sm ml-11 font-medium">Manage and optimize your digital life</p>
-            </div>
-
-            {/* Filter/Sort Controls Overlay */}
-            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center min-w-0">
-              {/* Category Filter Pills */}
-              <div className="flex-1 min-w-0 flex gap-1.5 p-1.5 bg-slate-900/40 backdrop-blur-md rounded-2xl border border-slate-800/50 overflow-x-auto custom-scrollbar">
-                <button
-                  onClick={() => setFilterCategory('All')}
-                  className={cn(
-                    "px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap",
-                    filterCategory === 'All'
-                      ? "bg-white text-black shadow-lg shadow-white/10"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                  )}
-                  aria-label="Show all subscriptions"
-                >
-                  All
-                </button>
-                {userCategories.map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setFilterCategory(cat)}
-                    className={cn(
-                      "px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap",
-                      filterCategory === cat
-                        ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20"
-                        : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                    )}
-                    aria-label={`Filter by ${cat}`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-
-              {/* Sort Pill with Dropdown */}
-              <div className="relative w-fit shrink-0">
-                <button
-                  onClick={() => setIsSortOpen(!isSortOpen)}
-                  className={cn(
-                    "flex items-center gap-2.5 px-4 h-11 rounded-2xl border transition-all text-sm font-bold whitespace-nowrap",
-                    isSortOpen
-                      ? "bg-indigo-500 border-indigo-500 text-white shadow-lg shadow-indigo-500/20"
-                      : "bg-slate-900/40 border-slate-800/50 text-slate-300 hover:border-indigo-500/30 hover:text-white"
-                  )}
-                  aria-label="Sort subscriptions"
-                  aria-expanded={isSortOpen}
-                >
-                  <ArrowUpDown className="w-4 h-4" />
-                  <span className="opacity-80">Sort:</span>
-                  <span>
-                    {sortBy === 'price-desc' && "Highest Price"}
-                    {sortBy === 'price-asc' && "Lowest Price"}
-                    {sortBy === 'renewal-asc' && "Next Renewal"}
-                    {sortBy === 'name-asc' && "Name (A-Z)"}
-                  </span>
-                </button>
-
-                {/* Sort Menu Dropdown */}
-                {isSortOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setIsSortOpen(false)} />
-                    <div
-                      className="absolute left-0 top-full mt-2 w-64 bg-slate-900/98 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-300"
-                    >
-                      <div className="p-2.5">
-                        <div className="px-3 py-2 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Sort list by</div>
-                        <div className="space-y-1">
-                          {[
-                            { label: 'Highest Price', value: 'price-desc', icon: <DollarSign className="w-4 h-4" /> },
-                            { label: 'Lowest Price', value: 'price-asc', icon: <DollarSign className="w-4 h-4 opacity-50" /> },
-                            { label: 'Next Renewal', value: 'renewal-asc', icon: <Calendar className="w-4 h-4" /> },
-                            { label: 'Name (A-Z)', value: 'name-asc', icon: <Type className="w-4 h-4" /> }
-                          ].map((opt) => (
-                            <button
-                              key={opt.value}
-                              onClick={() => { setSortBy(opt.value); setIsSortOpen(false); }}
-                              className={cn(
-                                "w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 transition-all text-sm font-semibold",
-                                sortBy === opt.value
-                                  ? "bg-indigo-500 text-white shadow-md shadow-indigo-500/30"
-                                  : "text-slate-400 hover:bg-slate-800/80 hover:text-white"
-                              )}
-                            >
-                              <span className={cn(
-                                "p-2 rounded-lg flex items-center justify-center shrink-0",
-                                sortBy === opt.value ? "bg-white/20" : "bg-slate-800 border border-slate-700/50"
-                              )}>
-                                {opt.icon}
-                              </span>
-                              <span className="flex-1">{opt.label}</span>
-                              {sortBy === opt.value && <Check className="w-4 h-4" />}
-                            </button>
-                          ))}
+            {/* Navigation */}
+            <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-slate-950/80 backdrop-blur-xl">
+                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                            <Wallet className="w-5 h-5 text-white" />
                         </div>
-                      </div>
+                        <span className="font-black text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                            SubTracking
+                        </span>
                     </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
 
+                    <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
+                        <a href="#features" className="hover:text-white transition-colors">Features</a>
+                        <a href="#privacy" className="hover:text-white transition-colors">Privacy</a>
+                        <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+                    </div>
 
-
-          {/* The List Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            <AnimatePresence>
-              {sortedSubscriptions.map((sub) => (
-                <SubscriptionCard
-                  key={sub.id}
-                  subscription={sub}
-                  viewMode={viewMode}
-                  onEdit={(s) => { setEditingId(s.id); setShowAddModal(true); }}
-                  onDelete={(id) => setDeleteId(id)}
-                  onMarkPaid={markAsPaid}
-                />
-              ))}
-            </AnimatePresence>
-
-            {/* Mobile Add Card (visible in list if empty?) No, standard empty state covers it. */}
-            {sortedSubscriptions.length === 0 && (
-              <div className="col-span-full py-20 flex flex-col items-center justify-center text-slate-600 space-y-4 border-2 border-dashed border-slate-800 rounded-3xl">
-                <CreditCard className="w-12 h-12 opacity-20" />
-                <p>No subscriptions found.</p>
-              </div>
-            )}
-          </div>
-        </section>
-
-      </div>
-
-      {/* Modals */}
-      <WelcomeModal
-        isOpen={showWelcome}
-        onClose={() => {
-          setShowWelcome(false);
-          localStorage.setItem('hasSeenWelcome', 'true');
-        }}
-      />
-
-      <SubscriptionModal
-        isOpen={showAddModal}
-        onClose={() => { setShowAddModal(false); setEditingId(null); }}
-        onSave={handleSaveSubscription}
-        initialData={editingId ? subscriptions.find(s => s.id === editingId) : null}
-        userCategories={userCategories}
-      />
-
-
-      <SettingsModal
-        isOpen={showSettingsModal}
-        onClose={() => setShowSettingsModal(false)}
-        onFactoryReset={() => setShowFactoryResetConfirm(true)}
-        onExport={exportData}
-        onImport={importData}
-        isPro={isPro}
-        onActivatePro={() => setShowLicenseModal(true)}
-      />
-
-      <LicenseModal
-        isOpen={showLicenseModal}
-        onClose={() => setShowLicenseModal(false)}
-        onSuccess={handleProSuccess}
-      />
-
-      <SubTrackingWizard
-        isOpen={showWizard}
-        onClose={() => setShowWizard(false)}
-        subscriptions={subscriptions}
-        onFinish={handleAuditFinish}
-      />
-
-      {/* Confirmations - Kept inline for now or extract later if needed. 
-           Actually, let's keep Category Delete Modal inline as it depends on local state `categoryToDelete` which is manageable.
-       */}
-      {
-        categoryToDelete && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-sm w-full space-y-6 animate-in zoom-in-95 duration-300 shadow-2xl">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="bg-red-500/20 p-4 rounded-2xl">
-                  <Tag className="w-8 h-8 text-red-500" />
+                    <Link
+                        href="/dashboard"
+                        className="bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:scale-105 transition-transform active:scale-95 shadow-xl shadow-white/5"
+                    >
+                        Launch App
+                    </Link>
                 </div>
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-bold text-white">Delete Category?</h2>
-                  <div className="text-slate-400 text-sm space-y-2">
-                    <p>Are you sure you want to delete <span className="text-white font-semibold">"{categoryToDelete}"</span>?</p>
-                    <p className="p-3 bg-red-500/5 rounded-xl border border-red-500/10 text-[11px] leading-relaxed">
-                      <span className="text-red-400 font-bold uppercase block mb-1">Impact</span>
-                      All subscriptions using this category will be moved to <span className="text-white font-bold">"Other"</span>.
+            </nav>
+
+            {/* HERO SECTION */}
+            <section className="relative pt-40 pb-20 px-6">
+                <div className="max-w-7xl mx-auto text-center space-y-8 relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-xs font-black uppercase tracking-widest"
+                    >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        The Future of Subscription Management
+                    </motion.div>
+
+                    <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="text-5xl md:text-8xl font-black tracking-tight leading-[1.1]"
+                    >
+                        Track Smarter.<br />
+                        <span className="text-slate-500">Spend Less.</span>
+                    </motion.h1>
+
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="max-w-2xl mx-auto text-slate-400 text-lg md:text-xl font-medium"
+                    >
+                        The privacy-first audit tool that helps you find unused subscriptions and stop the "Ghost Cost" of future spending. No bank logins required.
+                    </motion.p>
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+                    >
+                        <Link
+                            href="/dashboard"
+                            className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white px-10 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 group transition-all shadow-2xl shadow-indigo-600/20"
+                        >
+                            Start Auditing Now
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                        <button
+                            onClick={() => setIsVideoOpen(true)}
+                            className="w-full sm:w-auto border border-slate-800 hover:bg-white/5 text-white px-10 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 group transition-all"
+                        >
+                            <Play className="w-5 h-5 fill-white group-hover:scale-110 transition-transform" />
+                            Watch Demo
+                        </button>
+                    </motion.div>
+                </div>
+
+                {/* Hero App Preview */}
+                <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                    className="max-w-6xl mx-auto mt-20 relative group"
+                >
+                    <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] -z-10 group-hover:bg-indigo-500/30 transition-all duration-700" />
+                    <div className="rounded-3xl border border-white/10 p-2 bg-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden">
+                        <img
+                            src="/og-image.png"
+                            alt="SubTracking Dashboard"
+                            className="rounded-2xl w-full h-auto shadow-2xl"
+                        />
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* STATS SECTION */}
+            <section className="py-20 border-y border-white/5 bg-slate-900/30">
+                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+                    <div className="space-y-2">
+                        <div className="text-4xl font-black text-white">$450+</div>
+                        <div className="text-slate-500 text-sm font-bold uppercase tracking-widest">Avg. Yearly Savings</div>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="text-4xl font-black text-white">100%</div>
+                        <div className="text-slate-500 text-sm font-bold uppercase tracking-widest">Privacy (Local Data)</div>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="text-4xl font-black text-white">0</div>
+                        <div className="text-slate-500 text-sm font-bold uppercase tracking-widest">Bank Logins Required</div>
+                    </div>
+                </div>
+            </section>
+
+            {/* FEATURES */}
+            <section id="features" className="py-32 px-6">
+                <div className="max-w-7xl mx-auto space-y-20">
+                    <div className="text-center space-y-4">
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight">Everything you need to <br /><span className="text-indigo-500">take back control.</span></h2>
+                        <p className="text-slate-500 font-medium">Built for speed, privacy, and results.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {/* Feature 1 */}
+                        <div className="glass-panel p-8 rounded-3xl space-y-6 border border-white/5 hover:border-indigo-500/20 transition-all group">
+                            <div className="bg-indigo-500/10 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Ghost className="w-7 h-7 text-indigo-400" />
+                            </div>
+                            <div className="space-y-3">
+                                <h3 className="text-xl font-bold">The Ghost Meter</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    Visualize the "Lost Wealth" over 10 years. Small monthly leaks add up to life-changing money.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Feature 2 */}
+                        <div className="glass-panel p-8 rounded-3xl space-y-6 border border-white/5 hover:border-emerald-500/20 transition-all group">
+                            <div className="bg-emerald-500/10 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Shield className="w-7 h-7 text-emerald-400" />
+                            </div>
+                            <div className="space-y-3">
+                                <h3 className="text-xl font-bold">Privacy-First Audit</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    No Plaid. No Yodlee. No bank connections. Your data stays in your browser's local storage.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Feature 3 */}
+                        <div className="glass-panel p-8 rounded-3xl space-y-6 border border-white/5 hover:border-purple-500/20 transition-all group">
+                            <div className="bg-purple-500/10 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <MousePointer2 className="w-7 h-7 text-purple-400" />
+                            </div>
+                            <div className="space-y-3">
+                                <h3 className="text-xl font-bold">Keep or Toss Wizard</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    A Tinder-style interface to quickly audit your services. Flick through and save hundreds in seconds.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* PRIVACY SECTION */}
+            <section id="privacy" className="py-32 px-6 relative overflow-hidden">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/5 rounded-full blur-[120px] -z-10" />
+
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                    <div className="space-y-8">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-emerald-400 text-xs font-black uppercase tracking-widest">
+                            <Lock className="w-3.5 h-3.5" />
+                            Privacy First Architecture
+                        </div>
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
+                            Your finance stays <br />
+                            <span className="text-emerald-500">on your device.</span>
+                        </h2>
+                        <p className="text-slate-400 text-lg leading-relaxed">
+                            Unlike other trackers, SubTracking never asks for your bank login. We don't have servers that store your financial history. Everything is stored in your browser's local storage.
+                        </p>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div className="flex gap-4">
+                                <div className="mt-1 bg-emerald-500/20 p-2 rounded-lg h-fit">
+                                    <Globe className="w-4 h-4 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-white mb-1">No Cloud Sync</h4>
+                                    <p className="text-sm text-slate-500">Your data never touches the cloud or our servers.</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="mt-1 bg-emerald-500/20 p-2 rounded-lg h-fit">
+                                    <HardDrive className="w-4 h-4 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-white mb-1">Local Export</h4>
+                                    <p className="text-sm text-slate-500">Backup and restore your data manually via JSON files.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-4">
+                            <Link href="/privacy" className="text-slate-400 hover:text-white text-sm font-bold flex items-center gap-2 transition-colors">
+                                Read our Full Privacy Policy <ArrowRight className="w-4 h-4" />
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div className="relative">
+                        <div className="glass-panel p-8 rounded-[40px] border border-white/5 space-y-8 relative z-10">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">
+                                        <Lock className="w-5 h-5 text-slate-400" />
+                                    </div>
+                                    <span className="font-bold text-sm">Security Layers</span>
+                                </div>
+                                <span className="text-[10px] font-black text-emerald-500 px-2 py-1 bg-emerald-500/10 rounded-full">ACTIVE</span>
+                            </div>
+
+                            <div className="space-y-4">
+                                {[
+                                    "Zero Tracking Cookies",
+                                    "No Third Party Data Sales",
+                                    "Client-Side Encryption",
+                                    "GDPR & PIPEDA Compliant"
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
+                                        <Check className="w-5 h-5 text-emerald-500" />
+                                        <span className="text-sm font-medium text-slate-200">{item}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* PRICING SECTION */}
+            <section id="pricing" className="py-32 px-6 bg-slate-900/20">
+                <div className="max-w-7xl mx-auto space-y-20">
+                    <div className="text-center space-y-4">
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight">Simple, transparent <br /><span className="text-indigo-500">pricing.</span></h2>
+                        <p className="text-slate-500 font-medium">One-time payment. Lifetime access.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                        {/* Free Tier */}
+                        <div className="glass-panel p-10 rounded-[40px] border border-white/5 flex flex-col hover:border-slate-700 transition-all">
+                            <div className="space-y-2 flex-1">
+                                <h3 className="text-2xl font-bold">Standard</h3>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-5xl font-black">$0</span>
+                                    <span className="text-slate-500 font-medium">/forever</span>
+                                </div>
+                                <p className="text-slate-500 text-sm pt-4">For the curious financial tracker.</p>
+
+                                <ul className="space-y-4 pt-10">
+                                    {[
+                                        "Up to 5 Subscriptions",
+                                        "Manual Tracking",
+                                        "Renewal Alerts",
+                                        "Standard Categories",
+                                        "Audit Wizard (Basic)"
+                                    ].map((item, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-slate-400 text-sm">
+                                            <Check className="w-4 h-4 text-slate-600 shrink-0" />
+                                            {item}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <Link href="/dashboard" className="mt-10 w-full py-4 rounded-2xl border border-slate-800 font-bold text-center hover:bg-white/5 transition-colors">
+                                Get Started Free
+                            </Link>
+                        </div>
+
+                        {/* Pro Tier */}
+                        <div className="glass-panel p-10 rounded-[40px] border-2 border-indigo-500/30 bg-indigo-500/[0.02] flex flex-col relative overflow-hidden group">
+                            <div className="absolute top-4 right-4 bg-indigo-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-indigo-500/20">
+                                Best Value
+                            </div>
+
+                            <div className="space-y-2 flex-1">
+                                <h3 className="text-2xl font-bold flex items-center gap-2">
+                                    PRO
+                                    <Zap className="w-5 h-5 text-indigo-400 fill-indigo-400" />
+                                </h3>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-5xl font-black">$39</span>
+                                    <span className="text-slate-500 font-medium tracking-tight">/one-time</span>
+                                </div>
+                                <p className="text-indigo-200/60 text-sm pt-4">For the optimization masters.</p>
+
+                                <ul className="space-y-4 pt-10">
+                                    {[
+                                        "Unlimited Subscriptions",
+                                        "Ghost Meter Pro (10Y Projections)",
+                                        "Billing Pulse (Timeline View)",
+                                        "Advanced Custom Categories",
+                                        "Data Export/Import (Vault)",
+                                        "Priority Support"
+                                    ].map((item, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-slate-200 text-sm font-medium">
+                                            <Zap className="w-4 h-4 text-indigo-400 shrink-0" />
+                                            {item}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <Link href="/dashboard?upgrade=true" className="mt-10 w-full py-4 rounded-2xl bg-indigo-600 text-white font-black text-center hover:bg-indigo-500 shadow-xl shadow-indigo-600/20 group-hover:scale-105 transition-all active:scale-95">
+                                Go Pro Now
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* CALL TO ACTION */}
+            <section className="py-32 px-6">
+                <div className="max-w-5xl mx-auto rounded-[40px] bg-gradient-to-b from-indigo-600 to-indigo-700 p-12 md:p-20 text-center space-y-8 relative overflow-hidden shadow-2xl shadow-indigo-500/40">
+                    <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,1),rgba(255,255,255,0))]" />
+                    <div className="relative z-10 space-y-6">
+                        <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight leading-tight">
+                            Ready to stop the leaks?
+                        </h2>
+                        <p className="text-indigo-100/80 text-lg max-w-xl mx-auto font-medium">
+                            Join thousands who are decluttering their digital lives and saving real money every month.
+                        </p>
+                        <div className="pt-10">
+                            <Link
+                                href="/dashboard"
+                                className="inline-flex bg-indigo-600 text-white px-12 py-5 rounded-2xl font-black text-xl hover:scale-105 hover:bg-indigo-500 transition-all active:scale-95 shadow-2xl shadow-indigo-500/40 group"
+                            >
+                                Get Started Free
+                                <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* FOOTER */}
+            <footer className="py-12 border-t border-white/5 text-center px-6">
+                <div className="max-w-7xl mx-auto flex flex-col items-center gap-6">
+                    <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded bg-indigo-500 flex items-center justify-center">
+                            <Wallet className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="font-bold text-slate-200">SubTracking</span>
+                    </div>
+                    <p className="text-slate-500 text-xs">
+                        Built for those who value privacy and financial freedom.<br />
+                        &copy; 2026 SubTracking. No rights reserved. Go build something great.
                     </p>
-                  </div>
                 </div>
-              </div>
+            </footer>
 
-              <div className="flex flex-col space-y-3">
-                <button
-                  onClick={confirmCategoryDelete}
-                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition-all"
-                >
-                  Delete Category
-                </button>
-                <button
-                  onClick={() => setCategoryToDelete(null)}
-                  className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-4 rounded-xl active:scale-[0.98] transition-all"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )
-      }
-
-      {
-        deleteId && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-sm w-full space-y-6 animate-in zoom-in-95 duration-300 shadow-2xl">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="bg-red-500/20 p-4 rounded-2xl">
-                  <Trash2 className="w-8 h-8 text-red-500" />
-                </div>
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-bold text-white">Delete Service?</h2>
-                  <p className="text-slate-400 text-sm">
-                    Are you sure you want to remove <span className="text-white font-semibold">"{subscriptions.find(s => s.id === deleteId)?.name}"</span>?
-                    <br />
-                    {subscriptions.find(s => s.id === deleteId)?.hasEverBeenPaid && <span className="text-emerald-400 font-bold block mt-1">Found savings! 💰</span>}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col space-y-3">
-                <button
-                  onClick={confirmDelete}
-                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition-all"
-                >
-                  Confirm Delete
-                </button>
-                <button
-                  onClick={() => setDeleteId(null)}
-                  className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-4 rounded-xl active:scale-[0.98] transition-all"
-                >
-                  Keep Subscription
-                </button>
-              </div>
-            </div>
-          </div>
-        )
-      }
-
-      {
-        showFactoryResetConfirm && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-sm w-full space-y-6 animate-in zoom-in-95 duration-300 shadow-2xl transform scale-110">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="bg-red-500/20 p-4 rounded-2xl animate-pulse">
-                  <Zap className="w-8 h-8 text-red-500" />
-                </div>
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-bold text-white">Factory Reset?</h2>
-                  <p className="text-red-400/80 text-sm font-medium">
-                    CAUTION: This will permanently delete ALL your subscriptions, categories, and settings. This cannot be undone.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col space-y-3">
-                <button
-                  onClick={factoryReset}
-                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(239,68,68,0.4)] active:scale-[0.98] transition-all"
-                >
-                  Yes, Delete Everything
-                </button>
-                <button
-                  onClick={() => setShowFactoryResetConfirm(false)}
-                  className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-4 rounded-xl active:scale-[0.98] transition-all"
-                >
-                  Go Back Safety
-                </button>
-              </div>
-            </div>
-          </div>
-        )
-      }
-
-
-      {/* Floating Action Button for Add Subscription */}
-      <motion.button
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setShowAddModal(true)}
-        className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)] z-40 group border border-white/20"
-        aria-label="Add new subscription"
-      >
-        <Plus className="w-8 h-8 text-white transition-transform group-hover:rotate-90 duration-300" />
-
-        {/* Pulse Effect - only when modal is closed */}
-        {!showAddModal && (
-          <div className="absolute inset-0 rounded-full bg-indigo-500/20 animate-ping pointer-events-none" />
-        )}
-      </motion.button>
-
-      <ToastContainer />
-
-      <Footer
-        isPro={isPro}
-        onUnlockPro={() => setShowLicenseModal(true)}
-      />
-    </main>
-  );
-}
-
-export default function Home() {
-  return (
-    <ToastProvider>
-      <HomeContent />
-    </ToastProvider>
-  );
+            <style jsx>{`
+                .glass-panel {
+                    background: rgba(30, 41, 59, 0.4);
+                    backdrop-filter: blur(12px);
+                }
+            `}</style>
+        </div>
+    );
 }

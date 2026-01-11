@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, MoreVertical, Edit3, Trash2, Check, ExternalLink, ShieldAlert, Calendar } from 'lucide-react';
 import { generateICSFile } from '../lib/calendar';
 import { Subscription } from '../types';
-import { cn, getCategoryColorHex, getCategoryIcon, getDaysRemaining, getNextOccurrence } from '../lib/utils';
+import { cn, getCategoryColorHex, getCategoryIcon, getDaysRemaining, getNextOccurrence, calculateMonthlyPrice } from '../lib/utils';
 
 interface SubscriptionCardProps {
     subscription: Subscription;
@@ -13,7 +13,7 @@ interface SubscriptionCardProps {
     onMarkPaid?: (id: string) => void;
 }
 
-export function SubscriptionCard({ subscription, viewMode = 'monthly', onEdit, onDelete, onMarkPaid }: SubscriptionCardProps) {
+export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEdit, onDelete, onMarkPaid }: SubscriptionCardProps) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const nextRenewal = getNextOccurrence(subscription.renewalDate, subscription.billingCycle);
     const days = getDaysRemaining(nextRenewal);
@@ -23,24 +23,19 @@ export function SubscriptionCard({ subscription, viewMode = 'monthly', onEdit, o
     const isExpired = days < 0;
 
     // Calculate display price based on viewMode
-    let monthlyPrice = subscription.price;
-    if (subscription.billingCycle === 'weekly') monthlyPrice = subscription.price * 4.33;
-    else if (subscription.billingCycle === 'biweekly') monthlyPrice = subscription.price * 2.16;
-    else if (subscription.billingCycle === 'quarterly') monthlyPrice = subscription.price / 3;
-    else if (subscription.billingCycle === 'yearly') monthlyPrice = subscription.price / 12;
-
+    const monthlyPrice = calculateMonthlyPrice(subscription.price, subscription.billingCycle);
     const displayPrice = viewMode === 'monthly' ? monthlyPrice : monthlyPrice * 12;
 
     return (
         <motion.div
-            layout
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            whileHover={{ y: -4, scale: 1.01, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+            whileHover={{ y: -2, transition: { duration: 0.2 } }}
             className={cn(
-                "glass-card relative rounded-2xl transition-all duration-300 group mb-4", // Removed overflow-hidden
-                isMenuOpen ? "z-30 shadow-2xl" : "z-10", // Elevated state
+                "glass-card relative rounded-2xl transition-all duration-300 group mb-4",
+                isMenuOpen ? "z-30 shadow-2xl" : "z-10",
                 isUrgent ? "shadow-red-500/10 border-red-500/20" : "hover:border-white/10 hover:shadow-indigo-500/10"
             )}
         >
@@ -204,4 +199,6 @@ export function SubscriptionCard({ subscription, viewMode = 'monthly', onEdit, o
 
         </motion.div>
     );
-}
+});
+
+SubscriptionCard.displayName = 'SubscriptionCard';

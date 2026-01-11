@@ -180,3 +180,17 @@ body {
 .react-datepicker__triangle {
   display: none !important;
 }
+
+/* Hide Dev Tools for Clean Screenshots/Demos */
+[data-nextjs-toast],
+div[class*="nextjs-toast"],
+div[data-nextjs-toast-errors],
+div[class*="vercel-toolbar"],
+#vercel-toolbar,
+nextjs-portal,
+[data-testid="toast-container"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
