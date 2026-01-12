@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock, MousePointer2, X, Play, Globe, HardDrive, ShieldAlert } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -10,6 +11,22 @@ import { VideoModal } from '../components/VideoModal';
 
 export default function LandingPage() {
     const [isVideoOpen, setIsVideoOpen] = useState(false);
+    const router = useRouter();
+
+    useEffect(() => {
+        // Smart Redirect: If user has data, go straight to app
+        const savedSubs = localStorage.getItem('subtracking-subs');
+        if (savedSubs) {
+            try {
+                const subs = JSON.parse(savedSubs);
+                if (Array.isArray(subs) && subs.length > 0) {
+                    router.push('/dashboard');
+                }
+            } catch (e) {
+                // Ignore errors
+            }
+        }
+    }, [router]);
     return (
         <div className="min-h-screen bg-slate-950 text-slate-100 font-[family-name:var(--font-geist-sans)] selection:bg-indigo-500/30 overflow-x-hidden">
             <VideoModal
