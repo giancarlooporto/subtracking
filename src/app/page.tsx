@@ -39,9 +39,11 @@ export default function LandingPage() {
             <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-slate-950/80 backdrop-blur-xl">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                            <Wallet className="w-5 h-5 text-white" />
-                        </div>
+                        <img
+                            src="/logo.png"
+                            alt="SubTracking Logo"
+                            className="w-8 h-8 rounded-lg shadow-lg shadow-indigo-500/20"
+                        />
                         <span className="font-black text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
                             SubTracking
                         </span>
