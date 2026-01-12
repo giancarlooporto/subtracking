@@ -10,6 +10,7 @@ export interface Subscription {
     isTrial?: boolean;
     trialEndDate?: string;
     regularPrice?: number;
+    isOneTimePayment?: boolean;
 }
 
 export const DEFAULT_CATEGORIES = [

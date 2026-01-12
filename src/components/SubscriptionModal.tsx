@@ -36,6 +36,7 @@ export function SubscriptionModal({
     const [isTrial, setIsTrial] = useState(false);
     const [trialPrice, setTrialPrice] = useState('');
     const [trialEndDate, setTrialEndDate] = useState<Date | null>(null);
+    const [isOneTimePayment, setIsOneTimePayment] = useState(false);
 
     // Validation errors
     const [errors, setErrors] = useState<{
@@ -63,6 +64,7 @@ export function SubscriptionModal({
             setBillingCycle(initialData.billingCycle);
             setIsTrial(initialData.isTrial || false);
             setTrialEndDate(initialData.trialEndDate ? new Date(initialData.trialEndDate) : null);
+            setIsOneTimePayment(initialData.isOneTimePayment || false);
             setIsAddingCustom(false);
         } else {
             // Reset defaults
@@ -74,6 +76,7 @@ export function SubscriptionModal({
             setIsTrial(false);
             setTrialPrice('');
             setTrialEndDate(null);
+            setIsOneTimePayment(false);
             setIsAddingCustom(false);
             setErrors({});
             setShowProPrompt(false);
@@ -140,6 +143,7 @@ export function SubscriptionModal({
             isTrial,
             regularPrice: savedRegularPrice,
             trialEndDate: trialEndDate ? trialEndDate.toISOString().split('T')[0] : undefined,
+            isOneTimePayment: isTrial ? isOneTimePayment : undefined,
         });
         onClose();
     };
@@ -403,6 +407,18 @@ export function SubscriptionModal({
                                                 </p>
                                             </div>
 
+                                            <div className="flex items-center gap-3 bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+                                                <input
+                                                    type="checkbox"
+                                                    id="oneTimePayment"
+                                                    checked={isOneTimePayment}
+                                                    onChange={(e) => setIsOneTimePayment(e.target.checked)}
+                                                    className="w-4 h-4 rounded border-slate-700 text-indigo-500 focus:ring-indigo-500 bg-slate-800"
+                                                />
+                                                <label htmlFor="oneTimePayment" className="text-xs text-slate-300 select-none cursor-pointer">
+                                                    Results inside a one-time payment for full duration
+                                                </label>
+                                            </div>
                                             <div className="space-y-2">
                                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
                                                     Trial End Date
@@ -467,7 +483,8 @@ export function SubscriptionModal({
                         </div>
                     </motion.div>
                 </>
-            )}
-        </AnimatePresence>
+            )
+            }
+        </AnimatePresence >
     );
 }

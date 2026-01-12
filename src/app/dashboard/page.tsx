@@ -131,6 +131,11 @@ function HomeContent() {
         ? (sub.regularPrice || sub.price)
         : sub.price;
 
+      // If it's a one-time trial payment and trial is active, don't add to recurring monthly total
+      if (sub.isTrial && sub.isOneTimePayment && !isTrialExpired) {
+        return sum;
+      }
+
       return sum + calculateMonthlyPrice(currentPrice, sub.billingCycle);
     }, 0);
   }, [subscriptions]);

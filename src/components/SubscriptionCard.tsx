@@ -133,7 +133,9 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                             {displayPrice.toFixed(2)}
                         </div>
                         <div className="text-indigo-400 text-[10px] font-bold uppercase tracking-widest leading-none mt-1 opacity-80">
-                            {viewMode === 'monthly' ? '/ mo' : '/ yr'}
+                            {subscription.isTrial && subscription.isOneTimePayment && !isTrialExpired
+                                ? 'total'
+                                : viewMode === 'monthly' ? '/ mo' : '/ yr'}
                         </div>
                         {subscription.isTrial && subscription.regularPrice !== undefined && !isTrialExpired && (
                             <div className="text-[9px] text-slate-500 mt-1.5 font-bold uppercase tracking-tighter bg-slate-800/50 px-1.5 py-0.5 rounded border border-slate-700/50">
