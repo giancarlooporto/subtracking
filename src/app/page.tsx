@@ -123,7 +123,7 @@ export default function LandingPage() {
                     <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] -z-10 group-hover:bg-indigo-500/30 transition-all duration-700" />
                     <div className="rounded-3xl border border-white/10 p-2 bg-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden">
                         <img
-                            src="/og-image.png"
+                            src="/dashboard-preview.png"
                             alt="SubTracking Dashboard"
                             className="rounded-2xl w-full h-auto shadow-2xl"
                         />
