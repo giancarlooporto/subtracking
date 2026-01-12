@@ -351,10 +351,10 @@ export default function LandingPage() {
 
                                 <ul className="space-y-4 pt-10">
                                     {[
-                                        "Up to 5 Subscriptions",
-                                        "Manual Tracking",
+                                        "Up to 10 Subscriptions",
+                                        "Billing Pulse Timeline",
+                                        "Data Export (.json)",
                                         "Renewal Alerts",
-                                        "Standard Categories",
                                         "Audit Wizard (Basic)"
                                     ].map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-slate-400 text-sm">
@@ -391,9 +391,8 @@ export default function LandingPage() {
                                     {[
                                         "Unlimited Subscriptions",
                                         "Ghost Meter Pro (10Y Projections)",
-                                        "Billing Pulse (Timeline View)",
+                                        "Vault Restore (Data Import)",
                                         "Advanced Custom Categories",
-                                        "Data Export/Import (Vault)",
                                         "Priority Support"
                                     ].map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-slate-200 text-sm font-medium">

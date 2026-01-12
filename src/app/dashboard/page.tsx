@@ -259,9 +259,9 @@ function HomeContent() {
 
   const handleSaveSubscription = (data: Omit<Subscription, 'id' | 'lastPaidDate' | 'hasEverBeenPaid'>) => {
     // Check Limits for Free Users
-    if (!isPro && !editingId && subscriptions.length >= 5) {
+    if (!isPro && !editingId && subscriptions.length >= 10) {
       setShowLicenseModal(true);
-      showToast('Free limit reached. Unlock Pro for unlimited tracking!', 'error');
+      showToast('Free limit reached (10). Unlock Pro for unlimited tracking!', 'error');
       return;
     }
 
@@ -446,20 +446,8 @@ function HomeContent() {
         />
 
         {/* HOUSEHOLD PULSE (Timeline) */}
-        {/* HOUSEHOLD PULSE (Timeline) */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 relative group">
           <BillingPulse subscriptions={subscriptions} />
-          {!isPro && (
-            <div className="absolute inset-x-0 bottom-0 top-12 backdrop-blur-[2px] bg-slate-900/40 z-20 flex items-center justify-center rounded-b-2xl transition-all group-hover:backdrop-blur-[4px]">
-              <button
-                onClick={() => setShowLicenseModal(true)}
-                className="bg-slate-900 border border-indigo-500/30 px-5 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 hover:scale-105 transition-transform group-hover:bg-slate-800"
-              >
-                <Zap className="w-4 h-4 text-indigo-400 fill-indigo-400" />
-                <span className="text-white font-bold text-sm">Unlock Billing Pulse</span>
-              </button>
-            </div>
-          )}
         </div>
 
         {/* ACTION DECK (3-Column Grid) */}
