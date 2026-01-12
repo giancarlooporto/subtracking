@@ -331,7 +331,7 @@ export default function LandingPage() {
                                     <Zap className="w-5 h-5 text-indigo-400 fill-indigo-400" />
                                 </h3>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-5xl font-black">$39</span>
+                                    <span className="text-5xl font-black">$19</span>
                                     <span className="text-slate-500 font-medium tracking-tight">/one-time</span>
                                 </div>
                                 <p className="text-indigo-200/60 text-sm pt-4">For the optimization masters.</p>
