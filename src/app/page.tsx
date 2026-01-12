@@ -8,6 +8,7 @@ import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock
 import { cn } from '../lib/utils';
 
 import { VideoModal } from '../components/VideoModal';
+import { FAQSection } from '../components/FAQSection';
 
 export default function LandingPage() {
     const [isVideoOpen, setIsVideoOpen] = useState(false);
@@ -53,6 +54,7 @@ export default function LandingPage() {
                         <a href="#features" className="hover:text-white transition-colors">Features</a>
                         <a href="#privacy" className="hover:text-white transition-colors">Privacy</a>
                         <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+                        <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
                     </div>
 
                     <Link
@@ -373,6 +375,8 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
+
+            <FAQSection />
 
             {/* CALL TO ACTION */}
             <section className="py-32 px-6">
