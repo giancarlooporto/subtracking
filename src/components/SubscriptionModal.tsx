@@ -416,7 +416,7 @@ export function SubscriptionModal({
                                                             if (errors.trialEndDate) setErrors({ ...errors, trialEndDate: undefined });
                                                         }}
                                                         dateFormat="MM/dd/yyyy"
-                                                        popperPlacement="top"
+                                                        popperPlacement="bottom-start"
                                                         className={cn(
                                                             "w-full bg-slate-900 border rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none transition-all text-sm",
                                                             errors.trialEndDate
