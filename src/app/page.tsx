@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock, MousePointer2, X, Play, Globe, HardDrive, ShieldAlert } from 'lucide-react';
+import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock, MousePointer2, X, Play, Globe, HardDrive, ShieldAlert, Menu } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 import { VideoModal } from '../components/VideoModal';
@@ -12,6 +12,7 @@ import { FAQSection } from '../components/FAQSection';
 
 export default function LandingPage() {
     const [isVideoOpen, setIsVideoOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -57,13 +58,48 @@ export default function LandingPage() {
                         <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
                     </div>
 
-                    <Link
-                        href="/dashboard"
-                        className="bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:scale-105 transition-transform active:scale-95 shadow-xl shadow-white/5"
-                    >
-                        Launch App
-                    </Link>
+                    <div className="flex items-center gap-4">
+                        <Link
+                            href="/dashboard"
+                            className="hidden sm:block bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:scale-105 transition-transform active:scale-95 shadow-xl shadow-white/5"
+                        >
+                            Launch App
+                        </Link>
+
+                        <button
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
+                        >
+                            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                        </button>
+                    </div>
                 </div>
+
+                {/* Mobile Menu Overlay */}
+                <AnimatePresence>
+                    {isMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="md:hidden border-t border-white/5 bg-slate-950/95 backdrop-blur-xl overflow-hidden"
+                        >
+                            <div className="px-6 py-8 flex flex-col gap-6">
+                                <a href="#features" onClick={() => setIsMenuOpen(false)} className="text-lg font-bold text-slate-300 hover:text-white">Features</a>
+                                <a href="#privacy" onClick={() => setIsMenuOpen(false)} className="text-lg font-bold text-slate-300 hover:text-white">Privacy</a>
+                                <a href="#pricing" onClick={() => setIsMenuOpen(false)} className="text-lg font-bold text-slate-300 hover:text-white">Pricing</a>
+                                <a href="#faq" onClick={() => setIsMenuOpen(false)} className="text-lg font-bold text-slate-300 hover:text-white">FAQ</a>
+                                <Link
+                                    href="/dashboard"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-center shadow-xl shadow-indigo-600/20"
+                                >
+                                    Launch App
+                                </Link>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </nav>
 
             {/* HERO SECTION */}
