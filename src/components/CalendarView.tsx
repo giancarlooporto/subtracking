@@ -13,6 +13,7 @@ interface CalendarViewProps {
 export function CalendarView({ subscriptions, isPro, onUnlockPro }: CalendarViewProps) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+    const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
     // Calendar logic
     const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
@@ -169,12 +170,17 @@ export function CalendarView({ subscriptions, isPro, onUnlockPro }: CalendarView
                                             <div
                                                 className={cn(
                                                     "w-8 h-8 rounded-lg flex items-center justify-center text-xs",
-                                                    sub.logo ? "bg-white p-1" : ""
+                                                    sub.logo && !imageErrors[sub.id] ? "bg-white p-1" : ""
                                                 )}
-                                                style={!sub.logo ? { backgroundColor: `${getCategoryColorHex(sub.category)}20`, color: getCategoryColorHex(sub.category) } : {}}
+                                                style={!sub.logo || imageErrors[sub.id] ? { backgroundColor: `${getCategoryColorHex(sub.category)}20`, color: getCategoryColorHex(sub.category) } : {}}
                                             >
-                                                {sub.logo ? (
-                                                    <img src={sub.logo} alt="" className="w-full h-full object-contain" />
+                                                {sub.logo && !imageErrors[sub.id] ? (
+                                                    <img
+                                                        src={sub.logo}
+                                                        alt=""
+                                                        className="w-full h-full object-contain"
+                                                        onError={() => setImageErrors(prev => ({ ...prev, [sub.id]: true }))}
+                                                    />
                                                 ) : (
                                                     sub.name.charAt(0)
                                                 )}

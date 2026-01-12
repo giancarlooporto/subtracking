@@ -227,7 +227,12 @@ export function SubscriptionModal({
                                         />
                                         {logo && (
                                             <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-white overflow-hidden border border-slate-800 flex items-center justify-center p-0.5 animate-in zoom-in duration-300">
-                                                <img src={logo} alt="" className="w-full h-full object-contain" />
+                                                <img
+                                                    src={logo}
+                                                    alt=""
+                                                    className="w-full h-full object-contain"
+                                                    onError={() => setLogo('')}
+                                                />
                                             </div>
                                         )}
                                     </div>

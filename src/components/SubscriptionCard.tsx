@@ -15,6 +15,7 @@ interface SubscriptionCardProps {
 
 export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEdit, onDelete, onMarkPaid }: SubscriptionCardProps) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [imageError, setImageError] = useState(false);
     const nextRenewal = getNextOccurrence(subscription.renewalDate, subscription.billingCycle);
     const days = getDaysRemaining(nextRenewal);
 
@@ -66,15 +67,20 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                         className={cn(
                             "w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold shadow-lg transition-transform duration-300 group-hover:scale-110",
                             "border border-white/5",
-                            subscription.logo ? "bg-white p-2" : ""
+                            subscription.logo && !imageError ? "bg-white p-2" : ""
                         )}
-                        style={!subscription.logo ? {
+                        style={!subscription.logo || imageError ? {
                             backgroundColor: `${getCategoryColorHex(subscription.category)}20`,
                             color: getCategoryColorHex(subscription.category)
                         } : {}}
                     >
-                        {subscription.logo ? (
-                            <img src={subscription.logo} alt="" className="w-full h-full object-contain" />
+                        {subscription.logo && !imageError ? (
+                            <img
+                                src={subscription.logo}
+                                alt=""
+                                className="w-full h-full object-contain"
+                                onError={() => setImageError(true)}
+                            />
                         ) : (
                             getCategoryIcon(subscription.category)
                         )}
