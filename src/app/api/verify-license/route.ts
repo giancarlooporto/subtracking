@@ -14,6 +14,7 @@ export async function POST(request: Request) {
         formData.append('product_permalink', GUMROAD_CONFIG.productPermalink);
         formData.append('product_id', GUMROAD_CONFIG.productId); // Added as per API requirement
         formData.append('license_key', license_key);
+        formData.append('increment_uses_count', 'true'); // Tell Gumroad to count this verification
 
         const response = await fetch(GUMROAD_CONFIG.apiUrl, {
             method: 'POST',
@@ -27,6 +28,18 @@ export async function POST(request: Request) {
 
         // Pass through the Gumroad response logic
         if (data.success && !data.purchase.refunded && !data.purchase.chargebacked) {
+
+            // CUSTOM LIMIT CHECK
+            // Gumroad returns 'uses' count in the purchase object. 
+            // Since we sent 'increment_uses_count', the 'uses' value returned includes THIS attempt.
+            // So if uses > 3, this attempt pushed it over the limit.
+            if (data.purchase.uses > 3) {
+                return NextResponse.json({
+                    success: false,
+                    message: "License limit reached (Max 3 devices)."
+                }, { status: 400 });
+            }
+
             return NextResponse.json({ success: true, purchase: data.purchase });
         } else {
             return NextResponse.json({
