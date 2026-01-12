@@ -7,7 +7,7 @@ export const BRAND_LOGOS: Record<string, string> = {
     // Streaming Services
     'netflix': 'https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIPkDyCO86/542b1dfabbf3959908f69be546879952/Netflix-Brand-Logo.png',
     'spotify': 'https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png',
-    'apple music': 'https://www.apple.com/v/apple-music/d/images/overview/icon_apple_music__bvvfg6ddhf8m_large.png',
+    'apple music': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Apple_Music_icon.svg/512px-Apple_Music_icon.svg.png',
     'youtube premium': 'https://www.gstatic.com/youtube/img/branding/youtubelogo/svg/youtubelogo.svg',
     'disney+': 'https://cnbl-cdn.bamgrid.com/assets/7ecc8bcb60ad77193058d63e321bd21cbac2fc67.png',
     'disney plus': 'https://cnbl-cdn.bamgrid.com/assets/7ecc8bcb60ad77193058d63e321bd21cbac2fc67.png',
