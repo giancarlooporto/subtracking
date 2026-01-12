@@ -353,6 +353,7 @@ export default function LandingPage() {
                                     {[
                                         "Up to 10 Subscriptions",
                                         "Billing Pulse Timeline",
+                                        "Smart Brand Icons",
                                         "Data Export (.json)",
                                         "Renewal Alerts",
                                         "Audit Wizard (Basic)"

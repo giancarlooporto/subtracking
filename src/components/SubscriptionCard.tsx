@@ -65,14 +65,19 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                     <div
                         className={cn(
                             "w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold shadow-lg transition-transform duration-300 group-hover:scale-110",
-                            "border border-white/5" // Added minimal border for glass feel
+                            "border border-white/5",
+                            subscription.logo ? "bg-white p-2" : ""
                         )}
-                        style={{
+                        style={!subscription.logo ? {
                             backgroundColor: `${getCategoryColorHex(subscription.category)}20`,
                             color: getCategoryColorHex(subscription.category)
-                        }}
+                        } : {}}
                     >
-                        {getCategoryIcon(subscription.category)}
+                        {subscription.logo ? (
+                            <img src={subscription.logo} alt="" className="w-full h-full object-contain" />
+                        ) : (
+                            getCategoryIcon(subscription.category)
+                        )}
                     </div>
 
                     <div>

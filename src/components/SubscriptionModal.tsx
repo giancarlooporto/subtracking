@@ -37,6 +37,7 @@ export function SubscriptionModal({
     const [trialPrice, setTrialPrice] = useState('');
     const [trialEndDate, setTrialEndDate] = useState<Date | null>(null);
     const [isOneTimePayment, setIsOneTimePayment] = useState(false);
+    const [logo, setLogo] = useState('');
 
     // Validation errors
     const [errors, setErrors] = useState<{
@@ -65,6 +66,7 @@ export function SubscriptionModal({
             setIsTrial(initialData.isTrial || false);
             setTrialEndDate(initialData.trialEndDate ? new Date(initialData.trialEndDate) : null);
             setIsOneTimePayment(initialData.isOneTimePayment || false);
+            setLogo(initialData.logo || '');
             setIsAddingCustom(false);
         } else {
             // Reset defaults
@@ -78,10 +80,35 @@ export function SubscriptionModal({
             setTrialEndDate(null);
             setIsOneTimePayment(false);
             setIsAddingCustom(false);
+            setLogo('');
             setErrors({});
             setShowProPrompt(false);
         }
     }, [initialData, isOpen]);
+
+    // Logo Scraper Logic
+    useEffect(() => {
+        if (!name || name.trim().length < 2) {
+            if (!initialData) setLogo('');
+            return;
+        }
+
+        const timer = setTimeout(async () => {
+            try {
+                const response = await fetch(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${name}`);
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    // Only update if the result name is somewhat similar to avoid weird logo swaps
+                    const match = data[0];
+                    setLogo(match.logo || `https://logo.clearbit.com/${match.domain}`);
+                }
+            } catch (error) {
+                console.error('Logo fetch failed', error);
+            }
+        }, 800);
+
+        return () => clearTimeout(timer);
+    }, [name, initialData]);
 
     // Validation function
     const validateForm = () => {
@@ -144,6 +171,7 @@ export function SubscriptionModal({
             regularPrice: savedRegularPrice,
             trialEndDate: trialEndDate ? trialEndDate.toISOString().split('T')[0] : undefined,
             isOneTimePayment: isTrial ? isOneTimePayment : undefined,
+            logo: logo || undefined,
         });
         onClose();
     };
@@ -179,22 +207,30 @@ export function SubscriptionModal({
                                 {/* Name Input */}
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Service Name</label>
-                                    <input
-                                        type="text"
-                                        value={name}
-                                        onChange={(e) => {
-                                            setName(e.target.value);
-                                            if (errors.name) setErrors({ ...errors, name: undefined });
-                                        }}
-                                        className={cn(
-                                            "w-full bg-slate-950 border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none transition-all",
-                                            errors.name
-                                                ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                                                : "border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                                    <div className="relative group/name">
+                                        <input
+                                            type="text"
+                                            value={name}
+                                            onChange={(e) => {
+                                                setName(e.target.value);
+                                                if (errors.name) setErrors({ ...errors, name: undefined });
+                                            }}
+                                            className={cn(
+                                                "w-full bg-slate-950 border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none transition-all",
+                                                logo ? "pl-14" : "pl-4",
+                                                errors.name
+                                                    ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                                                    : "border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                                            )}
+                                            placeholder="e.g. Netflix"
+                                            autoFocus
+                                        />
+                                        {logo && (
+                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-white overflow-hidden border border-slate-800 flex items-center justify-center p-0.5 animate-in zoom-in duration-300">
+                                                <img src={logo} alt="" className="w-full h-full object-contain" />
+                                            </div>
                                         )}
-                                        placeholder="e.g. Netflix"
-                                        autoFocus
-                                    />
+                                    </div>
                                     {errors.name && (
                                         <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
                                             <span>⚠</span> {errors.name}

@@ -167,10 +167,17 @@ export function CalendarView({ subscriptions, isPro, onUnlockPro }: CalendarView
                                     >
                                         <div className="flex items-center gap-3">
                                             <div
-                                                className="w-8 h-8 rounded-lg flex items-center justify-center text-xs"
-                                                style={{ backgroundColor: `${getCategoryColorHex(sub.category)}20`, color: getCategoryColorHex(sub.category) }}
+                                                className={cn(
+                                                    "w-8 h-8 rounded-lg flex items-center justify-center text-xs",
+                                                    sub.logo ? "bg-white p-1" : ""
+                                                )}
+                                                style={!sub.logo ? { backgroundColor: `${getCategoryColorHex(sub.category)}20`, color: getCategoryColorHex(sub.category) } : {}}
                                             >
-                                                {sub.name.charAt(0)}
+                                                {sub.logo ? (
+                                                    <img src={sub.logo} alt="" className="w-full h-full object-contain" />
+                                                ) : (
+                                                    sub.name.charAt(0)
+                                                )}
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold text-white">{sub.name}</p>
