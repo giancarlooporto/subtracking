@@ -674,9 +674,9 @@ function HomeContent() {
             </div>
 
             {/* Filter/Sort Controls Overlay */}
-            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center min-w-0">
+            <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center min-w-0">
               {/* Category Filter Pills */}
-              <div className="flex-1 min-w-0 flex gap-1.5 p-1.5 bg-slate-900/40 backdrop-blur-md rounded-2xl border border-slate-800/50 overflow-x-auto custom-scrollbar">
+              <div className="w-full sm:flex-1 min-w-0 flex gap-1.5 p-1.5 bg-slate-900/40 backdrop-blur-md rounded-2xl border border-slate-800/50 overflow-x-auto custom-scrollbar">
                 <button
                   onClick={() => setFilterCategory('All')}
                   className={cn(
@@ -706,95 +706,100 @@ function HomeContent() {
                 ))}
               </div>
 
-              {/* Sort Pill with Dropdown */}
-              <div className="relative w-fit shrink-0">
-                <button
-                  onClick={() => setIsSortOpen(!isSortOpen)}
-                  className={cn(
-                    "flex items-center gap-2.5 px-4 h-11 rounded-2xl border transition-all text-sm font-bold whitespace-nowrap",
-                    isSortOpen
-                      ? "bg-indigo-500 border-indigo-500 text-white shadow-lg shadow-indigo-500/20"
-                      : "bg-slate-900/40 border-slate-800/50 text-slate-300 hover:border-indigo-500/30 hover:text-white"
-                  )}
-                  aria-label="Sort subscriptions"
-                  aria-expanded={isSortOpen}
-                >
-                  <ArrowUpDown className="w-4 h-4" />
-                  <span className="opacity-80">Sort:</span>
-                  <span>
-                    {sortBy === 'price-desc' && "Highest Price"}
-                    {sortBy === 'price-asc' && "Lowest Price"}
-                    {sortBy === 'renewal-asc' && "Next Renewal"}
-                    {sortBy === 'name-asc' && "Name (A-Z)"}
-                  </span>
-                </button>
+              {/* Action Bar (Sort & View) */}
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                {/* Sort Pill with Dropdown */}
+                <div className="relative flex-1 sm:flex-none">
+                  <button
+                    onClick={() => setIsSortOpen(!isSortOpen)}
+                    className={cn(
+                      "flex items-center justify-center gap-2.5 px-4 h-11 w-full sm:w-auto rounded-2xl border transition-all text-sm font-bold whitespace-nowrap",
+                      isSortOpen
+                        ? "bg-indigo-500 border-indigo-500 text-white shadow-lg shadow-indigo-500/20"
+                        : "bg-slate-900/40 border-slate-800/50 text-slate-300 hover:border-indigo-500/30 hover:text-white"
+                    )}
+                    aria-label="Sort subscriptions"
+                    aria-expanded={isSortOpen}
+                  >
+                    <ArrowUpDown className="w-4 h-4" />
+                    <span className="hidden xs:inline opacity-80">Sort:</span>
+                    <span>
+                      {sortBy === 'price-desc' && "Price ↓"}
+                      {sortBy === 'price-asc' && "Price ↑"}
+                      {sortBy === 'renewal-asc' && "Next"}
+                      {sortBy === 'name-asc' && "A-Z"}
+                    </span>
+                  </button>
 
-                {/* Sort Menu Dropdown */}
-                {isSortOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setIsSortOpen(false)} />
-                    <div
-                      className="absolute left-0 top-full mt-2 w-64 bg-slate-900/98 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-300"
-                    >
-                      <div className="p-2.5">
-                        <div className="px-3 py-2 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Sort list by</div>
-                        <div className="space-y-1">
-                          {[
-                            { label: 'Highest Price', value: 'price-desc', icon: <DollarSign className="w-4 h-4" /> },
-                            { label: 'Lowest Price', value: 'price-asc', icon: <DollarSign className="w-4 h-4 opacity-50" /> },
-                            { label: 'Next Renewal', value: 'renewal-asc', icon: <Calendar className="w-4 h-4" /> },
-                            { label: 'Name (A-Z)', value: 'name-asc', icon: <Type className="w-4 h-4" /> }
-                          ].map((opt) => (
-                            <button
-                              key={opt.value}
-                              onClick={() => { setSortBy(opt.value); setIsSortOpen(false); }}
-                              className={cn(
-                                "w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 transition-all text-sm font-semibold",
-                                sortBy === opt.value
-                                  ? "bg-indigo-500 text-white shadow-md shadow-indigo-500/30"
-                                  : "text-slate-400 hover:bg-slate-800/80 hover:text-white"
-                              )}
-                            >
-                              <span className={cn(
-                                "p-2 rounded-lg flex items-center justify-center shrink-0",
-                                sortBy === opt.value ? "bg-white/20" : "bg-slate-800 border border-slate-700/50"
-                              )}>
-                                {opt.icon}
-                              </span>
-                              <span className="flex-1">{opt.label}</span>
-                              {sortBy === opt.value && <Check className="w-4 h-4" />}
-                            </button>
-                          ))}
+                  {/* Sort Menu Dropdown */}
+                  {isSortOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setIsSortOpen(false)} />
+                      <div
+                        className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-56 bg-slate-900/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-300"
+                      >
+                        <div className="p-2">
+                          <div className="px-3 py-2 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Sort list by</div>
+                          <div className="space-y-1">
+                            {[
+                              { label: 'Highest Price', value: 'price-desc', icon: <DollarSign className="w-4 h-4" /> },
+                              { label: 'Lowest Price', value: 'price-asc', icon: <DollarSign className="w-4 h-4 opacity-50" /> },
+                              { label: 'Next Renewal', value: 'renewal-asc', icon: <Calendar className="w-4 h-4" /> },
+                              { label: 'Name (A-Z)', value: 'name-asc', icon: <Type className="w-4 h-4" /> }
+                            ].map((opt) => (
+                              <button
+                                key={opt.value}
+                                onClick={() => { setSortBy(opt.value); setIsSortOpen(false); }}
+                                className={cn(
+                                  "w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 transition-all text-sm font-semibold",
+                                  sortBy === opt.value
+                                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                                    : "text-slate-400 hover:bg-slate-800/80 hover:text-white"
+                                )}
+                              >
+                                <span className={cn(
+                                  "p-1.5 rounded-lg flex items-center justify-center shrink-0",
+                                  sortBy === opt.value ? "bg-white/20" : "bg-slate-800 border border-slate-700/50"
+                                )}>
+                                  {opt.icon}
+                                </span>
+                                <span className="flex-1 text-xs">{opt.label}</span>
+                                {sortBy === opt.value && <Check className="w-3 h-3" />}
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </>
-                )}
-              </div>
+                    </>
+                  )}
+                </div>
 
-              {/* View Switcher */}
-              <div className="flex bg-slate-900 border border-slate-800 p-1 rounded-2xl h-11 shrink-0">
-                <button
-                  onClick={() => setDashboardView('list')}
-                  className={cn(
-                    "px-4 rounded-xl text-sm font-bold transition-all flex items-center gap-2",
-                    dashboardView === 'list' ? "bg-indigo-600 text-white shadow-lg" : "text-slate-500 hover:text-white"
-                  )}
-                >
-                  <CreditCard className="w-4 h-4" />
-                  List
-                </button>
-                <button
-                  onClick={() => setDashboardView('calendar')}
-                  className={cn(
-                    "px-4 rounded-xl text-sm font-bold transition-all flex items-center gap-2 relative",
-                    dashboardView === 'calendar' ? "bg-indigo-600 text-white shadow-lg" : "text-slate-500 hover:text-white"
-                  )}
-                >
-                  <Calendar className="w-4 h-4" />
-                  Calendar
-                  {!isPro && <Zap className="w-2.5 h-2.5 text-indigo-400 fill-indigo-400 ml-0.5" />}
-                </button>
+                {/* View Switcher */}
+                <div className="flex bg-slate-900/40 backdrop-blur-md border border-slate-800/50 p-1 rounded-2xl h-11 shrink-0">
+                  <button
+                    onClick={() => setDashboardView('list')}
+                    className={cn(
+                      "px-4 rounded-xl text-sm font-bold transition-all flex items-center gap-2",
+                      dashboardView === 'list' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-slate-500 hover:text-white"
+                    )}
+                    aria-label="List View"
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    <span className="hidden sm:inline">List</span>
+                  </button>
+                  <button
+                    onClick={() => setDashboardView('calendar')}
+                    className={cn(
+                      "px-4 rounded-xl text-sm font-bold transition-all flex items-center gap-2 relative",
+                      dashboardView === 'calendar' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-slate-500 hover:text-white"
+                    )}
+                    aria-label="Calendar View"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    <span className="hidden sm:inline">Calendar</span>
+                    {!isPro && <Zap className="w-3 h-3 text-indigo-400 fill-indigo-400 ml-0.5" />}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
