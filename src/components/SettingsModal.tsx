@@ -1,4 +1,4 @@
-import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key } from 'lucide-react';
+import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown } from 'lucide-react';
 import { useRef, ChangeEvent } from 'react';
 import { cn } from '../lib/utils';
 
@@ -7,12 +7,13 @@ interface SettingsModalProps {
     onClose: () => void;
     onFactoryReset: () => void;
     onExport: () => void;
+    onExportCSV: () => void;
     onImport: (e: ChangeEvent<HTMLInputElement>) => void;
     isPro: boolean;
     onActivatePro: () => void;
 }
 
-export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onImport, isPro, onActivatePro }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExportCSV, onImport, isPro, onActivatePro }: SettingsModalProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     if (!isOpen) return null;
@@ -101,6 +102,43 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onImp
                                 ? "Full secure backup & restore active. Transfer your data anywhere."
                                 : "Export your data for free anytime. Upgrade to PRO to Import/Restore your vault."}
                         </p>
+                    </div>
+
+                    {/* Reports Section */}
+                    <div className="space-y-3 pt-4 border-t border-slate-800">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2 text-emerald-400">
+                                <FileDown className="w-4 h-4" />
+                                <h3 className="text-xs font-bold uppercase tracking-widest">Reports</h3>
+                            </div>
+                            {!isPro && <Lock className="w-3 h-3 text-slate-600" />}
+                        </div>
+                        <button
+                            onClick={isPro ? onExportCSV : onActivatePro}
+                            className={cn(
+                                "w-full flex items-center justify-between p-4 bg-slate-800/40 border border-slate-700/50 rounded-2xl transition-all group relative overflow-hidden",
+                                isPro ? "hover:bg-slate-800" : "opacity-60 hover:opacity-100"
+                            )}
+                        >
+                            {!isPro && (
+                                <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 font-bold">
+                                    <div className="flex items-center gap-2 bg-slate-900 border border-indigo-500/30 px-3 py-1 rounded-full shadow-lg">
+                                        <Zap className="w-3 h-3 text-indigo-400 fill-indigo-400" />
+                                        <span className="text-[10px] font-bold text-white tracking-widest uppercase">PRO</span>
+                                    </div>
+                                </div>
+                            )}
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+                                    <FileDown className="w-5 h-5" />
+                                </div>
+                                <div className="text-left">
+                                    <span className="text-sm font-bold text-white block">Audit Report (CSV)</span>
+                                    <span className="text-[10px] text-slate-500 font-medium">For Excel, Sheets, or Numbers</span>
+                                </div>
+                            </div>
+                            <Zap className={cn("w-4 h-4", isPro ? "text-emerald-500" : "text-slate-600")} />
+                        </button>
                     </div>
 
                     <div className="flex flex-col space-y-2 pt-4 border-t border-slate-800">

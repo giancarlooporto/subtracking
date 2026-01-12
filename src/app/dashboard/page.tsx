@@ -360,6 +360,54 @@ function HomeContent() {
     showToast(`Vault exported successfully! Check Downloads for "${fileName}"`, 'success');
   };
 
+  const exportCSV = () => {
+    const headers = [
+      'Name',
+      'Price ($)',
+      'Billing Cycle',
+      'Category',
+      'Next Renewal',
+      'Status',
+      'Trial End Date',
+      'Regular Price ($)',
+      'One-Time Payment'
+    ];
+
+    const rows = subscriptions.map(sub => [
+      sub.name,
+      sub.price.toFixed(2),
+      sub.billingCycle,
+      sub.category,
+      sub.renewalDate,
+      sub.isTrial ? 'Trial' : 'Regular',
+      sub.trialEndDate || 'N/A',
+      sub.regularPrice?.toFixed(2) || 'N/A',
+      sub.isOneTimePayment ? 'Yes' : 'No'
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(val => `"${val.toString().replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const fileName = `subtracking_audit_${new Date().toISOString().split('T')[0]}.csv`;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = fileName;
+
+    document.body.appendChild(a);
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+
+    showToast('Audit report exported! Open in Excel or Sheets.', 'success');
+  };
+
   const importData = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -777,6 +825,7 @@ function HomeContent() {
         onClose={() => setShowSettingsModal(false)}
         onFactoryReset={() => setShowFactoryResetConfirm(true)}
         onExport={exportData}
+        onExportCSV={exportCSV}
         onImport={importData}
         isPro={isPro}
         onActivatePro={() => setShowLicenseModal(true)}

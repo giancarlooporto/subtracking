@@ -392,9 +392,9 @@ export default function LandingPage() {
                                         "Unlimited Subscriptions",
                                         "Ghost Meter Pro (10Y Projections)",
                                         "Trial Shield (Calendar Alerts)",
+                                        "CSV Audit Report (Excel)",
                                         "Vault Restore (Data Import)",
-                                        "Advanced Custom Categories",
-                                        "Priority Support"
+                                        "Advanced Custom Categories"
                                     ].map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-slate-200 text-sm font-medium">
                                             <Zap className="w-4 h-4 text-indigo-400 shrink-0" />
