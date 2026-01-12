@@ -90,13 +90,7 @@ export default function LandingPage() {
                             Start Auditing Now
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </Link>
-                        <button
-                            onClick={() => setIsVideoOpen(true)}
-                            className="w-full sm:w-auto border border-slate-800 hover:bg-white/5 text-white px-10 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 group transition-all"
-                        >
-                            <Play className="w-5 h-5 fill-white group-hover:scale-110 transition-transform" />
-                            Watch Demo
-                        </button>
+
                     </motion.div>
                 </div>
 
