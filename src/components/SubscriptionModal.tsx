@@ -42,6 +42,7 @@ export function SubscriptionModal({
         name?: string;
         price?: string;
         renewalDate?: string;
+        trialEndDate?: string;
     }>({});
 
     const [showProPrompt, setShowProPrompt] = useState(false);
@@ -104,6 +105,15 @@ export function SubscriptionModal({
             newErrors.renewalDate = 'Renewal date is required';
         } else if (!(renewalDate instanceof Date) || isNaN(renewalDate.getTime())) {
             newErrors.renewalDate = 'Invalid date format';
+        }
+
+        // Trial date validation
+        if (isTrial && trialEndDate) {
+            if (!(trialEndDate instanceof Date) || isNaN(trialEndDate.getTime())) {
+                newErrors.trialEndDate = 'Invalid trial end date';
+            } else if (trialEndDate > renewalDate) {
+                newErrors.trialEndDate = 'Trial must end before or on renewal date';
+            }
         }
 
         setErrors(newErrors);
@@ -401,17 +411,31 @@ export function SubscriptionModal({
                                                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none z-10" />
                                                     <DatePicker
                                                         selected={trialEndDate}
-                                                        onChange={(date: Date | null) => setTrialEndDate(date)}
+                                                        onChange={(date: Date | null) => {
+                                                            setTrialEndDate(date);
+                                                            if (errors.trialEndDate) setErrors({ ...errors, trialEndDate: undefined });
+                                                        }}
                                                         dateFormat="MM/dd/yyyy"
                                                         popperPlacement="top"
-                                                        className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all text-sm"
+                                                        className={cn(
+                                                            "w-full bg-slate-900 border rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none transition-all text-sm",
+                                                            errors.trialEndDate
+                                                                ? "border-red-500 focus:border-red-500"
+                                                                : "border-slate-800 focus:border-indigo-500"
+                                                        )}
                                                         placeholderText="When does trial expire?"
                                                         calendarClassName="custom-datepicker"
                                                     />
                                                 </div>
-                                                <p className="text-[10px] text-slate-500 italic">
-                                                    Calendar alert will trigger 1 day before this date.
-                                                </p>
+                                                {errors.trialEndDate ? (
+                                                    <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+                                                        <span>⚠</span> {errors.trialEndDate}
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-[10px] text-slate-500 italic">
+                                                        Calendar alert will trigger 1 day before this date.
+                                                    </p>
+                                                )}
                                             </div>
 
                                             <div className="bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10 rounded-xl p-3 flex items-center gap-3">

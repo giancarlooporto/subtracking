@@ -18,12 +18,23 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
     const nextRenewal = getNextOccurrence(subscription.renewalDate, subscription.billingCycle);
     const days = getDaysRemaining(nextRenewal);
 
+    // Trial logic
+    const isTrialExpired = subscription.isTrial && subscription.trialEndDate
+        ? getDaysRemaining(subscription.trialEndDate) < 0
+        : false;
+    const trialDaysLeft = subscription.isTrial && subscription.trialEndDate
+        ? getDaysRemaining(subscription.trialEndDate)
+        : null;
+
     const isUrgent = days <= 2;
     const isDueSoon = days <= 7 && days > 2;
     const isExpired = days < 0;
 
-    // Calculate display price based on viewMode
-    const monthlyPrice = calculateMonthlyPrice(subscription.price, subscription.billingCycle);
+    // Calculate display price based on viewMode and trial status
+    const currentPrice = isTrialExpired
+        ? (subscription.regularPrice || subscription.price)
+        : subscription.price;
+    const monthlyPrice = calculateMonthlyPrice(currentPrice, subscription.billingCycle);
     const displayPrice = viewMode === 'monthly' ? monthlyPrice : monthlyPrice * 12;
 
     return (
@@ -74,10 +85,27 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                                 {subscription.category}
                             </span>
                             {subscription.isTrial && (
-                                <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold flex items-center gap-1">
-                                    <ShieldAlert className="w-3 h-3" />
-                                    Trial
-                                </span>
+                                <>
+                                    <span className={cn(
+                                        "px-2 py-0.5 rounded-full font-bold flex items-center gap-1",
+                                        isTrialExpired
+                                            ? "bg-slate-500/10 border border-slate-500/20 text-slate-500"
+                                            : "bg-indigo-500/10 border border-indigo-500/20 text-indigo-400"
+                                    )}>
+                                        <ShieldAlert className="w-3 h-3" />
+                                        {isTrialExpired ? 'Expired' : 'Trial'}
+                                    </span>
+                                    {!isTrialExpired && trialDaysLeft !== null && (
+                                        <span className={cn(
+                                            "px-2 py-0.5 rounded-full font-bold flex items-center gap-1",
+                                            trialDaysLeft >= 4 ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400" :
+                                                trialDaysLeft >= 2 ? "bg-yellow-500/10 border border-yellow-500/20 text-yellow-400" :
+                                                    "bg-red-500/10 border border-red-500/20 text-red-400 animate-pulse"
+                                        )}>
+                                            🕐 {trialDaysLeft} day{trialDaysLeft !== 1 ? 's' : ''} left
+                                        </span>
+                                    )}
+                                </>
                             )}
                             <span className="text-slate-600">•</span>
                             <span className="capitalize">{subscription.billingCycle} billing</span>
@@ -107,9 +135,14 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                         <div className="text-indigo-400 text-[10px] font-bold uppercase tracking-widest leading-none mt-1 opacity-80">
                             {viewMode === 'monthly' ? '/ mo' : '/ yr'}
                         </div>
-                        {subscription.isTrial && subscription.regularPrice !== undefined && (
+                        {subscription.isTrial && subscription.regularPrice !== undefined && !isTrialExpired && (
                             <div className="text-[9px] text-slate-500 mt-1.5 font-bold uppercase tracking-tighter bg-slate-800/50 px-1.5 py-0.5 rounded border border-slate-700/50">
                                 ➔ ${subscription.regularPrice.toFixed(2)} soon
+                            </div>
+                        )}
+                        {isTrialExpired && subscription.regularPrice !== undefined && (
+                            <div className="text-[9px] text-emerald-400 mt-1.5 font-bold uppercase tracking-tighter bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                                Now active
                             </div>
                         )}
                     </div>

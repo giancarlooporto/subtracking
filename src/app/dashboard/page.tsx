@@ -120,7 +120,19 @@ function HomeContent() {
   }, [subscriptions, userCategories, cancelledSavings, isLoaded]);
 
   const monthlyTotal = useMemo(() => {
-    return subscriptions.reduce((sum, sub) => sum + calculateMonthlyPrice(sub.price, sub.billingCycle), 0);
+    return subscriptions.reduce((sum, sub) => {
+      // Check if trial expired
+      const isTrialExpired = sub.isTrial && sub.trialEndDate
+        ? getDaysRemaining(sub.trialEndDate) < 0
+        : false;
+
+      // Use regular price if trial expired, otherwise use current price
+      const currentPrice = isTrialExpired
+        ? (sub.regularPrice || sub.price)
+        : sub.price;
+
+      return sum + calculateMonthlyPrice(currentPrice, sub.billingCycle);
+    }, 0);
   }, [subscriptions]);
 
   const sortedSubscriptions = useMemo(() => {
