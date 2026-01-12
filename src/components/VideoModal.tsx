@@ -52,11 +52,16 @@ export function VideoModal({ isOpen, onClose, videoSrc }: VideoModalProps) {
                             </button>
 
                             {/* Video Player */}
-                            <img
+                            <video
                                 src={videoSrc}
-                                alt="App Demo"
                                 className="w-full h-full object-contain"
-                            />
+                                controls
+                                autoPlay
+                                loop
+                                playsInline
+                            >
+                                Your browser does not support the video tag.
+                            </video>
                         </motion.div>
                     </motion.div>
                 </>

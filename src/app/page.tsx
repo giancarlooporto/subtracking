@@ -15,7 +15,7 @@ export default function LandingPage() {
             <VideoModal
                 isOpen={isVideoOpen}
                 onClose={() => setIsVideoOpen(false)}
-                videoSrc="/assets/demo.webp"
+                videoSrc="/assets/Use.mov"
             />
 
             {/* Navigation */}
