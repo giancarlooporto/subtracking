@@ -12,6 +12,7 @@ import dynamic from 'next/dynamic';
 // Components
 import { SubscriptionCard } from '../../components/SubscriptionCard';
 import { StatsOverview } from '../../components/StatsOverview';
+import { CalendarView } from '../../components/CalendarView';
 import { BillingPulse } from '../../components/BillingPulse';
 import { ToastProvider, useToast } from '../../hooks/useToast';
 import ToastContainer from '../../components/ToastContainer';
@@ -54,6 +55,7 @@ function HomeContent() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
   const [showUrgentBanner, setShowUrgentBanner] = useState(true);
+  const [dashboardView, setDashboardView] = useState<'list' | 'calendar'>('list');
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -769,32 +771,66 @@ function HomeContent() {
                   </>
                 )}
               </div>
+
+              {/* View Switcher */}
+              <div className="flex bg-slate-900 border border-slate-800 p-1 rounded-2xl h-11 shrink-0">
+                <button
+                  onClick={() => setDashboardView('list')}
+                  className={cn(
+                    "px-4 rounded-xl text-sm font-bold transition-all flex items-center gap-2",
+                    dashboardView === 'list' ? "bg-indigo-600 text-white shadow-lg" : "text-slate-500 hover:text-white"
+                  )}
+                >
+                  <CreditCard className="w-4 h-4" />
+                  List
+                </button>
+                <button
+                  onClick={() => setDashboardView('calendar')}
+                  className={cn(
+                    "px-4 rounded-xl text-sm font-bold transition-all flex items-center gap-2 relative",
+                    dashboardView === 'calendar' ? "bg-indigo-600 text-white shadow-lg" : "text-slate-500 hover:text-white"
+                  )}
+                >
+                  <Calendar className="w-4 h-4" />
+                  Calendar
+                  {!isPro && <Zap className="w-2.5 h-2.5 text-indigo-400 fill-indigo-400 ml-0.5" />}
+                </button>
+              </div>
             </div>
           </div>
 
 
 
-          {/* The List Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            <AnimatePresence>
-              {sortedSubscriptions.map((sub) => (
-                <SubscriptionCard
-                  key={sub.id}
-                  subscription={sub}
-                  viewMode={viewMode}
-                  onEdit={(s) => { setEditingId(s.id); setShowAddModal(true); }}
-                  onDelete={(id) => setDeleteId(id)}
-                  onMarkPaid={markAsPaid}
-                />
-              ))}
-            </AnimatePresence>
+          {/* The Content (List or Calendar) */}
+          <div className="min-h-[400px]">
+            {dashboardView === 'list' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <AnimatePresence>
+                  {sortedSubscriptions.map((sub) => (
+                    <SubscriptionCard
+                      key={sub.id}
+                      subscription={sub}
+                      viewMode={viewMode}
+                      onEdit={(s) => { setEditingId(s.id); setShowAddModal(true); }}
+                      onDelete={(id) => setDeleteId(id)}
+                      onMarkPaid={markAsPaid}
+                    />
+                  ))}
+                </AnimatePresence>
 
-            {/* Mobile Add Card (visible in list if empty?) No, standard empty state covers it. */}
-            {sortedSubscriptions.length === 0 && (
-              <div className="col-span-full py-20 flex flex-col items-center justify-center text-slate-600 space-y-4 border-2 border-dashed border-slate-800 rounded-3xl">
-                <CreditCard className="w-12 h-12 opacity-20" />
-                <p>No subscriptions found.</p>
+                {sortedSubscriptions.length === 0 && (
+                  <div className="col-span-full py-20 flex flex-col items-center justify-center text-slate-600 space-y-4 border-2 border-dashed border-slate-800 rounded-3xl">
+                    <CreditCard className="w-12 h-12 opacity-20" />
+                    <p>No subscriptions found.</p>
+                  </div>
+                )}
               </div>
+            ) : (
+              <CalendarView
+                subscriptions={subscriptions}
+                isPro={isPro}
+                onUnlockPro={() => setShowLicenseModal(true)}
+              />
             )}
           </div>
         </section>
