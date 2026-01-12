@@ -137,10 +137,12 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                                     className="absolute right-0 top-full mt-2 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
                                 >
                                     <div className="py-1">
-                                        {subscription.isTrial && (
+                                        {subscription.isTrial && subscription.trialEndDate && (
                                             <button
                                                 onClick={() => {
-                                                    generateICSFile(subscription.name, subscription.regularPrice || subscription.price, subscription.renewalDate);
+                                                    if (subscription.trialEndDate) {
+                                                        generateICSFile(subscription.name, subscription.regularPrice || subscription.price, subscription.trialEndDate);
+                                                    }
                                                     setIsMenuOpen(false);
                                                 }}
                                                 className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-indigo-400 hover:text-indigo-300 text-sm font-bold"

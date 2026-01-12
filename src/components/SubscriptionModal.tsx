@@ -35,6 +35,7 @@ export function SubscriptionModal({
     // Trial / Intro Logic
     const [isTrial, setIsTrial] = useState(false);
     const [trialPrice, setTrialPrice] = useState('');
+    const [trialEndDate, setTrialEndDate] = useState<Date | null>(null);
 
     // Validation errors
     const [errors, setErrors] = useState<{
@@ -60,6 +61,7 @@ export function SubscriptionModal({
             setRenewalDate(new Date(initialData.renewalDate));
             setBillingCycle(initialData.billingCycle);
             setIsTrial(initialData.isTrial || false);
+            setTrialEndDate(initialData.trialEndDate ? new Date(initialData.trialEndDate) : null);
             setIsAddingCustom(false);
         } else {
             // Reset defaults
@@ -70,6 +72,7 @@ export function SubscriptionModal({
             setBillingCycle('monthly');
             setIsTrial(false);
             setTrialPrice('');
+            setTrialEndDate(null);
             setIsAddingCustom(false);
             setErrors({});
             setShowProPrompt(false);
@@ -126,6 +129,7 @@ export function SubscriptionModal({
             billingCycle,
             isTrial,
             regularPrice: savedRegularPrice,
+            trialEndDate: trialEndDate ? trialEndDate.toISOString().split('T')[0] : undefined,
         });
         onClose();
     };
@@ -385,7 +389,28 @@ export function SubscriptionModal({
                                                     />
                                                 </div>
                                                 <p className="text-[10px] text-slate-500 italic">
-                                                    This price applies until the renewal date. Set to 0 for free trials.
+                                                    This price applies until the trial ends. Set to 0 for free trials.
+                                                </p>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                                                    Trial End Date
+                                                </label>
+                                                <div className="relative">
+                                                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none z-10" />
+                                                    <DatePicker
+                                                        selected={trialEndDate}
+                                                        onChange={(date: Date | null) => setTrialEndDate(date)}
+                                                        dateFormat="MM/dd/yyyy"
+                                                        popperPlacement="top"
+                                                        className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all text-sm"
+                                                        placeholderText="When does trial expire?"
+                                                        calendarClassName="custom-datepicker"
+                                                    />
+                                                </div>
+                                                <p className="text-[10px] text-slate-500 italic">
+                                                    Calendar alert will trigger 1 day before this date.
                                                 </p>
                                             </div>
 

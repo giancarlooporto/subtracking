@@ -267,8 +267,8 @@ function HomeContent() {
       setSubscriptions([...subscriptions, newSub]);
 
       // Calendar Bridge: Trigger alert download for new trials
-      if (data.isTrial) {
-        generateICSFile(data.name, data.regularPrice || data.price, data.renewalDate);
+      if (data.isTrial && data.trialEndDate) {
+        generateICSFile(data.name, data.regularPrice || data.price, data.trialEndDate);
         showToast('Trial Shield Active: Calendar Alert Generated! 🗓️', 'success');
       }
     }
