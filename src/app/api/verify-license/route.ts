@@ -34,10 +34,13 @@ export async function POST(request: Request) {
         if (data.success && !data.purchase.refunded && !data.purchase.chargebacked) {
 
             // CUSTOM LIMIT CHECK
-            // Gumroad returns 'uses' count in the purchase object. 
-            // Since we sent 'increment_uses_count', the 'uses' value returned includes THIS attempt.
-            // So if uses > 3, this attempt pushed it over the limit.
-            if (data.purchase.uses > 3) {
+            // Gumroad returns 'uses' at the root level (based on Vercel logs)
+            // We check multiple locations just to be safe (root .uses, purchase.uses_count, etc)
+            const usesCount = data.uses || data.purchase?.uses || 0;
+
+            console.log("Current Uses Count:", usesCount);
+
+            if (usesCount > 3) {
                 return NextResponse.json({
                     success: false,
                     message: "License limit reached (Max 3 devices)."
