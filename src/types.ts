@@ -12,6 +12,8 @@ export interface Subscription {
     regularPrice?: number;
     isOneTimePayment?: boolean;
     logo?: string;
+    isSplit?: boolean;
+    splitWith?: number;
 }
 
 export const DEFAULT_CATEGORIES = [

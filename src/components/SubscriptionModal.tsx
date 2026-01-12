@@ -39,6 +39,10 @@ export function SubscriptionModal({
     const [isOneTimePayment, setIsOneTimePayment] = useState(false);
     const [logo, setLogo] = useState('');
 
+    // Split Billing Logic
+    const [isSplit, setIsSplit] = useState(false);
+    const [splitWith, setSplitWith] = useState(2);
+
     // Validation errors
     const [errors, setErrors] = useState<{
         name?: string;
@@ -67,6 +71,8 @@ export function SubscriptionModal({
             setTrialEndDate(initialData.trialEndDate ? new Date(initialData.trialEndDate) : null);
             setIsOneTimePayment(initialData.isOneTimePayment || false);
             setLogo(initialData.logo || '');
+            setIsSplit(initialData.isSplit || false);
+            setSplitWith(initialData.splitWith || 2);
             setIsAddingCustom(false);
         } else {
             // Reset defaults
@@ -79,6 +85,8 @@ export function SubscriptionModal({
             setTrialPrice('');
             setTrialEndDate(null);
             setIsOneTimePayment(false);
+            setIsSplit(false);
+            setSplitWith(2);
             setIsAddingCustom(false);
             setLogo('');
             setErrors({});
@@ -184,6 +192,8 @@ export function SubscriptionModal({
             trialEndDate: trialEndDate ? trialEndDate.toISOString().split('T')[0] : undefined,
             isOneTimePayment: isTrial ? isOneTimePayment : undefined,
             logo: logo || undefined,
+            isSplit: isSplit || undefined,
+            splitWith: isSplit ? splitWith : undefined,
         });
         onClose();
     };
@@ -538,6 +548,87 @@ export function SubscriptionModal({
                                                     <p className="text-[10px] text-slate-400">Save to get an alert 1 day before the trial ends.</p>
                                                 </div>
                                             </div>
+                                        </motion.div>
+                                    )}
+                                </div>
+
+                                {/* Shared Subscription Section */}
+                                <div className="space-y-4 p-4 rounded-2xl bg-slate-950/50 border border-slate-800/50 relative group">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold text-white flex items-center gap-1.5">
+                                                    Shared Subscription
+                                                </p>
+                                                <p className="text-[11px] text-slate-500">Split with roommates or family</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsSplit(!isSplit)}
+                                            className={cn(
+                                                "w-10 h-6 rounded-full relative transition-colors duration-200",
+                                                isSplit ? "bg-emerald-600" : "bg-slate-800"
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 shadow-sm",
+                                                isSplit ? "left-5" : "left-1"
+                                            )} />
+                                        </button>
+                                    </div>
+
+                                    {isSplit && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            className="space-y-4 pt-2"
+                                        >
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                                    Split between how many people?
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    min="2"
+                                                    max="10"
+                                                    value={splitWith}
+                                                    onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        if (val >= 2 && val <= 10) {
+                                                            setSplitWith(val);
+                                                        }
+                                                    }}
+                                                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all text-sm"
+                                                />
+                                                <p className="text-[10px] text-slate-500 italic">
+                                                    Total people sharing (including you). Min: 2, Max: 10
+                                                </p>
+                                            </div>
+
+                                            {price && parseFloat(price) > 0 && (
+                                                <div className="bg-gradient-to-br from-emerald-500/5 to-teal-500/5 border border-emerald-500/10 rounded-xl p-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <div>
+                                                            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Full Price</p>
+                                                            <p className="text-lg font-black text-slate-400">${parseFloat(price).toFixed(2)}</p>
+                                                        </div>
+                                                        <div className="text-slate-600 text-2xl">→</div>
+                                                        <div className="text-right">
+                                                            <p className="text-[10px] text-emerald-400 uppercase tracking-wider font-bold">Your Share</p>
+                                                            <p className="text-2xl font-black text-emerald-400">
+                                                                ${(parseFloat(price) / splitWith).toFixed(2)}
+                                                            </p>
+                                                            <p className="text-[9px] text-slate-500 mt-0.5">Split {splitWith} ways</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </motion.div>
                                     )}
                                 </div>

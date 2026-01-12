@@ -35,7 +35,13 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
     const currentPrice = isTrialExpired
         ? (subscription.regularPrice || subscription.price)
         : subscription.price;
-    const monthlyPrice = calculateMonthlyPrice(currentPrice, subscription.billingCycle);
+
+    // Apply split if subscription is shared
+    const actualPrice = subscription.isSplit && subscription.splitWith
+        ? currentPrice / subscription.splitWith
+        : currentPrice;
+
+    const monthlyPrice = calculateMonthlyPrice(actualPrice, subscription.billingCycle);
     const displayPrice = viewMode === 'monthly' ? monthlyPrice : monthlyPrice * 12;
 
     return (
@@ -120,6 +126,18 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                             )}
                             <span className="text-slate-600">•</span>
                             <span className="capitalize">{subscription.billingCycle} billing</span>
+
+                            {subscription.isSplit && subscription.splitWith && (
+                                <>
+                                    <span className="text-slate-600">•</span>
+                                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold flex items-center gap-1">
+                                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                        Split {subscription.splitWith}
+                                    </span>
+                                </>
+                            )}
 
                             {(isUrgent || isDueSoon || isExpired) && (
                                 <>
