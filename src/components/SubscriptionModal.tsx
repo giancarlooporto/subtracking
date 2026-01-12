@@ -368,18 +368,40 @@ export function SubscriptionModal({
                                         </div>
                                         <button
                                             type="button"
-                                            onClick={() => setIsTrial(!isTrial)}
+                                            onClick={() => {
+                                                if (isPro) {
+                                                    setIsTrial(!isTrial);
+                                                } else {
+                                                    setShowProPrompt(true);
+                                                }
+                                            }}
                                             className={cn(
                                                 "w-10 h-6 rounded-full relative transition-colors duration-200",
-                                                isTrial ? "bg-indigo-600" : "bg-slate-800"
+                                                isTrial ? "bg-indigo-600" : "bg-slate-800",
+                                                !isPro && "opacity-80"
                                             )}
                                         >
                                             <div className={cn(
-                                                "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 shadow-sm",
+                                                "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 shadow-sm flex items-center justify-center",
                                                 isTrial ? "left-5" : "left-1"
-                                            )} />
+                                            )}>
+                                                {!isPro && !isTrial && <Zap className="w-2.5 h-2.5 text-indigo-500 fill-indigo-500" />}
+                                            </div>
                                         </button>
                                     </div>
+
+                                    {!isPro && showProPrompt && !isAddingCustom && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl mt-2"
+                                        >
+                                            <p className="text-[11px] text-indigo-300 font-medium">
+                                                <Zap className="w-3 h-3 inline mr-1 fill-indigo-400" />
+                                                Trial Shield is a Pro feature. Track free trials and get alerts before you're charged.
+                                            </p>
+                                        </motion.div>
+                                    )}
 
                                     {isTrial && (
                                         <motion.div

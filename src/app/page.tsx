@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock, MousePointer2, X, Play, Globe, HardDrive } from 'lucide-react';
+import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock, MousePointer2, X, Play, Globe, HardDrive, ShieldAlert } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 import { VideoModal } from '../components/VideoModal';
@@ -144,7 +144,7 @@ export default function LandingPage() {
                         <p className="text-slate-500 font-medium">Built for speed, privacy, and results.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {/* Feature 1 */}
                         <div className="glass-panel p-8 rounded-3xl space-y-6 border border-white/5 hover:border-indigo-500/20 transition-all group">
                             <div className="bg-indigo-500/10 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -180,6 +180,22 @@ export default function LandingPage() {
                                 <h3 className="text-xl font-bold">Keep or Toss Wizard</h3>
                                 <p className="text-slate-400 text-sm leading-relaxed">
                                     A Tinder-style interface to quickly audit your services. Flick through and save hundreds in seconds.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Feature 4 */}
+                        <div className="glass-panel p-8 rounded-3xl space-y-6 border border-white/5 hover:border-indigo-500/20 transition-all group">
+                            <div className="bg-indigo-500/10 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform relative">
+                                <ShieldAlert className="w-7 h-7 text-indigo-400" />
+                                <div className="absolute -top-1 -right-1">
+                                    <Zap className="w-4 h-4 text-indigo-400 fill-indigo-400" />
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                <h3 className="text-xl font-bold">Trial Shield</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    Set alerts for "Free Trials" or "Intro Pricing." Never get caught by a surprise $99 charge again.
                                 </p>
                             </div>
                         </div>
