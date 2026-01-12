@@ -570,18 +570,40 @@ export function SubscriptionModal({
                                         </div>
                                         <button
                                             type="button"
-                                            onClick={() => setIsSplit(!isSplit)}
+                                            onClick={() => {
+                                                if (isPro) {
+                                                    setIsSplit(!isSplit);
+                                                } else {
+                                                    setShowProPrompt(true);
+                                                }
+                                            }}
                                             className={cn(
                                                 "w-10 h-6 rounded-full relative transition-colors duration-200",
-                                                isSplit ? "bg-emerald-600" : "bg-slate-800"
+                                                isSplit ? "bg-emerald-600" : "bg-slate-800",
+                                                !isPro && "opacity-80"
                                             )}
                                         >
                                             <div className={cn(
-                                                "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 shadow-sm",
+                                                "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 shadow-sm flex items-center justify-center",
                                                 isSplit ? "left-5" : "left-1"
-                                            )} />
+                                            )}>
+                                                {!isPro && !isSplit && <Zap className="w-2.5 h-2.5 text-emerald-500 fill-emerald-500" />}
+                                            </div>
                                         </button>
                                     </div>
+
+                                    {!isPro && showProPrompt && !isAddingCustom && !isTrial && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mt-2"
+                                        >
+                                            <p className="text-[11px] text-emerald-300 font-medium">
+                                                <Zap className="w-3 h-3 inline mr-1 fill-emerald-400" />
+                                                Split Billing is a Pro feature. Track shared subscriptions and see your actual cost.
+                                            </p>
+                                        </motion.div>
+                                    )}
 
                                     {isSplit && (
                                         <motion.div
@@ -594,17 +616,21 @@ export function SubscriptionModal({
                                                     Split between how many people?
                                                 </label>
                                                 <input
-                                                    type="number"
-                                                    min="2"
-                                                    max="10"
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    pattern="[0-9]*"
                                                     value={splitWith}
                                                     onChange={(e) => {
-                                                        const val = parseInt(e.target.value);
-                                                        if (val >= 2 && val <= 10) {
-                                                            setSplitWith(val);
+                                                        const val = e.target.value.replace(/[^0-9]/g, '');
+                                                        const num = parseInt(val || '2');
+                                                        if (num >= 2 && num <= 10) {
+                                                            setSplitWith(num);
+                                                        } else if (val === '') {
+                                                            setSplitWith(2);
                                                         }
                                                     }}
-                                                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all text-sm"
+                                                    placeholder="2"
+                                                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all text-sm text-center font-bold text-xl"
                                                 />
                                                 <p className="text-[10px] text-slate-500 italic">
                                                     Total people sharing (including you). Min: 2, Max: 10
