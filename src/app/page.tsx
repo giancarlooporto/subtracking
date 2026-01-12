@@ -391,6 +391,7 @@ export default function LandingPage() {
                                     {[
                                         "Unlimited Subscriptions",
                                         "Ghost Meter Pro (10Y Projections)",
+                                        "Trial Shield (Calendar Alerts)",
                                         "Vault Restore (Data Import)",
                                         "Advanced Custom Categories",
                                         "Priority Support"
