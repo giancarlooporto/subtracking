@@ -95,11 +95,24 @@ export function SubscriptionModal({
 
         const timer = setTimeout(async () => {
             try {
+                // First, try curated brand database
+                const { getBrandLogo, normalizeBrandName } = await import('../lib/brandLogos');
+                const curatedLogo = getBrandLogo(normalizeBrandName(name));
+
+                if (curatedLogo) {
+                    setLogo(curatedLogo);
+                    return;
+                }
+
+                // Fallback: Try Clearbit autocomplete for domain detection
                 const response = await fetch(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${name}`);
                 const data = await response.json();
                 if (data && data.length > 0) {
                     const match = data[0];
-                    setLogo(`https://unavatar.io/${match.domain}`);
+                    const fallbackLogo = getBrandLogo(name, match.domain);
+                    if (fallbackLogo) {
+                        setLogo(fallbackLogo);
+                    }
                 }
             } catch (error) {
                 console.error('Logo fetch failed', error);
