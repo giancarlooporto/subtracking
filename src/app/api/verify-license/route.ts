@@ -16,6 +16,9 @@ export async function POST(request: Request) {
         formData.append('license_key', license_key);
         formData.append('increment_uses_count', 'true'); // Tell Gumroad to count this verification
 
+        console.log("Verifying gumroad license:", license_key);
+        console.log("Payload:", Object.fromEntries(formData));
+
         const response = await fetch(GUMROAD_CONFIG.apiUrl, {
             method: 'POST',
             headers: {
@@ -25,6 +28,7 @@ export async function POST(request: Request) {
         });
 
         const data = await response.json();
+        console.log("Gumroad Response:", JSON.stringify(data, null, 2));
 
         // Pass through the Gumroad response logic
         if (data.success && !data.purchase.refunded && !data.purchase.chargebacked) {
