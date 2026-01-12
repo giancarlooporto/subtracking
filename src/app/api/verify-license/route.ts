@@ -40,10 +40,10 @@ export async function POST(request: Request) {
 
             console.log("Current Uses Count:", usesCount);
 
-            if (usesCount > 3) {
+            if (usesCount > 20) {
                 return NextResponse.json({
                     success: false,
-                    message: "License limit reached (Max 3 devices)."
+                    message: "License limit reached (Max 20 devices)."
                 }, { status: 400 });
             }
 
