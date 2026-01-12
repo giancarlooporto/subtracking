@@ -98,9 +98,8 @@ export function SubscriptionModal({
                 const response = await fetch(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${name}`);
                 const data = await response.json();
                 if (data && data.length > 0) {
-                    // Only update if the result name is somewhat similar to avoid weird logo swaps
                     const match = data[0];
-                    setLogo(match.logo || `https://logo.clearbit.com/${match.domain}`);
+                    setLogo(`https://unavatar.io/${match.domain}`);
                 }
             } catch (error) {
                 console.error('Logo fetch failed', error);
