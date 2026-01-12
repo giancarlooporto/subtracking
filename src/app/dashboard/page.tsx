@@ -16,6 +16,7 @@ import { BillingPulse } from '../../components/BillingPulse';
 import { ToastProvider, useToast } from '../../hooks/useToast';
 import ToastContainer from '../../components/ToastContainer';
 import { Footer } from '../../components/Footer';
+import { InstallBanner } from '../../components/InstallBanner';
 import { generateICSFile } from '../../lib/calendar';
 
 const SubscriptionModal = dynamic(() => import('../../components/SubscriptionModal').then(mod => mod.SubscriptionModal), { ssr: false });
@@ -414,6 +415,7 @@ function HomeContent() {
 
   return (
     <main className="min-h-screen bg-aurora text-slate-100 font-[family-name:var(--font-geist-sans)] relative overflow-x-hidden">
+      <InstallBanner />
 
       {/* 1. Urgent Renovals Banner */}
       {urgentSubscriptions.length > 0 && showUrgentBanner && (
