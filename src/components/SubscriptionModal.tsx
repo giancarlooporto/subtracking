@@ -348,7 +348,7 @@ export function SubscriptionModal({
                                 </div>
 
                                 {/* Trial Shield Section */}
-                                <div className="space-y-4 p-4 rounded-2xl bg-slate-950/50 border border-slate-800/50 relative overflow-hidden group">
+                                <div className="space-y-4 p-4 rounded-2xl bg-slate-950/50 border border-slate-800/50 relative group">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                             <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400">
