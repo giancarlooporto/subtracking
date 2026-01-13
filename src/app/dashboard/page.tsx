@@ -916,177 +916,180 @@ function HomeContent() {
 
         {/* FULL LIST SECTION */}
         <section id="subscriptions-list" className="py-12 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="space-y-1 shrink-0">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white flex flex-wrap items-center gap-x-3 gap-y-2">
-                <Wallet className="w-8 h-8 text-indigo-400" />
-                <span>
-                  {!filterCategory.includes('All') ? 'Selected' : 'All'} Subscriptions
-                </span>
-
-                {/* Count Badge */}
-                <span className="bg-indigo-500/10 text-indigo-400 text-xs font-black px-2.5 py-1 rounded-full border border-indigo-500/20">
-                  {sortedSubscriptions.length}
-                </span>
-
-                {/* Filtered Total Display (Always show) */}
-                <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-300 w-full sm:w-auto ml-11 sm:ml-2">
-                  <div className="hidden sm:block h-6 w-px bg-slate-800 mx-2"></div>
-                  <span className="text-sm font-medium text-slate-400">Total:</span>
-                  <span className="text-xl font-bold text-emerald-400">
-                    ${filteredListTotal.toFixed(2)}<span className="text-xs text-emerald-500/70 font-normal ml-0.5">/mo</span>
+          {/* Sticky Header Container */}
+          <div className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-xl -mx-4 px-4 py-4 rounded-b-3xl border-b border-white/5 shadow-2xl shadow-black/50 transition-all">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="space-y-1 shrink-0">
+                <h2 className="text-2xl sm:text-3xl font-bold text-white flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <Wallet className="w-8 h-8 text-indigo-400" />
+                  <span>
+                    {!filterCategory.includes('All') ? 'Selected' : 'All'} Subscriptions
                   </span>
-                </div>
-              </h2>
-              <p className="text-slate-500 text-sm ml-11 font-medium">Manage and optimize your digital life</p>
-            </div>
 
-            {/* Filter/Sort Controls Overlay */}
-            <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center min-w-0">
+                  {/* Count Badge */}
+                  <span className="bg-indigo-500/10 text-indigo-400 text-xs font-black px-2.5 py-1 rounded-full border border-indigo-500/20">
+                    {sortedSubscriptions.length}
+                  </span>
 
-
-              {/* Action Bar (Sort & View) */}
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                {/* Sort Pill with Dropdown */}
-                <div className="relative flex-1 sm:flex-none">
-                  <button
-                    onClick={() => setIsSortOpen(!isSortOpen)}
-                    className={cn(
-                      "flex items-center justify-center gap-2.5 px-4 h-11 w-full sm:w-auto rounded-2xl border transition-all text-sm font-bold whitespace-nowrap",
-                      isSortOpen
-                        ? "bg-indigo-500 border-indigo-500 text-white shadow-lg shadow-indigo-500/20"
-                        : "bg-slate-900/40 border-slate-800/50 text-slate-300 hover:border-indigo-500/30 hover:text-white"
-                    )}
-                    aria-label="Sort subscriptions"
-                    aria-expanded={isSortOpen}
-                  >
-                    <ArrowUpDown className="w-4 h-4" />
-                    <span className="hidden xs:inline opacity-80">Sort:</span>
-                    <span>
-                      {sortBy === 'price-desc' && "Price ↓"}
-                      {sortBy === 'price-asc' && "Price ↑"}
-                      {sortBy === 'renewal-asc' && "Next"}
-                      {sortBy === 'name-asc' && "A-Z"}
+                  {/* Filtered Total Display (Always show) */}
+                  <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-300 w-full sm:w-auto ml-11 sm:ml-2">
+                    <div className="hidden sm:block h-6 w-px bg-slate-800 mx-2"></div>
+                    <span className="text-sm font-medium text-slate-400">Total:</span>
+                    <span className="text-xl font-bold text-emerald-400">
+                      ${filteredListTotal.toFixed(2)}<span className="text-xs text-emerald-500/70 font-normal ml-0.5">/mo</span>
                     </span>
-                  </button>
+                  </div>
+                </h2>
+                <p className="text-slate-500 text-sm ml-11 font-medium">Manage and optimize your digital life</p>
+              </div>
 
-                  {/* Sort Menu Dropdown */}
-                  {isSortOpen && (
-                    <>
-                      <div className="fixed inset-0 z-40" onClick={() => setIsSortOpen(false)} />
-                      <div
-                        className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-56 bg-slate-900/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-300"
-                      >
-                        <div className="p-2">
-                          <div className="px-3 py-2 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Sort list by</div>
-                          <div className="space-y-1">
-                            {[
-                              { label: 'Highest Price', value: 'price-desc', icon: <DollarSign className="w-4 h-4" /> },
-                              { label: 'Lowest Price', value: 'price-asc', icon: <DollarSign className="w-4 h-4 opacity-50" /> },
-                              { label: 'Next Renewal', value: 'renewal-asc', icon: <Calendar className="w-4 h-4" /> },
-                              { label: 'Name (A-Z)', value: 'name-asc', icon: <Type className="w-4 h-4" /> }
-                            ].map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() => { setSortBy(opt.value); setIsSortOpen(false); }}
-                                className={cn(
-                                  "w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 transition-all text-sm font-semibold",
-                                  sortBy === opt.value
-                                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                                    : "text-slate-400 hover:bg-slate-800/80 hover:text-white"
-                                )}
-                              >
-                                <span className={cn(
-                                  "p-1.5 rounded-lg flex items-center justify-center shrink-0",
-                                  sortBy === opt.value ? "bg-white/20" : "bg-slate-800 border border-slate-700/50"
-                                )}>
-                                  {opt.icon}
-                                </span>
-                                <span className="flex-1 text-xs">{opt.label}</span>
-                                {sortBy === opt.value && <Check className="w-3 h-3" />}
-                              </button>
-                            ))}
+              {/* Filter/Sort Controls Overlay */}
+              <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center min-w-0">
+
+
+                {/* Action Bar (Sort & View) */}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  {/* Sort Pill with Dropdown */}
+                  <div className="relative flex-1 sm:flex-none">
+                    <button
+                      onClick={() => setIsSortOpen(!isSortOpen)}
+                      className={cn(
+                        "flex items-center justify-center gap-2.5 px-4 h-11 w-full sm:w-auto rounded-2xl border transition-all text-sm font-bold whitespace-nowrap",
+                        isSortOpen
+                          ? "bg-indigo-500 border-indigo-500 text-white shadow-lg shadow-indigo-500/20"
+                          : "bg-slate-900/40 border-slate-800/50 text-slate-300 hover:border-indigo-500/30 hover:text-white"
+                      )}
+                      aria-label="Sort subscriptions"
+                      aria-expanded={isSortOpen}
+                    >
+                      <ArrowUpDown className="w-4 h-4" />
+                      <span className="hidden xs:inline opacity-80">Sort:</span>
+                      <span>
+                        {sortBy === 'price-desc' && "Price ↓"}
+                        {sortBy === 'price-asc' && "Price ↑"}
+                        {sortBy === 'renewal-asc' && "Next"}
+                        {sortBy === 'name-asc' && "A-Z"}
+                      </span>
+                    </button>
+
+                    {/* Sort Menu Dropdown */}
+                    {isSortOpen && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setIsSortOpen(false)} />
+                        <div
+                          className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-56 bg-slate-900/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-300"
+                        >
+                          <div className="p-2">
+                            <div className="px-3 py-2 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Sort list by</div>
+                            <div className="space-y-1">
+                              {[
+                                { label: 'Highest Price', value: 'price-desc', icon: <DollarSign className="w-4 h-4" /> },
+                                { label: 'Lowest Price', value: 'price-asc', icon: <DollarSign className="w-4 h-4 opacity-50" /> },
+                                { label: 'Next Renewal', value: 'renewal-asc', icon: <Calendar className="w-4 h-4" /> },
+                                { label: 'Name (A-Z)', value: 'name-asc', icon: <Type className="w-4 h-4" /> }
+                              ].map((opt) => (
+                                <button
+                                  key={opt.value}
+                                  onClick={() => { setSortBy(opt.value); setIsSortOpen(false); }}
+                                  className={cn(
+                                    "w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 transition-all text-sm font-semibold",
+                                    sortBy === opt.value
+                                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                                      : "text-slate-400 hover:bg-slate-800/80 hover:text-white"
+                                  )}
+                                >
+                                  <span className={cn(
+                                    "p-1.5 rounded-lg flex items-center justify-center shrink-0",
+                                    sortBy === opt.value ? "bg-white/20" : "bg-slate-800 border border-slate-700/50"
+                                  )}>
+                                    {opt.icon}
+                                  </span>
+                                  <span className="flex-1 text-xs">{opt.label}</span>
+                                  {sortBy === opt.value && <Check className="w-3 h-3" />}
+                                </button>
+                              ))}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </>
-                  )}
-                </div>
+                      </>
+                    )}
+                  </div>
 
-                {/* View Switcher */}
-                <div className="flex bg-slate-900/40 backdrop-blur-md border border-slate-800/50 p-1 rounded-2xl h-11 shrink-0">
-                  <button
-                    onClick={() => setDashboardView('list')}
-                    className={cn(
-                      "px-4 rounded-xl text-sm font-bold transition-all flex items-center gap-2",
-                      dashboardView === 'list' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-slate-500 hover:text-white"
-                    )}
-                    aria-label="List View"
-                  >
-                    <CreditCard className="w-4 h-4" />
-                    <span className="hidden sm:inline">List</span>
-                  </button>
-                  <button
-                    onClick={() => setDashboardView('calendar')}
-                    className={cn(
-                      "px-4 rounded-xl text-sm font-bold transition-all flex items-center gap-2 relative",
-                      dashboardView === 'calendar' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-slate-500 hover:text-white"
-                    )}
-                    aria-label="Calendar View"
-                  >
-                    <Calendar className="w-4 h-4" />
-                    <span className="hidden sm:inline">Calendar</span>
-                    {!isPro && <Zap className="w-3 h-3 text-indigo-400 fill-indigo-400 ml-0.5" />}
-                  </button>
+                  {/* View Switcher */}
+                  <div className="flex bg-slate-900/40 backdrop-blur-md border border-slate-800/50 p-1 rounded-2xl h-11 shrink-0">
+                    <button
+                      onClick={() => setDashboardView('list')}
+                      className={cn(
+                        "px-4 rounded-xl text-sm font-bold transition-all flex items-center gap-2",
+                        dashboardView === 'list' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-slate-500 hover:text-white"
+                      )}
+                      aria-label="List View"
+                    >
+                      <CreditCard className="w-4 h-4" />
+                      <span className="hidden sm:inline">List</span>
+                    </button>
+                    <button
+                      onClick={() => setDashboardView('calendar')}
+                      className={cn(
+                        "px-4 rounded-xl text-sm font-bold transition-all flex items-center gap-2 relative",
+                        dashboardView === 'calendar' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-slate-500 hover:text-white"
+                      )}
+                      aria-label="Calendar View"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      <span className="hidden sm:inline">Calendar</span>
+                      {!isPro && <Zap className="w-3 h-3 text-indigo-400 fill-indigo-400 ml-0.5" />}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Row 2: Full Width Filters */}
-          <div className="w-full">
-            <div className="w-full flex gap-2 overflow-x-auto pb-4 custom-scrollbar">
-              <button
-                onClick={() => setFilterCategory(['All'])}
-                className={cn(
-                  "px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0",
-                  filterCategory.includes('All')
-                    ? "bg-white text-black shadow-lg shadow-white/10"
-                    : "bg-slate-900/40 border border-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-800/50"
-                )}
-                aria-label="Show all subscriptions"
-              >
-                All
-              </button>
-              {userCategories.map(cat => {
-                const isSelected = filterCategory.includes(cat);
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => {
-                      if (filterCategory.includes('All')) {
-                        setFilterCategory([cat]);
-                      } else {
-                        if (isSelected) {
-                          const newFilters = filterCategory.filter(c => c !== cat);
-                          setFilterCategory(newFilters.length === 0 ? ['All'] : newFilters);
+            {/* Row 2: Full Width Filters */}
+            <div className="w-full mt-4 sm:mt-6">
+              <div className="w-full flex gap-2 overflow-x-auto pb-4 custom-scrollbar">
+                <button
+                  onClick={() => setFilterCategory(['All'])}
+                  className={cn(
+                    "px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0",
+                    filterCategory.includes('All')
+                      ? "bg-white text-black shadow-lg shadow-white/10"
+                      : "bg-slate-900/40 border border-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-800/50"
+                  )}
+                  aria-label="Show all subscriptions"
+                >
+                  All
+                </button>
+                {userCategories.map(cat => {
+                  const isSelected = filterCategory.includes(cat);
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => {
+                        if (filterCategory.includes('All')) {
+                          setFilterCategory([cat]);
                         } else {
-                          setFilterCategory([...filterCategory, cat]);
+                          if (isSelected) {
+                            const newFilters = filterCategory.filter(c => c !== cat);
+                            setFilterCategory(newFilters.length === 0 ? ['All'] : newFilters);
+                          } else {
+                            setFilterCategory([...filterCategory, cat]);
+                          }
                         }
-                      }
-                    }}
-                    className={cn(
-                      "px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 border",
-                      isSelected
-                        ? "bg-indigo-500 border-indigo-400 text-white shadow-lg shadow-indigo-500/20"
-                        : "bg-slate-900/40 border-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-800/50"
-                    )}
-                    aria-label={`Filter by ${cat}`}
-                  >
-                    {cat}
-                  </button>
-                );
-              })}
+                      }}
+                      className={cn(
+                        "px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 border",
+                        isSelected
+                          ? "bg-indigo-500 border-indigo-400 text-white shadow-lg shadow-indigo-500/20"
+                          : "bg-slate-900/40 border-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-800/50"
+                      )}
+                      aria-label={`Filter by ${cat}`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
