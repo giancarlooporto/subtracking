@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { X, Plus, Calendar, DollarSign, Tag, RotateCcw, ShieldAlert, Sparkles, Bell, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Subscription, DEFAULT_CATEGORIES } from '../types';
-import { cn } from '../lib/utils';
+import { cn, formatLocalDate } from '../lib/utils';
 import { siteConfig } from '../../siteConfig';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
 
 interface SubscriptionModalProps {
     isOpen: boolean;
@@ -66,10 +67,19 @@ export function SubscriptionModal({
                 setTrialPrice('');
             }
             setCategory(initialData.category);
-            setRenewalDate(new Date(initialData.renewalDate));
+            // Fix: Parse YYYY-MM-DD manually to avoid UTC conversion shift
+            const [rYear, rMonth, rDay] = initialData.renewalDate.split('-').map(Number);
+            setRenewalDate(new Date(rYear, rMonth - 1, rDay, 12, 0, 0)); // Set to Noon
+
             setBillingCycle(initialData.billingCycle);
             setIsTrial(initialData.isTrial || false);
-            setTrialEndDate(initialData.trialEndDate ? new Date(initialData.trialEndDate) : null);
+
+            if (initialData.trialEndDate) {
+                const [tYear, tMonth, tDay] = initialData.trialEndDate.split('-').map(Number);
+                setTrialEndDate(new Date(tYear, tMonth - 1, tDay, 12, 0, 0));
+            } else {
+                setTrialEndDate(null);
+            }
             setIsOneTimePayment(initialData.isOneTimePayment || false);
             setLogo(initialData.logo || '');
             setIsSplit(initialData.isSplit || false);
@@ -188,11 +198,11 @@ export function SubscriptionModal({
             name,
             price: savedPrice,
             category: finalCategory,
-            renewalDate: renewalDate.toISOString().split('T')[0],
+            renewalDate: formatLocalDate(renewalDate),
             billingCycle,
             isTrial,
             regularPrice: savedRegularPrice,
-            trialEndDate: trialEndDate ? trialEndDate.toISOString().split('T')[0] : undefined,
+            trialEndDate: trialEndDate ? formatLocalDate(trialEndDate) : undefined,
             isOneTimePayment: isTrial ? isOneTimePayment : undefined,
             logo: logo || undefined,
             isSplit: isSplit || undefined,

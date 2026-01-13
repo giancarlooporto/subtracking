@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type, Ghost } from 'lucide-react';
 import { Subscription, DEFAULT_CATEGORIES } from '../../types';
-import { getDaysRemaining, getNextOccurrence, getCategoryColorHex, getCategoryIcon, calculateMonthlyPrice, cn } from '../../lib/utils';
+import { getDaysRemaining, getNextOccurrence, getCategoryColorHex, getCategoryIcon, calculateMonthlyPrice, cn, formatLocalDate } from '../../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import dynamic from 'next/dynamic';
@@ -180,7 +180,7 @@ function HomeContent() {
 
   const isPaidThisCycle = (sub: Subscription) => {
     if (!sub.lastPaidDate) return false;
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = formatLocalDate(new Date());
     return sub.lastPaidDate === todayStr;
   };
 
@@ -193,7 +193,7 @@ function HomeContent() {
   }, [subscriptions]);
 
   const upcomingBills = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = formatLocalDate(new Date());
     return [...subscriptions]
       .filter(sub => {
         // Use raw renewalDate. If it's in the past and not paid, it stays as 'Past Due'
@@ -214,12 +214,12 @@ function HomeContent() {
   }, [subscriptions]);
 
   const markAsPaid = (id: string) => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = formatLocalDate(new Date());
     setSubscriptions(prev => prev.map(sub => {
       if (sub.id !== id) return sub;
       const [year, month, day] = sub.renewalDate.split('-').map(Number);
       let nextDate = new Date(year, month - 1, day);
-      nextDate.setHours(0, 0, 0, 0);
+      nextDate.setHours(12, 0, 0, 0); // Use noon to avoid TZ issues
 
       if (sub.billingCycle === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
       else if (sub.billingCycle === 'biweekly') nextDate.setDate(nextDate.getDate() + 14);
@@ -229,7 +229,7 @@ function HomeContent() {
 
       return {
         ...sub,
-        renewalDate: nextDate.toISOString().split('T')[0],
+        renewalDate: formatLocalDate(nextDate),
         lastPaidDate: today,
         hasEverBeenPaid: true
       };
@@ -243,7 +243,7 @@ function HomeContent() {
       // Revert date logic
       const [year, month, day] = sub.renewalDate.split('-').map(Number);
       let prevDate = new Date(year, month - 1, day);
-      prevDate.setHours(0, 0, 0, 0);
+      prevDate.setHours(12, 0, 0, 0); // Use noon to avoid TZ issues
 
       if (sub.billingCycle === 'weekly') prevDate.setDate(prevDate.getDate() - 7);
       else if (sub.billingCycle === 'biweekly') prevDate.setDate(prevDate.getDate() - 14);
@@ -252,7 +252,7 @@ function HomeContent() {
       else if (sub.billingCycle === 'yearly') prevDate.setFullYear(prevDate.getFullYear() - 1);
 
       // If the reverted date is in the past, use getNextOccurrence to find the next valid date
-      const revertedDateStr = prevDate.toISOString().split('T')[0];
+      const revertedDateStr = formatLocalDate(prevDate);
       const nextValidDate = getNextOccurrence(revertedDateStr, sub.billingCycle);
 
       return {
