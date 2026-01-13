@@ -181,7 +181,6 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 z-20">
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            onBlur={() => setTimeout(() => setIsMenuOpen(false), 200)}
                             className={cn(
                                 "p-2 rounded-lg transition-colors outline-none",
                                 isMenuOpen ? "bg-slate-800 text-white" : "text-slate-500 hover:bg-slate-800 hover:text-white"
@@ -193,82 +192,89 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
 
                         <AnimatePresence>
                             {isMenuOpen && (
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                                    className="absolute right-0 top-full mt-2 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
-                                >
-                                    <div className="py-1">
-                                        <button
-                                            onClick={() => {
-                                                generateICSFile(subscription, 'renewal');
-                                                setIsMenuOpen(false);
-                                            }}
-                                            className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-indigo-400 hover:text-indigo-300 text-sm font-bold"
-                                        >
-                                            <Calendar className="w-4 h-4" />
-                                            <span>Sync to Calendar</span>
-                                        </button>
-
-                                        {subscription.isTrial && subscription.trialEndDate && (
+                                <>
+                                    {/* Backdrop to close menu when clicking outside */}
+                                    <div
+                                        className="fixed inset-0 z-40"
+                                        onClick={() => setIsMenuOpen(false)}
+                                    />
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                        className="absolute right-0 top-full mt-2 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
+                                    >
+                                        <div className="py-1">
                                             <button
                                                 onClick={() => {
-                                                    generateICSFile(subscription, 'trial');
+                                                    generateICSFile(subscription, 'renewal');
                                                     setIsMenuOpen(false);
                                                 }}
-                                                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-amber-400 hover:text-amber-300 text-sm font-bold border-t border-slate-800/50"
+                                                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-indigo-400 hover:text-indigo-300 text-sm font-bold"
                                             >
-                                                <ShieldAlert className="w-4 h-4" />
-                                                <span>Sync Trial Alert</span>
+                                                <Calendar className="w-4 h-4" />
+                                                <span>Sync to Calendar</span>
                                             </button>
-                                        )}
 
-                                        <button
-                                            onClick={() => {
-                                                onEdit(subscription);
-                                                setIsMenuOpen(false);
-                                            }}
-                                            className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-slate-300 hover:text-indigo-300 text-sm"
-                                            aria-label={`Edit ${subscription.name}`}
-                                        >
-                                            <Edit3 className="w-4 h-4" />
-                                            <span>Edit Details</span>
-                                        </button>
+                                            {subscription.isTrial && subscription.trialEndDate && (
+                                                <button
+                                                    onClick={() => {
+                                                        generateICSFile(subscription, 'trial');
+                                                        setIsMenuOpen(false);
+                                                    }}
+                                                    className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-amber-400 hover:text-amber-300 text-sm font-bold border-t border-slate-800/50"
+                                                >
+                                                    <ShieldAlert className="w-4 h-4" />
+                                                    <span>Sync Trial Alert</span>
+                                                </button>
+                                            )}
 
-                                        {onMarkPaid && (
                                             <button
                                                 onClick={() => {
-                                                    if (subscription.isVariable && onOpenPaymentModal) {
-                                                        onOpenPaymentModal(subscription);
-                                                    } else {
-                                                        onMarkPaid(subscription.id);
-                                                    }
+                                                    onEdit(subscription);
                                                     setIsMenuOpen(false);
                                                 }}
-                                                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-slate-300 hover:text-emerald-300 text-sm"
-                                                aria-label={`Mark ${subscription.name} as paid`}
+                                                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-slate-300 hover:text-indigo-300 text-sm"
+                                                aria-label={`Edit ${subscription.name}`}
                                             >
-                                                <Check className="w-4 h-4" />
-                                                <span>Mark Paid</span>
+                                                <Edit3 className="w-4 h-4" />
+                                                <span>Edit Details</span>
                                             </button>
-                                        )}
 
-                                        <div className="h-px bg-slate-800 my-1" />
+                                            {onMarkPaid && (
+                                                <button
+                                                    onClick={() => {
+                                                        if (subscription.isVariable && onOpenPaymentModal) {
+                                                            onOpenPaymentModal(subscription);
+                                                        } else {
+                                                            onMarkPaid(subscription.id);
+                                                        }
+                                                        setIsMenuOpen(false);
+                                                    }}
+                                                    className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-slate-300 hover:text-emerald-300 text-sm"
+                                                    aria-label={`Mark ${subscription.name} as paid`}
+                                                >
+                                                    <Check className="w-4 h-4" />
+                                                    <span>Mark Paid</span>
+                                                </button>
+                                            )}
 
-                                        <button
-                                            onClick={(e) => {
-                                                onDelete(subscription.id, e);
-                                                setIsMenuOpen(false);
-                                            }}
-                                            className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-red-500/10 transition-colors text-red-400 hover:text-red-300 text-sm"
-                                            aria-label={`Delete ${subscription.name}`}
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                            <span>Delete Subscription</span>
-                                        </button>
-                                    </div>
-                                </motion.div>
+                                            <div className="h-px bg-slate-800 my-1" />
+
+                                            <button
+                                                onClick={(e) => {
+                                                    onDelete(subscription.id, e);
+                                                    setIsMenuOpen(false);
+                                                }}
+                                                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-red-500/10 transition-colors text-red-400 hover:text-red-300 text-sm"
+                                                aria-label={`Delete ${subscription.name}`}
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                                <span>Delete Subscription</span>
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                </>
                             )}
                         </AnimatePresence>
                     </div>
