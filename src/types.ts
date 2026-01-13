@@ -26,16 +26,16 @@ export interface PaymentRecord {
 
 export const DEFAULT_CATEGORIES = [
     'Streaming',
+    'Utility Bills',
     'Software & Apps',
-    'Shopping & Retail',
-    'Food & Dining',
+    'Housing & Rent',
+    'Gaming & Social',
     'Auto Loan',
+    'Shopping & Retail',
     'Transportation',
     'Finance & Insurance',
     'Health & Wellness',
-    'Gaming & Social',
     'News & Education',
-    'Housing & Rent',
-    'Utility Bills',
+    'Food & Dining',
     'Other'
 ];
