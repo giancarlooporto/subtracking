@@ -165,7 +165,12 @@ function HomeContent() {
   const categorySpending = useMemo(() => {
     const spending: Record<string, number> = {};
     subscriptions.forEach(sub => {
-      const monthlyPrice = calculateMonthlyPrice(sub.price, sub.billingCycle);
+      // Use split price if applicable
+      const actualPrice = sub.isSplit && sub.splitWith
+        ? sub.price / sub.splitWith
+        : sub.price;
+
+      const monthlyPrice = calculateMonthlyPrice(actualPrice, sub.billingCycle);
       spending[sub.category] = (spending[sub.category] || 0) + monthlyPrice;
     });
     return Object.entries(spending)
@@ -599,29 +604,64 @@ function HomeContent() {
               {categorySpending.length > 0 ? (
                 <>
                   <div className="flex-1 w-full flex items-center justify-center relative min-h-[180px]">
-                    <svg viewBox="0 0 100 100" className="transform -rotate-90 h-full max-h-[200px]">
+                    <svg viewBox="0 0 100 100" className="transform -rotate-90 h-full max-h-[220px]">
                       {categorySpending.reduce((acc: any[], cat, i) => {
                         const total = categorySpending.reduce((s, c) => s + c.value, 0);
                         const startAngle = acc.length > 0 ? acc[acc.length - 1].endAngle : 0;
                         const angle = (cat.value / total) * 360;
                         const endAngle = startAngle + angle;
-                        const x1 = 50 + 42 * Math.cos(Math.PI * startAngle / 180);
-                        const y1 = 50 + 42 * Math.sin(Math.PI * startAngle / 180);
-                        const x2 = 50 + 42 * Math.cos(Math.PI * endAngle / 180);
-                        const y2 = 50 + 42 * Math.sin(Math.PI * endAngle / 180);
+
+                        // Don't render tiny slices that break the math (less than 1 degree)
+                        if (angle < 1) return acc;
+
                         const largeArc = angle > 180 ? 1 : 0;
-                        const pathData = `M 50 50 L ${x1} ${y1} A 42 42 0 ${largeArc} 1 ${x2} ${y2} Z`;
-                        acc.push({ pathData, color: getCategoryColorHex(cat.name), endAngle });
+
+                        // Coordinates for outer radius (45)
+                        const x1 = 50 + 45 * Math.cos(Math.PI * startAngle / 180);
+                        const y1 = 50 + 45 * Math.sin(Math.PI * startAngle / 180);
+                        const x2 = 50 + 45 * Math.cos(Math.PI * endAngle / 180);
+                        const y2 = 50 + 45 * Math.sin(Math.PI * endAngle / 180);
+
+                        // Coordinates for inner radius (35) - creating the doughnut hole
+                        const x3 = 50 + 35 * Math.cos(Math.PI * endAngle / 180);
+                        const y3 = 50 + 35 * Math.sin(Math.PI * endAngle / 180);
+                        const x4 = 50 + 35 * Math.cos(Math.PI * startAngle / 180);
+                        const y4 = 50 + 35 * Math.sin(Math.PI * startAngle / 180);
+
+                        const pathData = [
+                          `M ${x1} ${y1}`, // Move to outer start
+                          `A 45 45 0 ${largeArc} 1 ${x2} ${y2}`, // Arc to outer end
+                          `L ${x3} ${y3}`, // Line to inner end
+                          `A 35 35 0 ${largeArc} 0 ${x4} ${y4}`, // Arc to inner start (reverse direction)
+                          `Z` // Close path
+                        ].join(' ');
+
+                        acc.push({ pathData, color: getCategoryColorHex(cat.name), endAngle, name: cat.name, value: cat.value, percent: (cat.value / total) * 100 });
                         return acc;
                       }, []).map((slice: any, i) => (
-                        <path key={i} d={slice.pathData} fill={slice.color} className="opacity-80 hover:opacity-100 transition-opacity cursor-help" />
+                        <path
+                          key={i}
+                          d={slice.pathData}
+                          fill={slice.color}
+                          className="opacity-90 hover:opacity-100 transition-all duration-300 hover:scale-105 cursor-pointer stroke-slate-900 stroke-[0.5]"
+                        >
+                          <title>{slice.name}: ${slice.value.toFixed(2)} ({slice.percent.toFixed(1)}%)</title>
+                        </path>
                       ))}
-                      <circle cx="50" cy="50" r="32" fill="transparent" />
                     </svg>
+
+                    {/* Center Text */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Total</span>
+                      <span className="text-xl font-bold text-white">
+                        ${categorySpending.reduce((s, c) => s + c.value, 0).toFixed(0)}
+                      </span>
+                      <span className="text-[9px] text-slate-600">/mo</span>
+                    </div>
                   </div>
 
-                  <div className="w-full grid grid-cols-2 gap-2 mt-4">
-                    {categorySpending.slice(0, 4).map(cat => (
+                  <div className="w-full grid grid-cols-2 gap-2 mt-4 max-h-[100px] overflow-y-auto pr-1 custom-scrollbar">
+                    {categorySpending.map(cat => (
                       <div key={cat.name} className="flex items-center text-[10px] text-slate-400 bg-slate-800/30 px-2 py-1.5 rounded-lg border border-slate-700/30">
                         <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ backgroundColor: getCategoryColorHex(cat.name) }}></span>
                         <span className="truncate flex-1">{cat.name}</span>
