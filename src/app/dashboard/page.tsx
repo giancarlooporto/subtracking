@@ -565,27 +565,47 @@ function HomeContent() {
   const exportCSV = () => {
     const headers = [
       'Name',
-      'Price ($)',
+      'Price ($)',           // Regular/main price (or regularPrice if trial)
+      'Trial Price ($)',     // Current discounted trial price (if applicable)
+      'Monthly Equivalent ($)',
       'Billing Cycle',
       'Category',
       'Next Renewal',
       'Status',
       'Trial End Date',
-      'Regular Price ($)',
-      'One-Time Payment'
+      'Is Essential',
+      'Is Variable',
+      'Is Split',
+      'Split With (People)',
+      'One-Time Payment',
+      'Last Paid Date'
     ];
 
-    const rows = subscriptions.map(sub => [
-      sub.name,
-      sub.price.toFixed(2),
-      sub.billingCycle,
-      sub.category,
-      sub.renewalDate,
-      sub.isTrial ? 'Trial' : 'Regular',
-      sub.trialEndDate || 'N/A',
-      sub.regularPrice?.toFixed(2) || 'N/A',
-      sub.isOneTimePayment ? 'Yes' : 'No'
-    ]);
+    const rows = subscriptions.map(sub => {
+      // For trials: Price = regularPrice, Trial Price = current price
+      // For regular: Price = price, Trial Price = N/A
+      const mainPrice = sub.isTrial && sub.regularPrice ? sub.regularPrice : sub.price;
+      const trialPrice = sub.isTrial ? sub.price : null;
+      const monthlyEquivalent = calculateMonthlyPrice(mainPrice, sub.billingCycle);
+
+      return [
+        sub.name,
+        mainPrice.toFixed(2),
+        trialPrice !== null ? trialPrice.toFixed(2) : 'N/A',
+        monthlyEquivalent.toFixed(2),
+        sub.billingCycle,
+        sub.category,
+        sub.renewalDate,
+        sub.isTrial ? 'Trial' : 'Regular',
+        sub.trialEndDate || 'N/A',
+        sub.isEssential ? 'Yes' : 'No',
+        sub.isVariable ? 'Yes' : 'No',
+        sub.isSplit ? 'Yes' : 'No',
+        sub.isSplit && sub.splitWith ? sub.splitWith.toString() : 'N/A',
+        sub.isOneTimePayment ? 'Yes' : 'No',
+        sub.lastPaidDate || 'N/A'
+      ];
+    });
 
     const csvContent = [
       headers.join(','),
