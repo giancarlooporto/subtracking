@@ -3,14 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Zap, AlertCircle } from 'lucide-react';
 import { Subscription } from '../types';
 import { cn, getNextOccurrence, getCategoryColorHex, getCategoryIcon } from '../lib/utils';
+import { SubscriptionCard } from './SubscriptionCard';
 
 interface CalendarViewProps {
     subscriptions: Subscription[];
     isPro: boolean;
     onUnlockPro: () => void;
+    onEdit: (sub: Subscription) => void;
+    onDelete: (id: string, e: React.MouseEvent) => void;
+    onMarkPaid: (id: string) => void;
 }
 
-export function CalendarView({ subscriptions, isPro, onUnlockPro }: CalendarViewProps) {
+export function CalendarView({ subscriptions, isPro, onUnlockPro, onEdit, onDelete, onMarkPaid }: CalendarViewProps) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
 
@@ -162,33 +166,13 @@ export function CalendarView({ subscriptions, isPro, onUnlockPro }: CalendarView
                         <div className="space-y-2">
                             {selectedDaySubs.length > 0 ? (
                                 selectedDaySubs.map(sub => (
-                                    <div
+                                    <SubscriptionCard
                                         key={sub.id}
-                                        className="p-4 bg-slate-900 border border-white/5 rounded-2xl flex items-center justify-between group hover:border-white/10 transition-colors"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div
-                                                className={cn(
-                                                    "w-8 h-8 rounded-lg flex items-center justify-center text-xs",
-                                                )}
-                                                style={{ backgroundColor: `${getCategoryColorHex(sub.category)}20`, color: getCategoryColorHex(sub.category) }}
-                                            >
-                                                {getCategoryIcon(sub.category)}
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-bold text-white">{sub.name}</p>
-                                                <p className="text-[10px] text-slate-500 font-medium uppercase tracking-tight">{sub.category}</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm font-black text-white">${sub.price.toFixed(2)}</p>
-                                            {sub.isTrial && (
-                                                <span className="text-[9px] text-red-400 font-bold uppercase flex items-center gap-1 justify-end">
-                                                    <AlertCircle className="w-2 h-2" /> Trial Ends
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
+                                        subscription={sub}
+                                        onEdit={onEdit}
+                                        onDelete={onDelete}
+                                        onMarkPaid={onMarkPaid}
+                                    />
                                 ))
                             ) : (
                                 <div className="p-8 text-center bg-slate-900/40 border border-dashed border-white/5 rounded-2xl">

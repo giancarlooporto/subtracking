@@ -19,6 +19,11 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
     const nextRenewal = getNextOccurrence(subscription.renewalDate, subscription.billingCycle);
     const days = getDaysRemaining(nextRenewal);
 
+    // Date formatting for card display
+    const [nY, nM, nD] = nextRenewal.split('-').map(Number);
+    const dateObj = new Date(nY, nM - 1, nD);
+    const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
     // Trial logic
     const isTrialExpired = subscription.isTrial && subscription.trialEndDate
         ? getDaysRemaining(subscription.trialEndDate) < 0
@@ -116,6 +121,8 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                             )}
                             <span className="text-slate-600">•</span>
                             <span className="capitalize">{subscription.billingCycle} billing</span>
+                            <span className="text-slate-600">•</span>
+                            <span className="text-slate-300 font-medium">{formattedDate}</span>
 
                             {subscription.isSplit && subscription.splitWith && (
                                 <>

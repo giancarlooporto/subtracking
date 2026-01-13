@@ -875,6 +875,9 @@ function HomeContent() {
                 subscriptions={subscriptions}
                 isPro={isPro}
                 onUnlockPro={() => setShowLicenseModal(true)}
+                onEdit={(s) => { setEditingId(s.id); setShowAddModal(true); }}
+                onDelete={(id) => setDeleteId(id)}
+                onMarkPaid={markAsPaid}
               />
             )}
           </div>
