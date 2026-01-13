@@ -42,6 +42,7 @@ export function SubscriptionModal({
     // Split Billing Logic
     const [isSplit, setIsSplit] = useState(false);
     const [splitWith, setSplitWith] = useState(2);
+    const [splitInput, setSplitInput] = useState('2');
 
     // Validation errors
     const [errors, setErrors] = useState<{
@@ -73,6 +74,7 @@ export function SubscriptionModal({
             setLogo(initialData.logo || '');
             setIsSplit(initialData.isSplit || false);
             setSplitWith(initialData.splitWith || 2);
+            setSplitInput(initialData.splitWith?.toString() || '2');
             setIsAddingCustom(false);
         } else {
             // Reset defaults
@@ -87,6 +89,7 @@ export function SubscriptionModal({
             setIsOneTimePayment(false);
             setIsSplit(false);
             setSplitWith(2);
+            setSplitInput('2');
             setIsAddingCustom(false);
             setLogo('');
             setErrors({});
@@ -619,14 +622,20 @@ export function SubscriptionModal({
                                                     type="text"
                                                     inputMode="numeric"
                                                     pattern="[0-9]*"
-                                                    value={splitWith}
+                                                    value={splitInput}
                                                     onChange={(e) => {
                                                         const val = e.target.value.replace(/[^0-9]/g, '');
-                                                        const num = parseInt(val || '2');
+                                                        setSplitInput(val);
+
+                                                        const num = parseInt(val);
                                                         if (num >= 2 && num <= 10) {
                                                             setSplitWith(num);
-                                                        } else if (val === '') {
-                                                            setSplitWith(2);
+                                                        }
+                                                    }}
+                                                    onBlur={() => {
+                                                        const num = parseInt(splitInput);
+                                                        if (!num || num < 2 || num > 10) {
+                                                            setSplitInput(splitWith.toString());
                                                         }
                                                     }}
                                                     placeholder="2"
