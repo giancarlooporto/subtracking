@@ -917,7 +917,7 @@ function HomeContent() {
         {/* FULL LIST SECTION */}
         <section id="subscriptions-list" className="py-12 space-y-8">
           {/* Sticky Header Container */}
-          <div className="sticky top-0 z-30 bg-slate-950 -mx-4 px-4 pb-4">
+          <div className="sticky top-0 z-30 backdrop-blur-md -mx-4 px-4 pb-4" style={{ background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.85) 70%, transparent 100%)' }}>
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="space-y-1 shrink-0">
                 <h2 className="text-2xl sm:text-3xl font-bold text-white flex flex-wrap items-center gap-x-3 gap-y-2">
