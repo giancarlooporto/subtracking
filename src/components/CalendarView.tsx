@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Zap, AlertCircle } from 'lucide-react';
 import { Subscription } from '../types';
-import { cn, getNextOccurrence, getCategoryColorHex } from '../lib/utils';
+import { cn, getNextOccurrence, getCategoryColorHex, getCategoryIcon } from '../lib/utils';
 
 interface CalendarViewProps {
     subscriptions: Subscription[];
@@ -13,7 +13,7 @@ interface CalendarViewProps {
 export function CalendarView({ subscriptions, isPro, onUnlockPro }: CalendarViewProps) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-    const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
 
     // Calendar logic
     const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
@@ -170,20 +170,10 @@ export function CalendarView({ subscriptions, isPro, onUnlockPro }: CalendarView
                                             <div
                                                 className={cn(
                                                     "w-8 h-8 rounded-lg flex items-center justify-center text-xs",
-                                                    sub.logo && !imageErrors[sub.id] ? "bg-white p-1" : ""
                                                 )}
-                                                style={!sub.logo || imageErrors[sub.id] ? { backgroundColor: `${getCategoryColorHex(sub.category)}20`, color: getCategoryColorHex(sub.category) } : {}}
+                                                style={{ backgroundColor: `${getCategoryColorHex(sub.category)}20`, color: getCategoryColorHex(sub.category) }}
                                             >
-                                                {sub.logo && !imageErrors[sub.id] ? (
-                                                    <img
-                                                        src={sub.logo}
-                                                        alt=""
-                                                        className="w-full h-full object-contain"
-                                                        onError={() => setImageErrors(prev => ({ ...prev, [sub.id]: true }))}
-                                                    />
-                                                ) : (
-                                                    sub.name.charAt(0)
-                                                )}
+                                                {getCategoryIcon(sub.category)}
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold text-white">{sub.name}</p>

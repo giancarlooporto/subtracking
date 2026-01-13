@@ -38,7 +38,7 @@ export function SubscriptionModal({
     const [trialPrice, setTrialPrice] = useState('');
     const [trialEndDate, setTrialEndDate] = useState<Date | null>(null);
     const [isOneTimePayment, setIsOneTimePayment] = useState(false);
-    const [logo, setLogo] = useState('');
+
 
     // Split Billing Logic
     const [isSplit, setIsSplit] = useState(false);
@@ -81,7 +81,7 @@ export function SubscriptionModal({
                 setTrialEndDate(null);
             }
             setIsOneTimePayment(initialData.isOneTimePayment || false);
-            setLogo(initialData.logo || '');
+
             setIsSplit(initialData.isSplit || false);
             setSplitWith(initialData.splitWith || 2);
             setSplitInput(initialData.splitWith?.toString() || '2');
@@ -101,47 +101,13 @@ export function SubscriptionModal({
             setSplitWith(2);
             setSplitInput('2');
             setIsAddingCustom(false);
-            setLogo('');
+
             setErrors({});
             setShowProPrompt(false);
         }
     }, [initialData, isOpen]);
 
-    // Logo Scraper Logic
-    useEffect(() => {
-        if (!name || name.trim().length < 2) {
-            if (!initialData) setLogo('');
-            return;
-        }
 
-        const timer = setTimeout(async () => {
-            try {
-                // First, try curated brand database
-                const { getBrandLogo, normalizeBrandName } = await import('../lib/brandLogos');
-                const curatedLogo = getBrandLogo(normalizeBrandName(name));
-
-                if (curatedLogo) {
-                    setLogo(curatedLogo);
-                    return;
-                }
-
-                // Fallback: Try Clearbit autocomplete for domain detection
-                const response = await fetch(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${name}`);
-                const data = await response.json();
-                if (data && data.length > 0) {
-                    const match = data[0];
-                    const fallbackLogo = getBrandLogo(name, match.domain);
-                    if (fallbackLogo) {
-                        setLogo(fallbackLogo);
-                    }
-                }
-            } catch (error) {
-                console.error('Logo fetch failed', error);
-            }
-        }, 800);
-
-        return () => clearTimeout(timer);
-    }, [name, initialData]);
 
     // Validation function
     const validateForm = () => {
@@ -204,7 +170,7 @@ export function SubscriptionModal({
             regularPrice: savedRegularPrice,
             trialEndDate: trialEndDate ? formatLocalDate(trialEndDate) : undefined,
             isOneTimePayment: isTrial ? isOneTimePayment : undefined,
-            logo: logo || undefined,
+
             isSplit: isSplit || undefined,
             splitWith: isSplit ? splitWith : undefined,
         });
@@ -252,7 +218,7 @@ export function SubscriptionModal({
                                             }}
                                             className={cn(
                                                 "w-full bg-slate-950 border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none transition-all",
-                                                logo ? "pl-14" : "pl-4",
+                                                "pl-4",
                                                 errors.name
                                                     ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
                                                     : "border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
@@ -260,16 +226,7 @@ export function SubscriptionModal({
                                             placeholder="e.g. Netflix"
                                             autoFocus
                                         />
-                                        {logo && (
-                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-white overflow-hidden border border-slate-800 flex items-center justify-center p-0.5 animate-in zoom-in duration-300">
-                                                <img
-                                                    src={logo}
-                                                    alt=""
-                                                    className="w-full h-full object-contain"
-                                                    onError={() => setLogo('')}
-                                                />
-                                            </div>
-                                        )}
+
                                     </div>
                                     {errors.name && (
                                         <p className="text-xs text-red-400 mt-1 flex items-center gap-1">

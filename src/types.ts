@@ -11,7 +11,7 @@ export interface Subscription {
     trialEndDate?: string;
     regularPrice?: number;
     isOneTimePayment?: boolean;
-    logo?: string;
+
     isSplit?: boolean;
     splitWith?: number;
 }
