@@ -123,6 +123,23 @@ function HomeContent() {
 
           // 4. Deduplicate (fix for potential "Auto Loan" double entry)
           loadedCats = Array.from(new Set(loadedCats));
+
+          // 5. Force Re-order to match new defaults
+          // This ensures the "common" categories appear first as requested
+          loadedCats.sort((a: string, b: string) => {
+            const indexA = DEFAULT_CATEGORIES.indexOf(a);
+            const indexB = DEFAULT_CATEGORIES.indexOf(b);
+
+            // If both are defaults, sort by default order
+            if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+
+            // If one is default and other is custom, default comes first
+            if (indexA !== -1) return -1;
+            if (indexB !== -1) return 1;
+
+            // If both are custom, sort alphabetically
+            return a.localeCompare(b);
+          });
         }
         setUserCategories(loadedCats);
       } catch (e) {
