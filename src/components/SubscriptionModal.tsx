@@ -385,7 +385,7 @@ export function SubscriptionModal({
                                                             onDeleteCategory(cat);
                                                             if (category === cat) setCategory('Other');
                                                         }}
-                                                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-600 hover:text-red-400 opacity-0 group-hover/cat:opacity-100 transition-all z-10"
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-red-400 bg-slate-900/80 rounded-full transition-all z-10"
                                                     >
                                                         <X className="w-3 h-3" />
                                                     </button>
