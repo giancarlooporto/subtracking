@@ -915,9 +915,9 @@ function HomeContent() {
         </div>
 
         {/* FULL LIST SECTION */}
-        <section id="subscriptions-list" className="py-12 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          {/* Sticky Header Container */}
-          <div className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-xl -mx-4 px-4 py-4 rounded-b-3xl border-b border-white/5 shadow-2xl shadow-black/50 transition-all">
+        <section id="subscriptions-list" className="py-12 space-y-8">
+          {/* Sticky Header Container (Minimalist) */}
+          <div className="sticky top-0 z-30 transition-all -mx-4 px-4 py-4 sm:py-2 backdrop-blur-xl bg-slate-950/80 sm:bg-transparent sm:backdrop-blur-none" style={{ maskImage: 'linear-gradient(to bottom, black 90%, transparent 100%)' }}>
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="space-y-1 shrink-0">
                 <h2 className="text-2xl sm:text-3xl font-bold text-white flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -1046,7 +1046,7 @@ function HomeContent() {
             </div>
 
             {/* Row 2: Full Width Filters */}
-            <div className="w-full mt-4 sm:mt-6">
+            <div className="w-full">
               <div className="w-full flex gap-2 overflow-x-auto pb-4 custom-scrollbar">
                 <button
                   onClick={() => setFilterCategory(['All'])}
