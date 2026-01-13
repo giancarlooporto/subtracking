@@ -912,16 +912,14 @@ function HomeContent() {
                   {sortedSubscriptions.length}
                 </span>
 
-                {/* Filtered Total Display (Only show if filtering) */}
-                {!filterCategory.includes('All') && (
-                  <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-300 w-full sm:w-auto ml-11 sm:ml-2">
-                    <div className="hidden sm:block h-6 w-px bg-slate-800 mx-2"></div>
-                    <span className="text-sm font-medium text-slate-400">Total:</span>
-                    <span className="text-xl font-bold text-emerald-400">
-                      ${filteredListTotal.toFixed(2)}<span className="text-xs text-emerald-500/70 font-normal ml-0.5">/mo</span>
-                    </span>
-                  </div>
-                )}
+                {/* Filtered Total Display (Always show) */}
+                <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-300 w-full sm:w-auto ml-11 sm:ml-2">
+                  <div className="hidden sm:block h-6 w-px bg-slate-800 mx-2"></div>
+                  <span className="text-sm font-medium text-slate-400">Total:</span>
+                  <span className="text-xl font-bold text-emerald-400">
+                    ${filteredListTotal.toFixed(2)}<span className="text-xs text-emerald-500/70 font-normal ml-0.5">/mo</span>
+                  </span>
+                </div>
               </h2>
               <p className="text-slate-500 text-sm ml-11 font-medium">Manage and optimize your digital life</p>
             </div>

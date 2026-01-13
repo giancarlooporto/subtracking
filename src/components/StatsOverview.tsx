@@ -83,16 +83,16 @@ export const StatsOverview = memo(({
                 </div>
 
                 {/* Controls */}
-                <div className="flex items-center gap-4 mt-8">
+                <div className="flex flex-wrap items-center justify-center gap-3 mt-8 max-w-full px-4">
                     {/* Toggle */}
                     <button
                         onClick={() => onViewModeChange(viewMode === 'monthly' ? 'yearly' : 'monthly')}
-                        className="flex items-center gap-3 px-1.5 py-1.5 bg-slate-900/50 backdrop-blur-md border border-slate-700/50 rounded-full cursor-pointer hover:bg-slate-800/50 transition-all"
+                        className="flex items-center gap-1.5 px-1.5 py-1.5 bg-slate-900/50 backdrop-blur-md border border-slate-700/50 rounded-full cursor-pointer hover:bg-slate-800/50 transition-all"
                     >
-                        <span className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${viewMode === 'monthly' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-white'}`}>
+                        <span className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${viewMode === 'monthly' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-white'}`}>
                             Monthly
                         </span>
-                        <span className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${viewMode === 'yearly' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-white'}`}>
+                        <span className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${viewMode === 'yearly' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-white'}`}>
                             Yearly
                         </span>
                     </button>
@@ -100,33 +100,33 @@ export const StatsOverview = memo(({
                     {/* Finance Mode Toggle */}
                     <button
                         onClick={() => onFinanceViewModeChange(financeViewMode === 'focus' ? 'total' : 'focus')}
-                        className="flex items-center gap-3 px-1.5 py-1.5 bg-slate-900/50 backdrop-blur-md border border-slate-700/50 rounded-full cursor-pointer hover:bg-slate-800/50 transition-all"
+                        className="flex items-center gap-1.5 px-1.5 py-1.5 bg-slate-900/50 backdrop-blur-md border border-slate-700/50 rounded-full cursor-pointer hover:bg-slate-800/50 transition-all"
                     >
-                        <span className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${financeViewMode === 'focus' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25' : 'text-slate-400 hover:text-white'}`}>
+                        <span className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${financeViewMode === 'focus' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25' : 'text-slate-400 hover:text-white'}`}>
                             Subs Only
                         </span>
-                        <span className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${financeViewMode === 'total' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25' : 'text-slate-400 hover:text-white'}`}>
+                        <span className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${financeViewMode === 'total' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25' : 'text-slate-400 hover:text-white'}`}>
                             Total Life
                         </span>
                     </button>
 
-                    {/* Actions */}
-                    <div className="h-6 w-px bg-slate-800"></div>
-
-                    <button
-                        onClick={onStartAudit}
-                        className="p-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-full transition-all"
-                        title="Start SubTracking Wizard!"
-                    >
-                        <Sparkles className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={onOpenSettings}
-                        className="p-3 bg-slate-800/50 hover:bg-slate-700 text-slate-400 border border-slate-700/50 rounded-full transition-all"
-                        title="Settings"
-                    >
-                        <Settings className="w-5 h-5" />
-                    </button>
+                    {/* Actions Group - Wrapped together to keep them side-by-side */}
+                    <div className="flex items-center gap-3 pl-1 sm:pl-3 sm:border-l border-slate-800/50">
+                        <button
+                            onClick={onStartAudit}
+                            className="p-2.5 sm:p-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-full transition-all"
+                            title="Start SubTracking Wizard!"
+                        >
+                            <Sparkles className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={onOpenSettings}
+                            className="p-2.5 sm:p-3 bg-slate-800/50 hover:bg-slate-700 text-slate-400 border border-slate-700/50 rounded-full transition-all"
+                            title="Settings"
+                        >
+                            <Settings className="w-5 h-5" />
+                        </button>
+                    </div>
                 </div>
 
             </div>
