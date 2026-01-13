@@ -901,7 +901,7 @@ function HomeContent() {
         <section id="subscriptions-list" className="py-12 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="space-y-1 shrink-0">
-              <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white flex flex-wrap items-center gap-x-3 gap-y-2">
                 <Wallet className="w-8 h-8 text-indigo-400" />
                 <span>
                   {!filterCategory.includes('All') ? 'Selected' : 'All'} Subscriptions
@@ -914,8 +914,8 @@ function HomeContent() {
 
                 {/* Filtered Total Display (Only show if filtering) */}
                 {!filterCategory.includes('All') && (
-                  <div className="flex items-center gap-2 ml-2 animate-in fade-in zoom-in duration-300">
-                    <div className="h-6 w-px bg-slate-800 mx-2"></div>
+                  <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-300 w-full sm:w-auto ml-11 sm:ml-2">
+                    <div className="hidden sm:block h-6 w-px bg-slate-800 mx-2"></div>
                     <span className="text-sm font-medium text-slate-400">Total:</span>
                     <span className="text-xl font-bold text-emerald-400">
                       ${filteredListTotal.toFixed(2)}<span className="text-xs text-emerald-500/70 font-normal ml-0.5">/mo</span>
