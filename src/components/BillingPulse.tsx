@@ -136,6 +136,7 @@ export function BillingPulse({ subscriptions }: BillingPulseProps) {
             let nextDateStr = getNextOccurrence(sub.renewalDate, sub.billingCycle);
             let [year, month, day] = nextDateStr.split('-').map(Number);
             let nextDate = new Date(year, month - 1, day);
+            nextDate.setHours(12, 0, 0, 0); // Normalize to NOON
 
             // For weekly/biweekly, we need to find all occurrences in the current month
             if (sub.billingCycle === 'weekly' || sub.billingCycle === 'biweekly') {

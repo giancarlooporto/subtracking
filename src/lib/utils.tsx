@@ -9,12 +9,12 @@ export function cn(...inputs: ClassValue[]) {
 
 export const getDaysRemaining = (dateString: string) => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setHours(12, 0, 0, 0); // Normalize to NOON to avoid TZ shifts
 
-    // Parse YYYY-MM-DD as local time
+    // Parse YYYY-MM-DD
     const [year, month, day] = dateString.split('-').map(Number);
     const renewal = new Date(year, month - 1, day);
-    renewal.setHours(0, 0, 0, 0);
+    renewal.setHours(12, 0, 0, 0); // Normalize to NOON
 
     const diffTime = renewal.getTime() - today.getTime();
     return Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -22,18 +22,42 @@ export const getDaysRemaining = (dateString: string) => {
 
 export const getNextOccurrence = (startDate: string, cycle: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly') => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setHours(12, 0, 0, 0); // Normalize to NOON
 
     const [year, month, day] = startDate.split('-').map(Number);
     let nextDate = new Date(year, month - 1, day);
-    nextDate.setHours(0, 0, 0, 0);
+    nextDate.setHours(12, 0, 0, 0); // Normalize to NOON
+
+    // Safety brake for infinite loops if date is invalid
+    if (isNaN(nextDate.getTime())) return startDate;
 
     while (nextDate < today) {
         if (cycle === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
         else if (cycle === 'biweekly') nextDate.setDate(nextDate.getDate() + 14);
-        else if (cycle === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
-        else if (cycle === 'quarterly') nextDate.setMonth(nextDate.getMonth() + 3);
-        else if (cycle === 'yearly') nextDate.setFullYear(nextDate.getFullYear() + 1);
+        else if (cycle === 'monthly') {
+            // Handle month rollover (Jan 31 -> Feb 28/29) using "last day of month" logic if needed
+            const d = nextDate.getDate();
+            nextDate.setMonth(nextDate.getMonth() + 1);
+            // If the day changed (e.g. was 31st, now is 2nd), it means we skipped a month end. Fix it.
+            if (nextDate.getDate() !== d) {
+                nextDate.setDate(0); // Set to last day of previous month
+            }
+        }
+        else if (cycle === 'quarterly') {
+            const d = nextDate.getDate();
+            nextDate.setMonth(nextDate.getMonth() + 3);
+            if (nextDate.getDate() !== d) {
+                nextDate.setDate(0);
+            }
+        }
+        else if (cycle === 'yearly') {
+            const d = nextDate.getDate();
+            nextDate.setFullYear(nextDate.getFullYear() + 1);
+            // Handle leap year rare edge case (Feb 29 -> Feb 28)
+            if (nextDate.getDate() !== d) {
+                nextDate.setDate(0);
+            }
+        }
     }
 
     const y = nextDate.getFullYear();
