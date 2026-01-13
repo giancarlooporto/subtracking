@@ -198,18 +198,27 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                                     className="absolute right-0 top-full mt-2 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
                                 >
                                     <div className="py-1">
+                                        <button
+                                            onClick={() => {
+                                                generateICSFile(subscription, 'renewal');
+                                                setIsMenuOpen(false);
+                                            }}
+                                            className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-indigo-400 hover:text-indigo-300 text-sm font-bold"
+                                        >
+                                            <Calendar className="w-4 h-4" />
+                                            <span>Sync to Calendar</span>
+                                        </button>
+
                                         {subscription.isTrial && subscription.trialEndDate && (
                                             <button
                                                 onClick={() => {
-                                                    if (subscription.trialEndDate) {
-                                                        generateICSFile(subscription.name, subscription.regularPrice || subscription.price, subscription.trialEndDate);
-                                                    }
+                                                    generateICSFile(subscription, 'trial');
                                                     setIsMenuOpen(false);
                                                 }}
-                                                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-indigo-400 hover:text-indigo-300 text-sm font-bold"
+                                                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-amber-400 hover:text-amber-300 text-sm font-bold border-t border-slate-800/50"
                                             >
-                                                <Calendar className="w-4 h-4" />
-                                                <span>Sync to Calendar</span>
+                                                <ShieldAlert className="w-4 h-4" />
+                                                <span>Sync Trial Alert</span>
                                             </button>
                                         )}
 

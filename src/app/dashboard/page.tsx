@@ -18,7 +18,7 @@ import { ToastProvider, useToast } from '../../hooks/useToast';
 import ToastContainer from '../../components/ToastContainer';
 import { Footer } from '../../components/Footer';
 import { InstallBanner } from '../../components/InstallBanner';
-import { generateICSFile } from '../../lib/calendar';
+import { generateICSFile, generateBulkICSFile } from '../../lib/calendar';
 
 const SubscriptionModal = dynamic(() => import('../../components/SubscriptionModal').then(mod => mod.SubscriptionModal), { ssr: false });
 const SettingsModal = dynamic(() => import('../../components/SettingsModal').then(mod => mod.SettingsModal), { ssr: false });
@@ -293,7 +293,7 @@ function HomeContent() {
 
       // Calendar Bridge: Trigger alert download for new trials
       if (data.isTrial && data.trialEndDate) {
-        generateICSFile(data.name, data.regularPrice || data.price, data.trialEndDate);
+        generateICSFile({ ...data, id: 'temp' } as Subscription, 'trial');
         showToast('Trial Shield Active: Calendar Alert Generated! 🗓️', 'success');
       }
     }
@@ -910,6 +910,10 @@ function HomeContent() {
         onFactoryReset={() => setShowFactoryResetConfirm(true)}
         onExport={exportData}
         onExportCSV={exportCSV}
+        onExportICS={() => {
+          generateBulkICSFile(subscriptions);
+          showToast('Calendar Sync File Exported! Open it in your Calendar app.', 'success');
+        }}
         onImport={importData}
         isPro={isPro}
         onActivatePro={() => setShowLicenseModal(true)}
