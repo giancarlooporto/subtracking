@@ -14,6 +14,14 @@ export interface Subscription {
 
     isSplit?: boolean;
     splitWith?: number;
+    isVariable?: boolean;
+    isEssential?: boolean;
+    paymentHistory?: PaymentRecord[];
+}
+
+export interface PaymentRecord {
+    date: string;
+    amount: number;
 }
 
 export const DEFAULT_CATEGORIES = [
@@ -21,10 +29,13 @@ export const DEFAULT_CATEGORIES = [
     'Software & Apps',
     'Shopping & Retail',
     'Food & Dining',
-    'Transport & Uber',
+    'Auto Loan',
+    'Transportation',
     'Finance & Insurance',
     'Health & Wellness',
     'Gaming & Social',
     'News & Education',
+    'Housing & Rent',
+    'Utility Bills',
     'Other'
 ];

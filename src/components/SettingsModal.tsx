@@ -171,6 +171,8 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
 
                     <div className="flex flex-col space-y-2 pt-4 border-t border-slate-800">
                         <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Preferences</h3>
+
+                        {/* Category Manager (Pro only) */}
                         <div className="p-4 bg-slate-800/50 border border-slate-700/50 rounded-xl flex items-center justify-between opacity-50 grayscale cursor-not-allowed">
                             <span className="text-sm font-medium text-slate-400 italic">Theme: Dark (Default)</span>
                         </div>

@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Tv, Laptop, Gamepad2, Heart, Utensils, Newspaper, Tag, ShoppingBag, Car, Landmark, BookOpen } from 'lucide-react';
+import { Tv, Laptop, Gamepad2, Heart, Utensils, Newspaper, Tag, ShoppingBag, Car, Landmark, BookOpen, Bus } from 'lucide-react';
 import React from 'react';
 
 export function cn(...inputs: ClassValue[]) {
@@ -80,11 +80,14 @@ export const getCategoryColorHex = (category: string) => {
         'Software & Apps': '#3b82f6', // blue-500
         'Shopping & Retail': '#8b5cf6', // violet-500
         'Food & Dining': '#f59e0b', // amber-500
-        'Transport & Uber': '#10b981', // emerald-500
+        'Auto Loan': '#10b981', // emerald-500
+        'Transportation': '#0ea5e9', // sky-500
         'Finance & Insurance': '#06b6d4', // cyan-500
         'Health & Wellness': '#f43f5e', // rose-500
         'Gaming & Social': '#ec4899', // pink-500
         'News & Education': '#14b8a6', // teal-500
+        'Housing & Rent': '#6366f1', // indigo-500
+        'Utility Bills': '#eab308', // yellow-500
         'Other': '#64748b', // slate-500
     };
     return map[category] || '#6366f1'; // Default indigo
@@ -96,11 +99,22 @@ export const getCategoryIcon = (category: string) => {
         case 'Software & Apps': return <Laptop className="w-4 h-4" />;
         case 'Shopping & Retail': return <ShoppingBag className="w-4 h-4" />;
         case 'Food & Dining': return <Utensils className="w-4 h-4" />;
-        case 'Transport & Uber': return <Car className="w-4 h-4" />;
+        case 'Auto Loan': return <Car className="w-4 h-4" />;
+        case 'Transportation': return <Bus className="w-4 h-4" />;
         case 'Finance & Insurance': return <Landmark className="w-4 h-4" />;
         case 'Health & Wellness': return <Heart className="w-4 h-4" />;
         case 'Gaming & Social': return <Gamepad2 className="w-4 h-4" />;
         case 'News & Education': return <BookOpen className="w-4 h-4" />;
+        case 'Housing & Rent': return (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+        );
+        case 'Utility Bills': return (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+        );
         default: return <Tag className="w-4 h-4" />;
     }
 };

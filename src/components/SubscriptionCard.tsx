@@ -10,10 +10,11 @@ interface SubscriptionCardProps {
     viewMode?: 'monthly' | 'yearly';
     onEdit: (sub: Subscription) => void;
     onDelete: (id: string, e: React.MouseEvent) => void;
-    onMarkPaid?: (id: string) => void;
+    onMarkPaid?: (id: string, amount?: number, date?: Date) => void;
+    onOpenPaymentModal?: (sub: Subscription) => void;
 }
 
-export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEdit, onDelete, onMarkPaid }: SubscriptionCardProps) => {
+export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEdit, onDelete, onMarkPaid, onOpenPaymentModal }: SubscriptionCardProps) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const nextRenewal = getNextOccurrence(subscription.renewalDate, subscription.billingCycle);
@@ -71,7 +72,7 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                 <div className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 w-0 group-hover:w-full transition-all duration-700 ease-out opacity-50" />
             </div>
 
-            <div className="relative p-5 flex items-center justify-between z-10">
+            <div className="relative p-5 pr-14 flex items-center justify-between z-10">
                 <div className="flex items-center space-x-4">
                     {/* Icon Box */}
                     <div
@@ -155,6 +156,7 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                 <div className="flex items-center space-x-4">
                     <div className="text-right">
                         <div className="text-xl font-black text-white tracking-tight flex items-baseline justify-end gap-0.5">
+                            {subscription.isVariable && <span className="text-lg text-slate-500 font-medium mr-0.5" title="Estimated">~</span>}
                             <span className="text-base text-slate-500 font-medium">$</span>
                             {displayPrice.toFixed(2)}
                         </div>
@@ -176,7 +178,7 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                     </div>
 
                     {/* Menu */}
-                    <div className="relative">
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 z-20">
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             onBlur={() => setTimeout(() => setIsMenuOpen(false), 200)}
@@ -237,7 +239,11 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                                         {onMarkPaid && (
                                             <button
                                                 onClick={() => {
-                                                    onMarkPaid(subscription.id);
+                                                    if (subscription.isVariable && onOpenPaymentModal) {
+                                                        onOpenPaymentModal(subscription);
+                                                    } else {
+                                                        onMarkPaid(subscription.id);
+                                                    }
                                                     setIsMenuOpen(false);
                                                 }}
                                                 className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-slate-300 hover:text-emerald-300 text-sm"

@@ -20,6 +20,8 @@ import { Footer } from '../../components/Footer';
 import { InstallBanner } from '../../components/InstallBanner';
 import { generateICSFile, generateBulkICSFile } from '../../lib/calendar';
 
+import { PaymentModal } from '../../components/PaymentModal';
+
 const SubscriptionModal = dynamic(() => import('../../components/SubscriptionModal').then(mod => mod.SubscriptionModal), { ssr: false });
 const SettingsModal = dynamic(() => import('../../components/SettingsModal').then(mod => mod.SettingsModal), { ssr: false });
 const SubTrackingWizard = dynamic(() => import('../../components/SubTrackingWizard').then(mod => mod.SubTrackingWizard), { ssr: false });
@@ -34,6 +36,7 @@ function HomeContent() {
   const [userCategories, setUserCategories] = useState<string[]>(DEFAULT_CATEGORIES);
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
+  const [financeViewMode, setFinanceViewMode] = useState<'focus' | 'total'>('focus'); // 'focus' = Discretionary, 'total' = Everything
   const [isPro, setIsPro] = useState(false);
 
   // Modals & UI State
@@ -45,9 +48,13 @@ function HomeContent() {
   const [showWizard, setShowWizard] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
 
+  // Payment Modal State
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [activePaymentSub, setActivePaymentSub] = useState<Subscription | null>(null);
+
   // Filtering & Sorting
   const [sortBy, setSortBy] = useState('price-desc');
-  const [filterCategory, setFilterCategory] = useState('All');
+  const [filterCategory, setFilterCategory] = useState<string[]>(['All']);
   const [isSortOpen, setIsSortOpen] = useState(false);
 
   // Stats
@@ -80,6 +87,42 @@ function HomeContent() {
 
         if (isOldList || loadedCats.includes('Household Utilities')) {
           loadedCats = DEFAULT_CATEGORIES;
+        } else {
+          // Auto-migrate: Add "Utility Bills", "Housing & Rent", "Auto & Transport" if missing
+          const ensureCategory = (cat: string) => {
+            if (!loadedCats.includes(cat)) {
+              // Try to insert before "Other"
+              const otherIndex = loadedCats.indexOf('Other');
+              if (otherIndex !== -1) loadedCats.splice(otherIndex, 0, cat);
+              else loadedCats.push(cat);
+            }
+          };
+
+          ensureCategory('Utility Bills');
+          ensureCategory('Housing & Rent');
+
+          // Migration: Split Auto & Transport into Auto Loan / Transportation
+          // Also rename "Automotive" -> "Auto Loan" if it exists from previous step
+
+          // 1. Ensure new categories exist
+          ensureCategory('Auto Loan');
+          ensureCategory('Transportation');
+
+          // 2. Remove old "Auto & Transport" or "Transport & Uber" from list
+          const oldAutoIndex = loadedCats.indexOf('Auto & Transport');
+          if (oldAutoIndex !== -1) loadedCats.splice(oldAutoIndex, 1);
+
+          const oldTransportIndex = loadedCats.indexOf('Transport & Uber');
+          if (oldTransportIndex !== -1) loadedCats.splice(oldTransportIndex, 1);
+
+          // 3. Rename "Automotive" -> "Auto Loan" if present
+          const automotiveIndex = loadedCats.indexOf('Automotive');
+          if (automotiveIndex !== -1) {
+            loadedCats[automotiveIndex] = 'Auto Loan';
+          }
+
+          // 4. Deduplicate (fix for potential "Auto Loan" double entry)
+          loadedCats = Array.from(new Set(loadedCats));
         }
         setUserCategories(loadedCats);
       } catch (e) {
@@ -109,6 +152,43 @@ function HomeContent() {
     }
   }, [searchParams]);
 
+  // Migration Effect: Smartly Split 'Auto & Transport' -> 'Automotive' vs 'Transportation'
+  useEffect(() => {
+    if (!isLoaded || subscriptions.length === 0) return;
+
+    // Subscription Migration: "Auto & Transport" or "Transport & Uber" -> "Auto Loan" / "Transportation"
+    // Also rename any existing "Automotive" subs -> "Auto Loan"
+    let subsChanged = false;
+    const newSubs = subscriptions.map((sub: Subscription) => {
+      if (sub.category === 'Automotive') {
+        subsChanged = true;
+        return { ...sub, category: 'Auto Loan', isEssential: true };
+      }
+      if (sub.category === 'Auto & Transport' || sub.category === 'Transport & Uber') {
+        subsChanged = true;
+        const name = sub.name.toLowerCase();
+        // Essential keywords: loan, lease, insurance, finance, car payment, toyota, honda, ford, etc...
+        // It's safer to check for explicit "Transportation" keywords (uber, lyft, train, bus)
+        // But let's stick to the user's request:
+        // "Automotive" (now Auto Loan) for fixed stuff.
+
+        const isFixedAuto = name.includes('insurance') || name.includes('loan') || name.includes('lease') || name.includes('payment') || name.includes('car');
+
+        if (isFixedAuto) {
+          return { ...sub, category: 'Auto Loan', isEssential: true };
+        } else {
+          return { ...sub, category: 'Transportation', isEssential: false };
+        }
+      }
+      return sub;
+    });
+
+    if (subsChanged) {
+      setSubscriptions(newSubs);
+      showToast('Split "Auto" into "Auto Loan" & "Transportation"', 'success');
+    }
+  }, [isLoaded, subscriptions.length]);
+
   // Save to localStorage (Debounced for performance)
   useEffect(() => {
     if (!isLoaded) return;
@@ -124,6 +204,10 @@ function HomeContent() {
 
   const monthlyTotal = useMemo(() => {
     return subscriptions.reduce((sum, sub) => {
+      // Finance View Mode Logic:
+      // If in 'focus' mode, skip 'Essential' items (Rent, Loans, etc.)
+      if (financeViewMode === 'focus' && sub.isEssential) return sum;
+
       // Check if trial expired
       const isTrialExpired = sub.isTrial && sub.trialEndDate
         ? getDaysRemaining(sub.trialEndDate) < 0
@@ -141,13 +225,42 @@ function HomeContent() {
 
       return sum + calculateMonthlyPrice(currentPrice, sub.billingCycle);
     }, 0);
-  }, [subscriptions]);
+  }, [subscriptions, financeViewMode]);
+
+  const variableTotal = useMemo(() => {
+    return subscriptions.reduce((sum, sub) => {
+      if (!sub.isVariable) return sum;
+
+      // Finance View Mode Logic
+      if (financeViewMode === 'focus' && sub.isEssential) return sum;
+
+      // Check if trial expired
+      const isTrialExpired = sub.isTrial && sub.trialEndDate
+        ? getDaysRemaining(sub.trialEndDate) < 0
+        : false;
+
+      // Use regular price if trial expired, otherwise use current price
+      const currentPrice = isTrialExpired
+        ? (sub.regularPrice || sub.price)
+        : sub.price;
+
+      // If it's a one-time trial payment and trial is active, don't add to recurring monthly total
+      if (sub.isTrial && sub.isOneTimePayment && !isTrialExpired) {
+        return sum;
+      }
+
+      return sum + calculateMonthlyPrice(currentPrice, sub.billingCycle);
+    }, 0);
+  }, [subscriptions, financeViewMode]);
 
   const sortedSubscriptions = useMemo(() => {
     let result = [...subscriptions];
-    if (filterCategory !== 'All') {
-      result = result.filter(sub => sub.category === filterCategory);
+
+    // Multi-Select Filter Logic
+    if (!filterCategory.includes('All')) {
+      result = result.filter(sub => filterCategory.includes(sub.category));
     }
+
     return result.sort((a, b) => {
       switch (sortBy) {
         case 'price-desc': return b.price - a.price;
@@ -162,21 +275,55 @@ function HomeContent() {
     });
   }, [subscriptions, sortBy, filterCategory]);
 
+  // Calculate total for the filtered list
+  const filteredListTotal = useMemo(() => {
+    return sortedSubscriptions.reduce((sum, sub) => {
+      // Logic for list total should simpler, or match the View Mode? 
+      // User said "spend by category... also sync it with subs only and total life" earlier.
+      // But for this specific "selected categories total", let's assume monthly normalized cost.
+      return sum + calculateMonthlyPrice(sub.price, sub.billingCycle);
+    }, 0);
+  }, [sortedSubscriptions]);
+
   const categorySpending = useMemo(() => {
     const spending: Record<string, number> = {};
     subscriptions.forEach(sub => {
-      // Use split price if applicable
-      const actualPrice = sub.isSplit && sub.splitWith
-        ? sub.price / sub.splitWith
+      // Finance View Mode Logic:
+      // If in 'focus' mode, skip 'Essential' items (Rent, Loans, etc.)
+      if (financeViewMode === 'focus' && sub.isEssential) return;
+
+      // Check if trial expired and handle price accordingly (matching monthlyTotal logic)
+      const isTrialExpired = sub.isTrial && sub.trialEndDate
+        ? getDaysRemaining(sub.trialEndDate) < 0
+        : false;
+
+      // If it's a one-time trial payment and trial is active, don't include
+      if (sub.isTrial && sub.isOneTimePayment && !isTrialExpired) {
+        return;
+      }
+
+      const currentPrice = isTrialExpired
+        ? (sub.regularPrice || sub.price)
         : sub.price;
 
-      const monthlyPrice = calculateMonthlyPrice(actualPrice, sub.billingCycle);
-      spending[sub.category] = (spending[sub.category] || 0) + monthlyPrice;
+      // Use split price if applicable
+      const actualPrice = sub.isSplit && sub.splitWith
+        ? currentPrice / sub.splitWith
+        : currentPrice;
+
+      let price = calculateMonthlyPrice(actualPrice, sub.billingCycle);
+
+      // Adjust for View Mode
+      if (viewMode === 'yearly') {
+        price *= 12;
+      }
+
+      spending[sub.category] = (spending[sub.category] || 0) + price;
     });
     return Object.entries(spending)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
-  }, [subscriptions]);
+  }, [subscriptions, financeViewMode, viewMode]);
 
   const isPaidThisCycle = (sub: Subscription) => {
     if (!sub.lastPaidDate) return false;
@@ -213,8 +360,8 @@ function HomeContent() {
       });
   }, [subscriptions]);
 
-  const markAsPaid = (id: string) => {
-    const today = formatLocalDate(new Date());
+  const markAsPaid = (id: string, amount?: number, date?: Date) => {
+    const today = formatLocalDate(date || new Date());
     setSubscriptions(prev => prev.map(sub => {
       if (sub.id !== id) return sub;
       const [year, month, day] = sub.renewalDate.split('-').map(Number);
@@ -227,13 +374,42 @@ function HomeContent() {
       else if (sub.billingCycle === 'quarterly') nextDate.setMonth(nextDate.getMonth() + 3);
       else if (sub.billingCycle === 'yearly') nextDate.setFullYear(nextDate.getFullYear() + 1);
 
-      return {
+      // Create new payment record if amount is provided
+      const newPaymentHistory = amount ? [
+        ...(sub.paymentHistory || []),
+        { date: today, amount }
+      ] : sub.paymentHistory;
+
+      const updatedSub = {
         ...sub,
         renewalDate: formatLocalDate(nextDate),
         lastPaidDate: today,
-        hasEverBeenPaid: true
+        hasEverBeenPaid: true,
+        paymentHistory: newPaymentHistory
       };
+
+      // Smart Update: Auto-adjust estimated price for variable bills based on last 3 payments
+      if (sub.isVariable && amount && newPaymentHistory) {
+        // Since history is append-only, just take the last 3 entries
+        const recentAmounts = newPaymentHistory.slice(-3).map(p => p.amount);
+
+        if (recentAmounts.length > 0) {
+          const avg = recentAmounts.reduce((sum, val) => sum + val, 0) / recentAmounts.length;
+          updatedSub.price = parseFloat(avg.toFixed(2)); // Round to 2 decimals
+        }
+      }
+
+      return updatedSub;
     }));
+  };
+
+  const handlePaymentConfirm = (amount: number, date: Date) => {
+    if (activePaymentSub) {
+      markAsPaid(activePaymentSub.id, amount, date);
+      setShowPaymentModal(false);
+      setActivePaymentSub(null);
+      showToast(`Payment of $${amount.toFixed(2)} recorded!`, 'success');
+    }
   };
 
   const unmarkAsPaid = (id: string) => {
@@ -494,10 +670,22 @@ function HomeContent() {
         {/* HERO SECTION */}
         <StatsOverview
           monthlyTotal={monthlyTotal}
+          variableTotal={variableTotal}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
+          financeViewMode={financeViewMode}
+          onFinanceViewModeChange={setFinanceViewMode}
           onOpenSettings={() => setShowSettingsModal(true)}
           onStartAudit={() => setShowWizard(true)}
+        />
+
+        {/* Payment Modal */}
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          onConfirm={handlePaymentConfirm}
+          subscriptionName={activePaymentSub?.name || ''}
+          estimatedAmount={activePaymentSub?.price}
         />
 
         {/* HOUSEHOLD PULSE (Timeline) */}
@@ -567,7 +755,15 @@ function HomeContent() {
                         </span>
                         {!isPaid && (
                           <button
-                            onClick={(e) => { e.stopPropagation(); markAsPaid(sub.id); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (sub.isVariable) {
+                                setActivePaymentSub(sub);
+                                setShowPaymentModal(true);
+                              } else {
+                                markAsPaid(sub.id);
+                              }
+                            }}
                             className="p-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/20 rounded-lg transition-colors border border-transparent hover:border-emerald-500/30 shadow-lg"
                             aria-label={`Mark ${sub.name} as paid`}
                           >
@@ -656,7 +852,9 @@ function HomeContent() {
                       <span className="text-xl font-bold text-white">
                         ${categorySpending.reduce((s, c) => s + c.value, 0).toFixed(0)}
                       </span>
-                      <span className="text-[9px] text-slate-600">/mo</span>
+                      <span className="text-[9px] text-slate-600">
+                        {viewMode === 'monthly' ? '/mo' : '/yr'}
+                      </span>
                     </div>
                   </div>
 
@@ -682,7 +880,7 @@ function HomeContent() {
 
           <div className="relative group">
             <GhostMeter
-              subscriptions={subscriptions}
+              subscriptions={financeViewMode === 'focus' ? subscriptions.filter(s => !s.isEssential) : subscriptions}
             />
             {!isPro && (
               <div className="absolute inset-0 top-12 backdrop-blur-[6px] bg-slate-900/20 z-20 flex items-center justify-center rounded-b-2xl">
@@ -705,46 +903,32 @@ function HomeContent() {
             <div className="space-y-1 shrink-0">
               <h2 className="text-3xl font-bold text-white flex items-center gap-3">
                 <Wallet className="w-8 h-8 text-indigo-400" />
-                All Subscriptions
-                <span className="bg-indigo-500/10 text-indigo-400 text-xs font-black px-2.5 py-1 rounded-full border border-indigo-500/20 ml-2">
-                  {subscriptions.length}
+                <span>
+                  {!filterCategory.includes('All') ? 'Selected' : 'All'} Subscriptions
                 </span>
+
+                {/* Count Badge */}
+                <span className="bg-indigo-500/10 text-indigo-400 text-xs font-black px-2.5 py-1 rounded-full border border-indigo-500/20">
+                  {sortedSubscriptions.length}
+                </span>
+
+                {/* Filtered Total Display (Only show if filtering) */}
+                {!filterCategory.includes('All') && (
+                  <div className="flex items-center gap-2 ml-2 animate-in fade-in zoom-in duration-300">
+                    <div className="h-6 w-px bg-slate-800 mx-2"></div>
+                    <span className="text-sm font-medium text-slate-400">Total:</span>
+                    <span className="text-xl font-bold text-emerald-400">
+                      ${filteredListTotal.toFixed(2)}<span className="text-xs text-emerald-500/70 font-normal ml-0.5">/mo</span>
+                    </span>
+                  </div>
+                )}
               </h2>
               <p className="text-slate-500 text-sm ml-11 font-medium">Manage and optimize your digital life</p>
             </div>
 
             {/* Filter/Sort Controls Overlay */}
             <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center min-w-0">
-              {/* Category Filter Pills */}
-              <div className="w-full sm:flex-1 min-w-0 flex gap-1.5 p-1.5 bg-slate-900/40 backdrop-blur-md rounded-2xl border border-slate-800/50 overflow-x-auto custom-scrollbar">
-                <button
-                  onClick={() => setFilterCategory('All')}
-                  className={cn(
-                    "px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap",
-                    filterCategory === 'All'
-                      ? "bg-white text-black shadow-lg shadow-white/10"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                  )}
-                  aria-label="Show all subscriptions"
-                >
-                  All
-                </button>
-                {userCategories.map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setFilterCategory(cat)}
-                    className={cn(
-                      "px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap",
-                      filterCategory === cat
-                        ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20"
-                        : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                    )}
-                    aria-label={`Filter by ${cat}`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
+
 
               {/* Action Bar (Sort & View) */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -844,6 +1028,53 @@ function HomeContent() {
             </div>
           </div>
 
+          {/* Row 2: Full Width Filters */}
+          <div className="w-full">
+            <div className="w-full flex gap-2 overflow-x-auto pb-4 custom-scrollbar">
+              <button
+                onClick={() => setFilterCategory(['All'])}
+                className={cn(
+                  "px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0",
+                  filterCategory.includes('All')
+                    ? "bg-white text-black shadow-lg shadow-white/10"
+                    : "bg-slate-900/40 border border-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-800/50"
+                )}
+                aria-label="Show all subscriptions"
+              >
+                All
+              </button>
+              {userCategories.map(cat => {
+                const isSelected = filterCategory.includes(cat);
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                      if (filterCategory.includes('All')) {
+                        setFilterCategory([cat]);
+                      } else {
+                        if (isSelected) {
+                          const newFilters = filterCategory.filter(c => c !== cat);
+                          setFilterCategory(newFilters.length === 0 ? ['All'] : newFilters);
+                        } else {
+                          setFilterCategory([...filterCategory, cat]);
+                        }
+                      }
+                    }}
+                    className={cn(
+                      "px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 border",
+                      isSelected
+                        ? "bg-indigo-500 border-indigo-400 text-white shadow-lg shadow-indigo-500/20"
+                        : "bg-slate-900/40 border-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-800/50"
+                    )}
+                    aria-label={`Filter by ${cat}`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
 
 
           {/* The Content (List or Calendar) */}
@@ -852,14 +1083,22 @@ function HomeContent() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 <AnimatePresence>
                   {sortedSubscriptions.map((sub) => (
-                    <SubscriptionCard
-                      key={sub.id}
-                      subscription={sub}
-                      viewMode={viewMode}
-                      onEdit={(s) => { setEditingId(s.id); setShowAddModal(true); }}
-                      onDelete={(id) => setDeleteId(id)}
-                      onMarkPaid={markAsPaid}
-                    />
+                    <div key={sub.id} className={cn(
+                      "transition-all duration-300",
+                      sub.isEssential && financeViewMode === 'focus' ? "opacity-40 grayscale hover:opacity-100 hover:grayscale-0" : "opacity-100"
+                    )}>
+                      <SubscriptionCard
+                        subscription={sub}
+                        viewMode={viewMode}
+                        onEdit={(s) => { setEditingId(s.id); setShowAddModal(true); }}
+                        onDelete={(id) => setDeleteId(id)}
+                        onMarkPaid={markAsPaid}
+                        onOpenPaymentModal={(sub) => {
+                          setActivePaymentSub(sub);
+                          setShowPaymentModal(true);
+                        }}
+                      />
+                    </div>
                   ))}
                 </AnimatePresence>
 
@@ -901,8 +1140,14 @@ function HomeContent() {
         initialData={editingId ? subscriptions.find(s => s.id === editingId) : null}
         userCategories={userCategories}
         isPro={isPro}
+        onDeleteCategory={(cat) => {
+          // Instant Delete: No confirmation pop-up
+          setUserCategories(prev => prev.filter(c => c !== cat));
+          // Auto-update any subscription using this deleted category to 'Other'
+          setSubscriptions(prev => prev.map(s => s.category === cat ? { ...s, category: 'Other' } : s));
+          showToast(`Category "${cat}" deleted`, 'success');
+        }}
       />
-
 
       <SettingsModal
         isOpen={showSettingsModal}
@@ -946,10 +1191,10 @@ function HomeContent() {
                 <div className="space-y-2">
                   <h2 className="text-2xl font-bold text-white">Delete Category?</h2>
                   <div className="text-slate-400 text-sm space-y-2">
-                    <p>Are you sure you want to delete <span className="text-white font-semibold">"{categoryToDelete}"</span>?</p>
+                    <p>Are you sure you want to delete <span className="text-white font-semibold">&quot;{categoryToDelete}&quot;</span>?</p>
                     <p className="p-3 bg-red-500/5 rounded-xl border border-red-500/10 text-[11px] leading-relaxed">
                       <span className="text-red-400 font-bold uppercase block mb-1">Impact</span>
-                      All subscriptions using this category will be moved to <span className="text-white font-bold">"Other"</span>.
+                      All subscriptions using this category will be moved to <span className="text-white font-bold">&quot;Other&quot;</span>.
                     </p>
                   </div>
                 </div>
@@ -985,7 +1230,7 @@ function HomeContent() {
                 <div className="space-y-2">
                   <h2 className="text-2xl font-bold text-white">Delete Service?</h2>
                   <p className="text-slate-400 text-sm">
-                    Are you sure you want to remove <span className="text-white font-semibold">"{subscriptions.find(s => s.id === deleteId)?.name}"</span>?
+                    Are you sure you want to remove <span className="text-white font-semibold">&quot;{subscriptions.find(s => s.id === deleteId)?.name}&quot;</span>?
                     <br />
                     {subscriptions.find(s => s.id === deleteId)?.hasEverBeenPaid && <span className="text-emerald-400 font-bold block mt-1">Found savings! 💰</span>}
                   </p>
@@ -1071,7 +1316,7 @@ function HomeContent() {
         isPro={isPro}
         onUnlockPro={() => setShowLicenseModal(true)}
       />
-    </main>
+    </main >
   );
 }
 

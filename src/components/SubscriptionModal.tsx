@@ -15,6 +15,7 @@ interface SubscriptionModalProps {
     initialData?: Subscription | null;
     userCategories?: string[];
     isPro?: boolean;
+    onDeleteCategory?: (category: string) => void;
 }
 
 export function SubscriptionModal({
@@ -23,7 +24,8 @@ export function SubscriptionModal({
     onSave,
     initialData,
     userCategories = DEFAULT_CATEGORIES,
-    isPro = false
+    isPro = false,
+    onDeleteCategory
 }: SubscriptionModalProps) {
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
@@ -44,6 +46,12 @@ export function SubscriptionModal({
     const [isSplit, setIsSplit] = useState(false);
     const [splitWith, setSplitWith] = useState(2);
     const [splitInput, setSplitInput] = useState('2');
+
+    // Variable / Utility Logic
+    const [isVariable, setIsVariable] = useState(false);
+
+    // Essential / Fixed Bill Logic
+    const [isEssential, setIsEssential] = useState(false);
 
     // Validation errors
     const [errors, setErrors] = useState<{
@@ -85,6 +93,8 @@ export function SubscriptionModal({
             setIsSplit(initialData.isSplit || false);
             setSplitWith(initialData.splitWith || 2);
             setSplitInput(initialData.splitWith?.toString() || '2');
+            setIsVariable(initialData.isVariable || false);
+            setIsEssential(initialData.isEssential || false);
             setIsAddingCustom(false);
         } else {
             // Reset defaults
@@ -100,6 +110,10 @@ export function SubscriptionModal({
             setIsSplit(false);
             setSplitWith(2);
             setSplitInput('2');
+            setSplitWith(2);
+            setSplitInput('2');
+            setIsVariable(false);
+            setIsEssential(false);
             setIsAddingCustom(false);
 
             setErrors({});
@@ -173,6 +187,8 @@ export function SubscriptionModal({
 
             isSplit: isSplit || undefined,
             splitWith: isSplit ? splitWith : undefined,
+            isVariable: isVariable || undefined,
+            isEssential
         });
         onClose();
     };
@@ -235,6 +251,33 @@ export function SubscriptionModal({
                                     )}
                                 </div>
 
+                                {/* Essential / Fixed Bill Toggle */}
+                                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                                    <div className="space-y-0.5">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-bold text-white">Mark as Essential / Fixed Bill</span>
+                                            <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded-full uppercase tracking-wider font-bold">New</span>
+                                        </div>
+                                        <p className="text-[10px] text-slate-500 max-w-[200px] leading-tight">
+                                            Exclude from "Focus Mode" totals (e.g. Rent, Car Loan). Great for fixed obligations.
+                                        </p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsEssential(!isEssential)}
+                                        className={cn(
+                                            "w-10 h-6 rounded-full relative transition-colors duration-200",
+                                            isEssential ? "bg-emerald-500" : "bg-slate-700"
+                                        )}
+                                    >
+                                        <motion.div
+                                            initial={false}
+                                            animate={{ x: isEssential ? 18 : 2 }}
+                                            className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm"
+                                        />
+                                    </button>
+                                </div>
+
                                 {/* Price & Cycle */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
@@ -263,6 +306,18 @@ export function SubscriptionModal({
                                                 <span>⚠</span> {errors.price}
                                             </p>
                                         )}
+                                        <div className="flex items-center gap-2 mt-2">
+                                            <input
+                                                type="checkbox"
+                                                id="isVariable"
+                                                checked={isVariable}
+                                                onChange={(e) => setIsVariable(e.target.checked)}
+                                                className="w-3.5 h-3.5 rounded border-slate-700 text-indigo-500 focus:ring-indigo-500 bg-slate-800"
+                                            />
+                                            <label htmlFor="isVariable" className="text-[10px] text-slate-400 select-none cursor-pointer">
+                                                Variable / Utility Amount?
+                                            </label>
+                                        </div>
                                     </div>
 
                                     <div className="space-y-2">
@@ -290,19 +345,52 @@ export function SubscriptionModal({
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Category</label>
                                     <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto custom-scrollbar pr-1">
                                         {userCategories.map((cat) => (
-                                            <button
-                                                key={cat}
-                                                type="button"
-                                                onClick={() => { setCategory(cat); setIsAddingCustom(false); }}
-                                                className={cn(
-                                                    "px-3 py-2 rounded-lg text-xs font-bold border transition-all text-left",
-                                                    category === cat && !isAddingCustom
-                                                        ? "bg-indigo-600/20 border-indigo-500 text-indigo-300"
-                                                        : "bg-slate-900 border-slate-800 text-slate-500 hover:border-slate-600"
+                                            <div key={cat} className="group/cat relative">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setCategory(cat);
+                                                        setIsAddingCustom(false);
+
+                                                        // Smart Feature: Auto-mark specific categories as Essential
+                                                        const ESSENTIAL_CATEGORIES = [
+                                                            'Housing & Rent',
+                                                            'Utility Bills',
+                                                            'Auto Loan', // Fixed bills (Loans, Insurance)
+                                                            'Finance & Insurance',
+                                                            'Loans & Debt'
+                                                        ];
+
+                                                        if (ESSENTIAL_CATEGORIES.includes(cat)) {
+                                                            setIsEssential(true);
+                                                        } else {
+                                                            setIsEssential(false);
+                                                        }
+                                                    }}
+                                                    className={cn(
+                                                        "w-full px-3 py-2 rounded-lg text-xs font-bold border transition-all text-left",
+                                                        category === cat && !isAddingCustom
+                                                            ? "bg-indigo-600/20 border-indigo-500 text-indigo-300"
+                                                            : "bg-slate-900 border-slate-800 text-slate-500 hover:border-slate-600"
+                                                    )}
+                                                >
+                                                    {cat}
+                                                </button>
+                                                {/* Allow deleting ONLY custom categories (not defaults) */}
+                                                {!DEFAULT_CATEGORIES.includes(cat) && onDeleteCategory && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onDeleteCategory(cat);
+                                                            if (category === cat) setCategory('Other');
+                                                        }}
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-600 hover:text-red-400 opacity-0 group-hover/cat:opacity-100 transition-all z-10"
+                                                    >
+                                                        <X className="w-3 h-3" />
+                                                    </button>
                                                 )}
-                                            >
-                                                {cat}
-                                            </button>
+                                            </div>
                                         ))}
                                         <button
                                             type="button"
