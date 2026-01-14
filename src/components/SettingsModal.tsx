@@ -1,4 +1,4 @@
-import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar } from 'lucide-react';
+import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar, BookOpen } from 'lucide-react';
 import { useRef, ChangeEvent } from 'react';
 import { cn } from '../lib/utils';
 
@@ -12,9 +12,10 @@ interface SettingsModalProps {
     onImport: (e: ChangeEvent<HTMLInputElement>) => void;
     isPro: boolean;
     onActivatePro: () => void;
+    onOpenGuide: () => void;
 }
 
-export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExportCSV, onExportICS, onImport, isPro, onActivatePro }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExportCSV, onExportICS, onImport, isPro, onActivatePro, onOpenGuide }: SettingsModalProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     if (!isOpen) return null;
@@ -171,6 +172,24 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
 
                     <div className="flex flex-col space-y-2 pt-4 border-t border-slate-800">
                         <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Preferences</h3>
+
+                        <button
+                            onClick={() => {
+                                onClose();
+                                onOpenGuide();
+                            }}
+                            className="flex items-center justify-between w-full p-4 bg-slate-800/40 border border-slate-700/50 rounded-xl hover:bg-slate-800 transition-all group"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
+                                    <BookOpen className="w-5 h-5" />
+                                </div>
+                                <div className="text-left">
+                                    <span className="text-sm font-bold text-white block">User Manual</span>
+                                    <span className="text-[10px] text-slate-500 font-medium">Learn how to use features</span>
+                                </div>
+                            </div>
+                        </button>
 
                         {/* Category Manager (Pro only) */}
                         <div className="p-4 bg-slate-800/50 border border-slate-700/50 rounded-xl flex items-center justify-between opacity-50 grayscale cursor-not-allowed">

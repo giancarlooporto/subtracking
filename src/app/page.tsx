@@ -400,7 +400,7 @@ export default function LandingPage() {
 
                                 <ul className="space-y-4 pt-10">
                                     {[
-                                        "Up to 10 Subscriptions",
+                                        "Unlimited Subscriptions",
                                         "Billing Pulse Timeline",
                                         "Data Export (.json)",
                                         "Renewal Alerts",

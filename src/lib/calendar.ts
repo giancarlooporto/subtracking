@@ -20,15 +20,21 @@ const createEventBlock = (sub: Subscription, isTrial: boolean) => {
     if (!dateStr) return '';
 
     const [y, m, d] = dateStr.split('-').map(Number);
-    const eventDate = new Date(y, m - 1, d, 12, 0, 0); // Noon
+    let eventDate = new Date(y, m - 1, d, 12, 0, 0); // Noon
+
+    // If it's a trial, schedule the event 1 DAY BEFORE the actual end date
+    // This ensures the effective notification happens in time to cancel.
+    if (isTrial) {
+        eventDate.setDate(eventDate.getDate() - 1);
+    }
 
     const start = formatDate(eventDate);
     const end = formatDate(new Date(eventDate.getTime() + 60 * 60 * 1000)); // 1 hour
 
-    const summary = isTrial ? `🚨 Trial Ending: ${sub.name}` : `💳 Bill Due: ${sub.name}`;
+    const summary = isTrial ? `🚨 Trial Ends TOMORROW: ${sub.name}` : `💳 Bill Due: ${sub.name}`;
     const priceStr = (isTrial ? (sub.regularPrice || sub.price) : sub.price).toFixed(2);
     const description = isTrial
-        ? `Your trial for ${sub.name} ends soon. It will renew at $${priceStr}.`
+        ? `Last chance! Your trial for ${sub.name} ends tomorrow (${dateStr}). Cancel now to avoid the $${priceStr} charge.`
         : `Payment of $${priceStr} due for ${sub.name}.`;
 
     const rrule = !isTrial ? `RRULE:${getRRULE(sub.billingCycle)}` : '';
@@ -45,9 +51,9 @@ const createEventBlock = (sub: Subscription, isTrial: boolean) => {
 
     block.push(
         'BEGIN:VALERT',
-        'TRIGGER:-P1D', // 1 day before
+        'TRIGGER:-PT15M', // Alert 15 mins before this event (which is already 1 day early)
         'ACTION:DISPLAY',
-        `DESCRIPTION:${summary} Reminder`,
+        `DESCRIPTION:${summary}`,
         'END:VALERT',
         'END:VEVENT'
     );

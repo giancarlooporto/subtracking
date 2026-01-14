@@ -28,6 +28,7 @@ const SubTrackingWizard = dynamic(() => import('../../components/SubTrackingWiza
 const GhostMeter = dynamic(() => import('../../components/GhostMeter').then(mod => mod.GhostMeter), { ssr: false });
 const WelcomeModal = dynamic(() => import('../../components/WelcomeModal').then(mod => mod.WelcomeModal), { ssr: false });
 const LicenseModal = dynamic(() => import('../../components/LicenseModal').then(mod => mod.LicenseModal), { ssr: false });
+const UserGuideModal = dynamic(() => import('../../components/UserGuideModal').then(mod => mod.UserGuideModal), { ssr: false });
 
 function HomeContent() {
   const { showToast } = useToast();
@@ -47,6 +48,7 @@ function HomeContent() {
   const [showFactoryResetConfirm, setShowFactoryResetConfirm] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showUserGuide, setShowUserGuide] = useState(false);
 
   // Payment Modal State
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -522,12 +524,7 @@ function HomeContent() {
 
 
   const handleSaveSubscription = (data: Omit<Subscription, 'id' | 'lastPaidDate' | 'hasEverBeenPaid'>) => {
-    // Check Limits for Free Users
-    if (!isPro && !editingId && subscriptions.length >= 10) {
-      setShowLicenseModal(true);
-      showToast('Free limit reached (10). Unlock Pro for unlimited tracking!', 'error');
-      return;
-    }
+
 
     // Add custom category if needed (PRO ONLY FEATURE)
     if (isPro && !userCategories.includes(data.category)) {
@@ -1390,25 +1387,28 @@ function HomeContent() {
         }}
       />
 
+      <LicenseModal
+        isOpen={showLicenseModal}
+        onClose={() => setShowLicenseModal(false)}
+        onSuccess={handleProSuccess}
+      />
+
+      <UserGuideModal
+        isOpen={showUserGuide}
+        onClose={() => setShowUserGuide(false)}
+      />
+
       <SettingsModal
         isOpen={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
         onFactoryReset={() => setShowFactoryResetConfirm(true)}
         onExport={exportData}
         onExportCSV={exportCSV}
-        onExportICS={() => {
-          generateBulkICSFile(subscriptions);
-          showToast('Calendar Sync File Exported! Open it in your Calendar app.', 'success');
-        }}
+        onExportICS={() => generateBulkICSFile(subscriptions)}
         onImport={importData}
         isPro={isPro}
         onActivatePro={() => setShowLicenseModal(true)}
-      />
-
-      <LicenseModal
-        isOpen={showLicenseModal}
-        onClose={() => setShowLicenseModal(false)}
-        onSuccess={handleProSuccess}
+        onOpenGuide={() => setShowUserGuide(true)}
       />
 
       <SubTrackingWizard
