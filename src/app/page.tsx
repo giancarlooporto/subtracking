@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock, MousePointer2, X, Play, Globe, HardDrive, ShieldAlert, Menu, Layers } from 'lucide-react';
+import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock, MousePointer2, X, Play, Globe, HardDrive, ShieldAlert, Menu, Layers, Users, Download, FileSpreadsheet, CalendarRange } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 import { VideoModal } from '../components/VideoModal';
@@ -195,71 +195,107 @@ export default function LandingPage() {
                         <p className="text-slate-500 font-medium">Built for speed, privacy, and results.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {/* Feature 1 */}
-                        <div className="glass-panel p-8 rounded-3xl space-y-6 border border-white/5 hover:border-indigo-500/20 transition-all group">
-                            <div className="bg-indigo-500/10 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Ghost className="w-7 h-7 text-indigo-400" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {/* Feature 1 - Ghost Meter */}
+                        <div className="glass-panel p-6 rounded-3xl space-y-4 border border-white/5 hover:border-indigo-500/20 transition-all group">
+                            <div className="bg-indigo-500/10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Ghost className="w-6 h-6 text-indigo-400" />
                             </div>
-                            <div className="space-y-3">
-                                <h3 className="text-xl font-bold">The Ghost Meter</h3>
+                            <div className="space-y-2">
+                                <h3 className="text-lg font-bold">The Ghost Meter</h3>
                                 <p className="text-slate-400 text-sm leading-relaxed">
-                                    Visualize the "Lost Wealth" over 10 years. Small monthly leaks add up to life-changing money.
+                                    Visualize "Lost Wealth" over 10 years. See how small monthly leaks can compound into massive losses.
                                 </p>
                             </div>
                         </div>
 
-                        {/* Feature 2 */}
-                        <div className="glass-panel p-8 rounded-3xl space-y-6 border border-white/5 hover:border-emerald-500/20 transition-all group">
-                            <div className="bg-emerald-500/10 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Shield className="w-7 h-7 text-emerald-400" />
+                        {/* Feature 2 - Calendar Command Center (New) */}
+                        <div className="glass-panel p-6 rounded-3xl space-y-4 border border-white/5 hover:border-sky-500/20 transition-all group">
+                            <div className="bg-sky-500/10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <CalendarRange className="w-6 h-6 text-sky-400" />
                             </div>
-                            <div className="space-y-3">
-                                <h3 className="text-xl font-bold">Privacy-First Audit</h3>
+                            <div className="space-y-2">
+                                <h3 className="text-lg font-bold">Calendar Command</h3>
                                 <p className="text-slate-400 text-sm leading-relaxed">
-                                    No Plaid. No Yodlee. No bank connections. Your data stays in your browser's local storage.
+                                    A visual timeline of your payments. See exactly when renewals hit so you're never caught off guard.
                                 </p>
                             </div>
                         </div>
 
-                        {/* Feature 3 */}
-                        <div className="glass-panel p-8 rounded-3xl space-y-6 border border-white/5 hover:border-purple-500/20 transition-all group">
-                            <div className="bg-purple-500/10 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <MousePointer2 className="w-7 h-7 text-purple-400" />
+                        {/* Feature 3 - Split Details (New) */}
+                        <div className="glass-panel p-6 rounded-3xl space-y-4 border border-white/5 hover:border-pink-500/20 transition-all group">
+                            <div className="bg-pink-500/10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Users className="w-6 h-6 text-pink-400" />
                             </div>
-                            <div className="space-y-3">
-                                <h3 className="text-xl font-bold">Keep or Toss Wizard</h3>
+                            <div className="space-y-2">
+                                <h3 className="text-lg font-bold">Smart Splits</h3>
                                 <p className="text-slate-400 text-sm leading-relaxed">
-                                    A Tinder-style interface to quickly audit your services. Flick through and save hundreds in seconds.
+                                    Share Netflix with a roommate? Track only your portion of the bill with built-in split logic.
                                 </p>
                             </div>
                         </div>
 
-                        {/* Feature 4 */}
-                        <div className="glass-panel p-8 rounded-3xl space-y-6 border border-white/5 hover:border-indigo-500/20 transition-all group">
-                            <div className="bg-indigo-500/10 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform relative">
-                                <ShieldAlert className="w-7 h-7 text-indigo-400" />
-                                <div className="absolute -top-1 -right-1">
-                                    <Zap className="w-4 h-4 text-indigo-400 fill-indigo-400" />
-                                </div>
+                        {/* Feature 4 - Export & Sync (New) */}
+                        <div className="glass-panel p-6 rounded-3xl space-y-4 border border-white/5 hover:border-teal-500/20 transition-all group">
+                            <div className="bg-teal-500/10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Download className="w-6 h-6 text-teal-400" />
                             </div>
-                            <div className="space-y-3">
-                                <h3 className="text-xl font-bold">Trial Shield</h3>
+                            <div className="space-y-2">
+                                <h3 className="text-lg font-bold">Export & Sync</h3>
                                 <p className="text-slate-400 text-sm leading-relaxed">
-                                    Set alerts for "Free Trials" or "Intro Pricing." Never get caught by a surprise $99 charge again.
+                                    Your data is yours. Export to CSV for Excel/Numbers or sync renewals directly to your Calendar.
                                 </p>
                             </div>
                         </div>
 
-                        {/* Feature 5 - New Finance Mode */}
-                        <div className="glass-panel p-8 rounded-3xl space-y-6 border border-white/5 hover:border-emerald-500/20 transition-all group">
-                            <div className="bg-emerald-500/10 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform relative">
-                                <Layers className="w-7 h-7 text-emerald-400" />
+                        {/* Feature 5 - Privacy */}
+                        <div className="glass-panel p-6 rounded-3xl space-y-4 border border-white/5 hover:border-emerald-500/20 transition-all group">
+                            <div className="bg-emerald-500/10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Shield className="w-6 h-6 text-emerald-400" />
                             </div>
-                            <div className="space-y-3">
-                                <h3 className="text-xl font-bold">Finance Focus Mode</h3>
+                            <div className="space-y-2">
+                                <h3 className="text-lg font-bold">Privacy-First Audit</h3>
                                 <p className="text-slate-400 text-sm leading-relaxed">
-                                    Toggle between "Discretionary Spending" and "Total Life Overview". Track fixed bills like Rent separately.
+                                    No Plaid. No bank connections. Your financial data stays 100% local on your device.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Feature 6 - Wizard */}
+                        <div className="glass-panel p-6 rounded-3xl space-y-4 border border-white/5 hover:border-purple-500/20 transition-all group">
+                            <div className="bg-purple-500/10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <MousePointer2 className="w-6 h-6 text-purple-400" />
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-lg font-bold">Keep or Toss</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    A fast, Tinder-style interface to quickly audit your services. Flick through and save in seconds.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Feature 7 - Trial Shield */}
+                        <div className="glass-panel p-6 rounded-3xl space-y-4 border border-white/5 hover:border-amber-500/20 transition-all group">
+                            <div className="bg-amber-500/10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform relative">
+                                <ShieldAlert className="w-6 h-6 text-amber-400" />
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-lg font-bold">Trial Shield</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    Set alerts for "Free Trials" or "Intro Pricing." Never get caught by a surprise auto-renewal again.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Feature 8 - Finance Focus Mode */}
+                        <div className="glass-panel p-6 rounded-3xl space-y-4 border border-white/5 hover:border-indigo-500/20 transition-all group">
+                            <div className="bg-indigo-500/10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform relative">
+                                <Layers className="w-6 h-6 text-indigo-400" />
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-lg font-bold">Finance Focus</h3>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    Toggle between "Discretionary Spending" and "Total Life Overview". Track fixed bills separately.
                                 </p>
                             </div>
                         </div>
