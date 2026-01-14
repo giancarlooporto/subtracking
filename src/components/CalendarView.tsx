@@ -17,7 +17,7 @@ interface CalendarViewProps {
 export function CalendarView({ subscriptions, isPro, onUnlockPro, onEdit, onDelete, onMarkPaid }: CalendarViewProps) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-
+    const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
 
     // Calendar logic
     const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
@@ -172,6 +172,8 @@ export function CalendarView({ subscriptions, isPro, onUnlockPro, onEdit, onDele
                                         onEdit={onEdit}
                                         onDelete={onDelete}
                                         onMarkPaid={onMarkPaid}
+                                        isMenuOpen={activeMenuId === sub.id}
+                                        onToggleMenu={() => setActiveMenuId(activeMenuId === sub.id ? null : sub.id)}
                                     />
                                 ))
                             ) : (

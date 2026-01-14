@@ -1,4 +1,5 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useRef, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, MoreVertical, Edit3, Trash2, Check, ExternalLink, ShieldAlert, Calendar } from 'lucide-react';
 import { generateICSFile } from '../lib/calendar';
@@ -12,10 +13,11 @@ interface SubscriptionCardProps {
     onDelete: (id: string, e: React.MouseEvent) => void;
     onMarkPaid?: (id: string, amount?: number, date?: Date) => void;
     onOpenPaymentModal?: (sub: Subscription) => void;
+    isMenuOpen: boolean;
+    onToggleMenu: () => void;
 }
 
-export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEdit, onDelete, onMarkPaid, onOpenPaymentModal }: SubscriptionCardProps) => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEdit, onDelete, onMarkPaid, onOpenPaymentModal, isMenuOpen, onToggleMenu }: SubscriptionCardProps) => {
 
     const nextRenewal = getNextOccurrence(subscription.renewalDate, subscription.billingCycle);
     const days = getDaysRemaining(nextRenewal);
@@ -50,239 +52,272 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
     const monthlyPrice = calculateMonthlyPrice(actualPrice, subscription.billingCycle);
     const displayPrice = viewMode === 'monthly' ? monthlyPrice : monthlyPrice * 12;
 
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    const [menuStyle, setMenuStyle] = useState<{ top: number; right: number } | null>(null);
+
+    // Calculate menu position when opening
+    useLayoutEffect(() => {
+        if (isMenuOpen && buttonRef.current) {
+            const rect = buttonRef.current.getBoundingClientRect();
+            const scrollY = window.scrollY;
+            setMenuStyle({
+                top: rect.bottom + scrollY + 8, // 8px spacing
+                right: window.innerWidth - rect.right
+            });
+        }
+    }, [isMenuOpen]);
+
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.2 }}
-            whileHover={{ y: -2, transition: { duration: 0.2 } }}
-            className={cn(
-                "glass-card relative rounded-2xl transition-all duration-300 group mb-4",
-                isMenuOpen ? "z-30 shadow-2xl" : "z-10",
-                isUrgent ? "shadow-red-500/10 border-red-500/20" : "hover:border-white/10 hover:shadow-indigo-500/10"
-            )}
-        >
-            {/* Clipped Decorative Background */}
-            <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
-                <div
-                    className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-500/10 transition-colors duration-500"
-                />
-                {/* Progress/Usage Bar Placeholder (Visual Only for now) */}
-                <div className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 w-0 group-hover:w-full transition-all duration-700 ease-out opacity-50" />
-            </div>
-
-            <div className="relative p-5 pr-14 flex items-center justify-between z-10">
-                <div className="flex items-center space-x-4">
-                    {/* Icon Box */}
+        <>
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                className={cn(
+                    "glass-card relative rounded-2xl transition-all duration-300 group mb-4",
+                    isMenuOpen ? "z-50 shadow-2xl" : "z-10",
+                    isUrgent ? "shadow-red-500/10 border-red-500/20" : "hover:border-white/10 hover:shadow-indigo-500/10"
+                )}
+            >
+                {/* Clipped Decorative Background */}
+                <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
                     <div
-                        className={cn(
-                            "w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold shadow-lg transition-transform duration-300 group-hover:scale-110",
-                            "border border-white/5"
-                        )}
-                        style={{
-                            backgroundColor: `${getCategoryColorHex(subscription.category)}20`,
-                            color: getCategoryColorHex(subscription.category)
-                        }}
-                    >
-                        {getCategoryIcon(subscription.category)}
-                    </div>
+                        className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-500/10 transition-colors duration-500"
+                    />
+                    {/* Progress/Usage Bar Placeholder (Visual Only for now) */}
+                    <div className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 w-0 group-hover:w-full transition-all duration-700 ease-out opacity-50" />
+                </div>
 
-                    <div>
-                        <h3 className="font-bold text-white text-lg leading-tight group-hover:text-indigo-200 transition-colors">
-                            {subscription.name}
-                        </h3>
+                <div className="relative p-5 pr-14 flex items-center justify-between z-10">
+                    <div className="flex items-center space-x-4">
+                        {/* Icon Box */}
+                        <div
+                            className={cn(
+                                "w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold shadow-lg transition-transform duration-300 group-hover:scale-110",
+                                "border border-white/5"
+                            )}
+                            style={{
+                                backgroundColor: `${getCategoryColorHex(subscription.category)}20`,
+                                color: getCategoryColorHex(subscription.category)
+                            }}
+                        >
+                            {getCategoryIcon(subscription.category)}
+                        </div>
 
-                        <div className="flex items-center flex-wrap gap-2 text-xs text-slate-400 mt-1.5">
-                            <span className="px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700/50 backdrop-blur-sm">
-                                {subscription.category}
-                            </span>
-                            {subscription.isTrial && (
-                                <>
-                                    <span className={cn(
-                                        "px-2 py-0.5 rounded-full font-bold flex items-center gap-1",
-                                        isTrialExpired
-                                            ? "bg-slate-500/10 border border-slate-500/20 text-slate-500"
-                                            : "bg-indigo-500/10 border border-indigo-500/20 text-indigo-400"
-                                    )}>
-                                        <ShieldAlert className="w-3 h-3" />
-                                        {isTrialExpired ? 'Expired' : 'Trial'}
-                                    </span>
-                                    {!isTrialExpired && trialDaysLeft !== null && (
+                        <div>
+                            <h3 className="font-bold text-white text-lg leading-tight group-hover:text-indigo-200 transition-colors">
+                                {subscription.name}
+                            </h3>
+
+                            <div className="flex items-center flex-wrap gap-2 text-xs text-slate-400 mt-1.5">
+                                <span className="px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700/50 backdrop-blur-sm">
+                                    {subscription.category}
+                                </span>
+                                {subscription.isTrial && (
+                                    <>
                                         <span className={cn(
                                             "px-2 py-0.5 rounded-full font-bold flex items-center gap-1",
-                                            trialDaysLeft >= 4 ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400" :
-                                                trialDaysLeft >= 2 ? "bg-yellow-500/10 border border-yellow-500/20 text-yellow-400" :
-                                                    "bg-red-500/10 border border-red-500/20 text-red-400 animate-pulse"
+                                            isTrialExpired
+                                                ? "bg-slate-500/10 border border-slate-500/20 text-slate-500"
+                                                : "bg-indigo-500/10 border border-indigo-500/20 text-indigo-400"
                                         )}>
-                                            🕐 {trialDaysLeft} day{trialDaysLeft !== 1 ? 's' : ''} left
+                                            <ShieldAlert className="w-3 h-3" />
+                                            {isTrialExpired ? 'Expired' : 'Trial'}
                                         </span>
-                                    )}
-                                </>
-                            )}
-                            <span className="text-slate-600">•</span>
-                            <span className="capitalize">{subscription.billingCycle} billing</span>
-                            <span className="text-slate-600">•</span>
-                            <span className="text-slate-300 font-medium">{formattedDate}</span>
+                                        {!isTrialExpired && trialDaysLeft !== null && (
+                                            <span className={cn(
+                                                "px-2 py-0.5 rounded-full font-bold flex items-center gap-1",
+                                                trialDaysLeft >= 4 ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400" :
+                                                    trialDaysLeft >= 2 ? "bg-yellow-500/10 border border-yellow-500/20 text-yellow-400" :
+                                                        "bg-red-500/10 border border-red-500/20 text-red-400 animate-pulse"
+                                            )}>
+                                                🕐 {trialDaysLeft} day{trialDaysLeft !== 1 ? 's' : ''} left
+                                            </span>
+                                        )}
+                                    </>
+                                )}
+                                <span className="text-slate-600">•</span>
+                                <span className="capitalize">{subscription.billingCycle} billing</span>
+                                <span className="text-slate-600">•</span>
+                                <span className="text-slate-300 font-medium">{formattedDate}</span>
 
-                            {subscription.isSplit && subscription.splitWith && (
-                                <>
-                                    <span className="text-slate-600">•</span>
-                                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold flex items-center gap-1">
-                                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                        Split {subscription.splitWith}
-                                    </span>
-                                </>
-                            )}
+                                {subscription.isSplit && subscription.splitWith && (
+                                    <>
+                                        <span className="text-slate-600">•</span>
+                                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold flex items-center gap-1">
+                                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                            Split {subscription.splitWith}
+                                        </span>
+                                    </>
+                                )}
 
-                            {(isUrgent || isDueSoon || isExpired) && (
-                                <>
-                                    <span className="text-slate-600">•</span>
-                                    <span className={cn(
-                                        "flex items-center font-bold px-1.5 py-0.5 rounded-md",
-                                        isUrgent || isExpired ? "bg-red-500/10 text-red-400 animate-pulse" : "bg-amber-500/10 text-amber-400"
-                                    )}>
-                                        <AlertCircle className="w-3 h-3 mr-1" />
-                                        {days === 0 ? 'Today' : isExpired ? 'Overdue' : `${days} days`}
-                                    </span>
-                                </>
+                                {(isUrgent || isDueSoon || isExpired) && (
+                                    <>
+                                        <span className="text-slate-600">•</span>
+                                        <span className={cn(
+                                            "flex items-center font-bold px-1.5 py-0.5 rounded-md",
+                                            isUrgent || isExpired ? "bg-red-500/10 text-red-400 animate-pulse" : "bg-amber-500/10 text-amber-400"
+                                        )}>
+                                            <AlertCircle className="w-3 h-3 mr-1" />
+                                            {days === 0 ? 'Today' : isExpired ? 'Overdue' : `${days} days`}
+                                        </span>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                            <div className="text-xl font-black text-white tracking-tight flex items-baseline justify-end gap-0.5">
+                                {subscription.isVariable && <span className="text-lg text-slate-500 font-medium mr-0.5" title="Estimated">~</span>}
+                                <span className="text-base text-slate-500 font-medium">$</span>
+                                {displayPrice.toFixed(2)}
+                            </div>
+                            <div className="text-indigo-400 text-[10px] font-bold uppercase tracking-widest leading-none mt-1 opacity-80">
+                                {subscription.isTrial && subscription.isOneTimePayment && !isTrialExpired
+                                    ? 'total'
+                                    : viewMode === 'monthly' ? '/ mo' : '/ yr'}
+                            </div>
+                            {subscription.isTrial && subscription.regularPrice !== undefined && !isTrialExpired && (
+                                <div className="text-[9px] text-slate-500 mt-1.5 font-bold uppercase tracking-tighter bg-slate-800/50 px-1.5 py-0.5 rounded border border-slate-700/50">
+                                    ➔ ${subscription.regularPrice.toFixed(2)} soon
+                                </div>
                             )}
+                            {isTrialExpired && subscription.regularPrice !== undefined && (
+                                <div className="text-[9px] text-emerald-400 mt-1.5 font-bold uppercase tracking-tighter bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                                    Now active
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Menu Trigger */}
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 z-20">
+                            <button
+                                ref={buttonRef}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onToggleMenu();
+                                }}
+                                className={cn(
+                                    "p-2 rounded-lg transition-colors outline-none",
+                                    isMenuOpen ? "bg-slate-800 text-white" : "text-slate-500 hover:bg-slate-800 hover:text-white"
+                                )}
+                                aria-label="Options"
+                            >
+                                <MoreVertical className="w-5 h-5" />
+                            </button>
                         </div>
                     </div>
                 </div>
+            </motion.div>
 
-                <div className="flex items-center space-x-4">
-                    <div className="text-right">
-                        <div className="text-xl font-black text-white tracking-tight flex items-baseline justify-end gap-0.5">
-                            {subscription.isVariable && <span className="text-lg text-slate-500 font-medium mr-0.5" title="Estimated">~</span>}
-                            <span className="text-base text-slate-500 font-medium">$</span>
-                            {displayPrice.toFixed(2)}
-                        </div>
-                        <div className="text-indigo-400 text-[10px] font-bold uppercase tracking-widest leading-none mt-1 opacity-80">
-                            {subscription.isTrial && subscription.isOneTimePayment && !isTrialExpired
-                                ? 'total'
-                                : viewMode === 'monthly' ? '/ mo' : '/ yr'}
-                        </div>
-                        {subscription.isTrial && subscription.regularPrice !== undefined && !isTrialExpired && (
-                            <div className="text-[9px] text-slate-500 mt-1.5 font-bold uppercase tracking-tighter bg-slate-800/50 px-1.5 py-0.5 rounded border border-slate-700/50">
-                                ➔ ${subscription.regularPrice.toFixed(2)} soon
-                            </div>
-                        )}
-                        {isTrialExpired && subscription.regularPrice !== undefined && (
-                            <div className="text-[9px] text-emerald-400 mt-1.5 font-bold uppercase tracking-tighter bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
-                                Now active
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Menu */}
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 z-20">
-                        <button
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className={cn(
-                                "p-2 rounded-lg transition-colors outline-none",
-                                isMenuOpen ? "bg-slate-800 text-white" : "text-slate-500 hover:bg-slate-800 hover:text-white"
-                            )}
-                            aria-label="Options"
-                        >
-                            <MoreVertical className="w-5 h-5" />
-                        </button>
-
-                        <AnimatePresence>
-                            {isMenuOpen && (
-                                <>
-                                    {/* Backdrop to close menu when clicking outside */}
-                                    <div
-                                        className="fixed inset-0 z-40"
-                                        onClick={() => setIsMenuOpen(false)}
-                                    />
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                                        className="absolute right-0 top-full mt-2 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
+            {/* Portal Menu */}
+            {typeof document !== 'undefined' && createPortal(
+                <AnimatePresence>
+                    {isMenuOpen && menuStyle && (
+                        <>
+                            {/* Backdrop for click-outside */}
+                            <div
+                                className="fixed inset-0 z-[9998]"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onToggleMenu();
+                                }}
+                            />
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                style={{
+                                    position: 'absolute',
+                                    top: menuStyle.top,
+                                    right: menuStyle.right,
+                                }}
+                                className="w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-[9999] overflow-hidden backdrop-blur-xl"
+                            >
+                                <div className="py-1">
+                                    <button
+                                        onClick={() => {
+                                            generateICSFile(subscription, 'renewal');
+                                            onToggleMenu();
+                                        }}
+                                        className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-indigo-400 hover:text-indigo-300 text-sm font-bold"
                                     >
-                                        <div className="py-1">
-                                            <button
-                                                onClick={() => {
-                                                    generateICSFile(subscription, 'renewal');
-                                                    setIsMenuOpen(false);
-                                                }}
-                                                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-indigo-400 hover:text-indigo-300 text-sm font-bold"
-                                            >
-                                                <Calendar className="w-4 h-4" />
-                                                <span>Sync to Calendar</span>
-                                            </button>
+                                        <Calendar className="w-4 h-4" />
+                                        <span>Sync Renewal</span>
+                                    </button>
 
-                                            {subscription.isTrial && subscription.trialEndDate && (
-                                                <button
-                                                    onClick={() => {
-                                                        generateICSFile(subscription, 'trial');
-                                                        setIsMenuOpen(false);
-                                                    }}
-                                                    className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-amber-400 hover:text-amber-300 text-sm font-bold border-t border-slate-800/50"
-                                                >
-                                                    <ShieldAlert className="w-4 h-4" />
-                                                    <span>Sync Trial Alert</span>
-                                                </button>
-                                            )}
+                                    {subscription.isTrial && subscription.trialEndDate && (
+                                        <button
+                                            onClick={() => {
+                                                generateICSFile(subscription, 'trial');
+                                                onToggleMenu();
+                                            }}
+                                            className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-amber-400 hover:text-amber-300 text-sm font-bold border-t border-slate-800/50"
+                                        >
+                                            <ShieldAlert className="w-4 h-4" />
+                                            <span>Sync Trial Alert</span>
+                                        </button>
+                                    )}
 
-                                            <button
-                                                onClick={() => {
-                                                    onEdit(subscription);
-                                                    setIsMenuOpen(false);
-                                                }}
-                                                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-slate-300 hover:text-indigo-300 text-sm"
-                                                aria-label={`Edit ${subscription.name}`}
-                                            >
-                                                <Edit3 className="w-4 h-4" />
-                                                <span>Edit Details</span>
-                                            </button>
+                                    <button
+                                        onClick={() => {
+                                            onEdit(subscription);
+                                            onToggleMenu();
+                                        }}
+                                        className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-slate-300 hover:text-indigo-300 text-sm"
+                                        aria-label={`Edit ${subscription.name}`}
+                                    >
+                                        <Edit3 className="w-4 h-4" />
+                                        <span>Edit Details</span>
+                                    </button>
 
-                                            {onMarkPaid && (
-                                                <button
-                                                    onClick={() => {
-                                                        if (subscription.isVariable && onOpenPaymentModal) {
-                                                            onOpenPaymentModal(subscription);
-                                                        } else {
-                                                            onMarkPaid(subscription.id);
-                                                        }
-                                                        setIsMenuOpen(false);
-                                                    }}
-                                                    className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-slate-300 hover:text-emerald-300 text-sm"
-                                                    aria-label={`Mark ${subscription.name} as paid`}
-                                                >
-                                                    <Check className="w-4 h-4" />
-                                                    <span>Mark Paid</span>
-                                                </button>
-                                            )}
+                                    {onMarkPaid && (
+                                        <button
+                                            onClick={() => {
+                                                if (subscription.isVariable && onOpenPaymentModal) {
+                                                    onOpenPaymentModal(subscription);
+                                                } else {
+                                                    onMarkPaid(subscription.id);
+                                                }
+                                                onToggleMenu();
+                                            }}
+                                            className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-slate-800 transition-colors text-slate-300 hover:text-emerald-300 text-sm"
+                                            aria-label={`Mark ${subscription.name} as paid`}
+                                        >
+                                            <Check className="w-4 h-4" />
+                                            <span>Mark Paid</span>
+                                        </button>
+                                    )}
 
-                                            <div className="h-px bg-slate-800 my-1" />
+                                    <div className="h-px bg-slate-800 my-1" />
 
-                                            <button
-                                                onClick={(e) => {
-                                                    onDelete(subscription.id, e);
-                                                    setIsMenuOpen(false);
-                                                }}
-                                                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-red-500/10 transition-colors text-red-400 hover:text-red-300 text-sm"
-                                                aria-label={`Delete ${subscription.name}`}
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                                <span>Delete Subscription</span>
-                                            </button>
-                                        </div>
-                                    </motion.div>
-                                </>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
-            </div>
-
-        </motion.div>
+                                    <button
+                                        onClick={(e) => {
+                                            onDelete(subscription.id, e);
+                                            onToggleMenu();
+                                        }}
+                                        className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-red-500/10 transition-colors text-red-400 hover:text-red-300 text-sm"
+                                        aria-label={`Delete ${subscription.name}`}
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                        <span>Delete Subscription</span>
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
+        </>
     );
+
 });
 
 SubscriptionCard.displayName = 'SubscriptionCard';

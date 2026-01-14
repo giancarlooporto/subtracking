@@ -64,7 +64,69 @@ function HomeContent() {
   const [showUrgentBanner, setShowUrgentBanner] = useState(true);
   const [dashboardView, setDashboardView] = useState<'list' | 'calendar'>('list');
   const [isHeaderCompact, setIsHeaderCompact] = useState(false);
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const stickyHeaderRef = React.useRef<HTMLDivElement>(null);
+  const lastScrollY = React.useRef(0);
+  const isHeaderSticky = React.useRef(false);
+
+  // Scroll-based header collapse for mobile
+  useEffect(() => {
+    const header = stickyHeaderRef.current;
+    if (!header) return;
+
+    // Check if we're on mobile (viewport width < 640px which is Tailwind's sm breakpoint)
+    const checkMobile = () => window.innerWidth < 640;
+
+    const handleScroll = () => {
+      if (!checkMobile()) {
+        // On desktop, always show full header
+        setIsHeaderCompact(false);
+        return;
+      }
+
+      const currentScrollY = window.scrollY;
+      const headerRect = header.getBoundingClientRect();
+
+      // Header is considered "sticky" when its top is at 0 (or very close)
+      const headerIsAtTop = headerRect.top <= 1;
+      isHeaderSticky.current = headerIsAtTop;
+
+      if (headerIsAtTop) {
+        // Scrolling down = collapse, scrolling up = expand
+        const scrollingDown = currentScrollY > lastScrollY.current;
+        const scrollDelta = Math.abs(currentScrollY - lastScrollY.current);
+
+        // Only trigger if scroll delta is significant (reduces jitter)
+        if (scrollDelta > 5) {
+          if (scrollingDown) {
+            setIsHeaderCompact(true);
+          } else {
+            setIsHeaderCompact(false);
+          }
+        }
+      } else {
+        // Header not sticky yet, ensure it's expanded
+        setIsHeaderCompact(false);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    // Also handle resize to reset state when switching to desktop
+    const handleResize = () => {
+      if (!checkMobile()) {
+        setIsHeaderCompact(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -946,7 +1008,7 @@ function HomeContent() {
               isHeaderCompact ? "p-3 sm:p-6" : "p-4 sm:p-6"
             )}
             style={{
-              background: 'rgba(15, 23, 42, 0.88)',
+              background: 'rgba(15, 23, 42, 0.96)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)'
             }}
@@ -1274,6 +1336,8 @@ function HomeContent() {
                           setActivePaymentSub(sub);
                           setShowPaymentModal(true);
                         }}
+                        isMenuOpen={activeMenuId === sub.id}
+                        onToggleMenu={() => setActiveMenuId(activeMenuId === sub.id ? null : sub.id)}
                       />
                     </div>
                   ))}
