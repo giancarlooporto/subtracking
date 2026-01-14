@@ -21,7 +21,7 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-sm w-full space-y-8 animate-in zoom-in-95 duration-300 shadow-2xl">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-sm w-full space-y-6 sm:space-y-8 animate-in zoom-in-95 duration-300 shadow-2xl max-h-[85vh] overflow-y-auto">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                         <div className="p-2 rounded-xl bg-slate-800 text-slate-400">

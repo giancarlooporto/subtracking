@@ -1414,7 +1414,7 @@ function HomeContent() {
       <SubTrackingWizard
         isOpen={showWizard}
         onClose={() => setShowWizard(false)}
-        subscriptions={subscriptions}
+        subscriptions={subscriptions.filter(s => !s.isEssential && s.category !== 'Utility Bills')}
         onFinish={handleAuditFinish}
       />
 
