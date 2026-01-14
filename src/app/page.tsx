@@ -438,7 +438,6 @@ export default function LandingPage() {
 
                                 <ul className="space-y-4 pt-10">
                                     {[
-                                        "Unlimited Subscriptions",
                                         "Ghost Meter Pro (10Y Projections)",
                                         "Calendar Command Center",
                                         "Trial Shield (Calendar Alerts)",
