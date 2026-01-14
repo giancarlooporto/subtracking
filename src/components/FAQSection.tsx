@@ -36,7 +36,7 @@ const faqs = [
             },
             {
                 q: "Why should I pay $19 for PRO when I could use a spreadsheet?",
-                a: "A spreadsheet is a list; SubTracking is a system. You're paying for the Ghost Meter (10-year projections), the Audit Wizard (psychological auditing), and Calendar Bridge integration. Most users find that SubTracking pays for itself in the first 5 minutes by identifying one forgotten \"leak\" that a spreadsheet would have missed."
+                a: "A spreadsheet is a list; SubTracking is a system. Spreadsheets don't calculate your 10-year \"Ghost Cost\" automatically. They don't have a psychological \"Audit Wizard\" to force tough decisions. And they definitely don't create calendar alerts 24 hours before your free trial expires. SubTracking PRO is automated financial defense—most users save more than the $19 fee in their first 10 minutes."
             },
             {
                 q: "Can I use my PRO license on multiple devices?",
