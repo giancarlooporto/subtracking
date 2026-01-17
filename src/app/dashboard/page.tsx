@@ -269,6 +269,9 @@ function HomeContent() {
         categories: userCategories
       });
 
+      // Refresh allProfiles state to trigger alert recalculation
+      setAllProfiles(getProfiles());
+
       // 2. Also update the Legacy Key for backup/redundancy (Optional, but good for safety)
       localStorage.setItem('subtracking-data', JSON.stringify(subscriptions));
       localStorage.setItem('subtracking-categories', JSON.stringify(userCategories));
@@ -442,7 +445,8 @@ function HomeContent() {
 
   // Cross-Profile Alerts (Check other profiles for urgent bills)
   const crossProfileAlerts = useMemo(() => {
-    if (!allProfiles || allProfiles.length <= 1) return [];
+    if (!allProfiles || allProfiles.length === 0) return [];
+
 
     const alerts: Array<{ profileId: string; profileName: string; subName: string; days: number; isOverdue: boolean }> = [];
     const today = new Date();
