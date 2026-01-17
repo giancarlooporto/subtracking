@@ -991,25 +991,31 @@ function HomeContent() {
           const isUrgent = alert.days <= 1 || alert.isOverdue;
 
           return (
-            <div className={cn(
-              "border-b text-white animate-in slide-in-from-top duration-500 relative z-[60]",
-              isUrgent
-                ? "bg-gradient-to-r from-red-600/90 to-red-500/90 border-red-500/30"
-                : "bg-gradient-to-r from-amber-500/90 to-yellow-500/90 border-amber-500/30"
-            )}>
-              <div className="max-w-7xl mx-auto px-4 sm:px-8 py-2.5 flex items-center justify-between gap-4">
+            <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-full max-w-xl px-4 animate-in slide-in-from-top-4 fade-in duration-500">
+              <div className={cn(
+                "p-3 pr-4 rounded-xl flex items-center justify-between shadow-2xl backdrop-blur-md border",
+                isUrgent
+                  ? "bg-red-500/20 border-red-500/30 shadow-red-500/10 text-red-100"
+                  : "bg-amber-500/20 border-amber-500/30 shadow-amber-500/10 text-amber-100"
+              )}>
                 <div className="flex items-center gap-3 overflow-hidden">
-                  <div className="bg-white/20 p-1.5 rounded-full shrink-0">
-                    <AlertCircle className="w-4 h-4 text-white animate-pulse" />
+                  <div className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                    isUrgent ? "bg-red-500/20" : "bg-amber-500/20"
+                  )}>
+                    <AlertCircle className={cn(
+                      "w-4 h-4",
+                      isUrgent ? "text-red-400" : "text-amber-400 animate-pulse"
+                    )} />
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-2 truncate">
                     <span className="font-bold text-sm truncate">
                       {alert.subName}
-                      <span className="font-normal opacity-90"> is due </span>
+                      <span className="font-normal opacity-70"> is due </span>
                       {alert.isOverdue ? 'NOW' : `in ${alert.days} days`}
                     </span>
-                    <span className="text-xs bg-black/20 px-2 py-0.5 rounded-full font-medium truncate">
-                      in "{alert.profileName}"
+                    <span className="text-[10px] uppercase font-bold tracking-wider opacity-60 truncate mt-0.5 sm:mt-0">
+                      {alert.profileName}
                     </span>
                   </div>
                 </div>
@@ -1018,9 +1024,9 @@ function HomeContent() {
                   onClick={() => {
                     setDismissedAlerts(prev => [...prev, `${alert.profileId}-${alert.subName}`]);
                   }}
-                  className="p-1 hover:bg-white/20 rounded-full transition-colors shrink-0"
+                  className="p-1.5 hover:bg-white/10 rounded-full transition-colors shrink-0 ml-3"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4 opacity-70 hover:opacity-100" />
                 </button>
               </div>
             </div>
@@ -1028,22 +1034,7 @@ function HomeContent() {
         })()
       )}
 
-      {/* 1. Urgent Renovals Banner */}
-      {urgentSubscriptions.length > 0 && showUrgentBanner && (
-        <div className="bg-red-500/10 border-b border-red-500/20 animate-in slide-in-from-top duration-500 backdrop-blur-md relative z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <AlertCircle className="w-5 h-5 text-red-500 animate-pulse" />
-              <p className="text-sm font-medium text-red-200">
-                <span className="font-bold text-white">{urgentSubscriptions.length} services</span> renewing within 48 hours.
-              </p>
-            </div>
-            <button onClick={() => setShowUrgentBanner(false)} className="text-red-400 hover:text-white transition-colors">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
+
 
       <div className="max-w-7xl mx-auto p-4 sm:p-8 space-y-8 relative z-10">
 
@@ -1076,6 +1067,59 @@ function HomeContent() {
             <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-400 transition-colors" />
           </button>
         </div>
+
+        {/* Cross-Profile Alert Cards (Yellow Kind Style) */}
+        {crossProfileAlerts.length > 0 && (
+          <div className="space-y-2 mb-6">
+            {crossProfileAlerts.filter(a => !dismissedAlerts.includes(`${a.profileId}-${a.subName}`)).map((alert, idx) => {
+              // Logic: Light Red if <= 1 day or Overdue, Light Yellow if 2-3 days
+              const isUrgent = alert.days <= 1 || alert.isOverdue;
+
+              return (
+                <div
+                  key={`${alert.profileId}-${alert.subName}-${idx}`}
+                  className={cn(
+                    "p-3 rounded-xl flex items-center justify-between shadow-lg border backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-500",
+                    isUrgent
+                      ? "bg-red-500/10 border-red-500/20 shadow-red-500/5 text-red-200"
+                      : "bg-amber-500/10 border-amber-500/20 shadow-amber-500/5 text-amber-200"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                      isUrgent ? "bg-red-500/20" : "bg-amber-500/20"
+                    )}>
+                      <AlertCircle className={cn(
+                        "w-4 h-4",
+                        isUrgent ? "text-red-400" : "text-amber-400"
+                      )} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold leading-none">
+                        {alert.subName} is {alert.isOverdue ? 'Overdue!' : `due in ${alert.days} days`}
+                      </p>
+                      <p className={cn("text-[10px] uppercase tracking-wider font-bold opacity-60 mt-0.5", isUrgent ? "text-red-400" : "text-amber-400")}>
+                        In "{alert.profileName}" Profile
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setDismissedAlerts(prev => [...prev, `${alert.profileId}-${alert.subName}`])}
+                    className={cn(
+                      "p-1.5 rounded-full transition-colors hover:bg-white/10 opacity-70 hover:opacity-100",
+                      isUrgent ? "text-red-200" : "text-amber-200"
+                    )}
+                    aria-label="Dismiss alert"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* HERO SECTION */}
 
