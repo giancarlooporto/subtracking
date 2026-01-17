@@ -980,59 +980,6 @@ function HomeContent() {
     <main className="min-h-screen bg-aurora text-slate-100 font-[family-name:var(--font-geist-sans)] relative" style={{ overflowX: 'clip' }}>
       <InstallBanner />
 
-      {/* Cross-Profile Alert Banner (Highest Priority) */}
-      {/* Cross-Profile Alert Banner (Highest Priority) */}
-      {crossProfileAlerts.length > 0 && crossProfileAlerts.some(a => !dismissedAlerts.includes(`${a.profileId}-${a.subName}`)) && (
-        (() => {
-          // Get the highest priority alert
-          const activeAlerts = crossProfileAlerts.filter(a => !dismissedAlerts.includes(`${a.profileId}-${a.subName}`));
-          const alert = activeAlerts[0];
-          // Logic: Light Red if <= 1 day or Overdue, Yellow if 2-3 days
-          const isUrgent = alert.days <= 1 || alert.isOverdue;
-
-          return (
-            <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-full max-w-xl px-4 animate-in slide-in-from-top-4 fade-in duration-500">
-              <div className={cn(
-                "p-3 pr-4 rounded-xl flex items-center justify-between shadow-2xl backdrop-blur-md border",
-                isUrgent
-                  ? "bg-red-500/20 border-red-500/30 shadow-red-500/10 text-red-100"
-                  : "bg-amber-500/20 border-amber-500/30 shadow-amber-500/10 text-amber-100"
-              )}>
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <div className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                    isUrgent ? "bg-red-500/20" : "bg-amber-500/20"
-                  )}>
-                    <AlertCircle className={cn(
-                      "w-4 h-4",
-                      isUrgent ? "text-red-400" : "text-amber-400 animate-pulse"
-                    )} />
-                  </div>
-                  <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-2 truncate">
-                    <span className="font-bold text-sm truncate">
-                      {alert.subName}
-                      <span className="font-normal opacity-70"> is due </span>
-                      {alert.isOverdue ? 'NOW' : `in ${alert.days} days`}
-                    </span>
-                    <span className="text-[10px] uppercase font-bold tracking-wider opacity-60 truncate mt-0.5 sm:mt-0">
-                      {alert.profileName}
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => {
-                    setDismissedAlerts(prev => [...prev, `${alert.profileId}-${alert.subName}`]);
-                  }}
-                  className="p-1.5 hover:bg-white/10 rounded-full transition-colors shrink-0 ml-3"
-                >
-                  <X className="w-4 h-4 opacity-70 hover:opacity-100" />
-                </button>
-              </div>
-            </div>
-          );
-        })()
-      )}
 
 
 
