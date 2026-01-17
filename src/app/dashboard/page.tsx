@@ -218,7 +218,7 @@ function HomeContent() {
   // Save dismissed alerts to localStorage
   useEffect(() => {
     localStorage.setItem('dismissedCrossProfileAlerts', JSON.stringify(dismissedAlerts));
-  }, []);
+  }, [dismissedAlerts]);
 
   // Migration Effect: Smartly Split 'Auto & Transport' -> 'Automotive' vs 'Transportation'
   useEffect(() => {
