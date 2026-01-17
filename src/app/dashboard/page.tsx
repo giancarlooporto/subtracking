@@ -980,6 +980,39 @@ function HomeContent() {
     <main className="min-h-screen bg-aurora text-slate-100 font-[family-name:var(--font-geist-sans)] relative" style={{ overflowX: 'clip' }}>
       <InstallBanner />
 
+      {/* Cross-Profile Alert Banner (Highest Priority) */}
+      {crossProfileAlerts.length > 0 && crossProfileAlerts.some(a => !dismissedAlerts.includes(`${a.profileId}-${a.subName}`)) && (
+        <div className="bg-gradient-to-r from-red-600/90 to-amber-600/90 border-b border-red-500/30 text-white animate-in slide-in-from-top duration-500 relative z-[60]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-8 py-2.5 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 overflow-hidden">
+              <div className="bg-white/20 p-1.5 rounded-full shrink-0">
+                <AlertCircle className="w-4 h-4 text-white animate-pulse" />
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-2 truncate">
+                <span className="font-bold text-sm truncate">
+                  {crossProfileAlerts.filter(a => !dismissedAlerts.includes(`${a.profileId}-${a.subName}`))[0].subName}
+                  <span className="font-normal opacity-90"> is due </span>
+                  {crossProfileAlerts.filter(a => !dismissedAlerts.includes(`${a.profileId}-${a.subName}`))[0].isOverdue ? 'NOW' : `in ${crossProfileAlerts.filter(a => !dismissedAlerts.includes(`${a.profileId}-${a.subName}`))[0].days} days`}
+                </span>
+                <span className="text-xs bg-black/20 px-2 py-0.5 rounded-full font-medium truncate">
+                  in "{crossProfileAlerts.filter(a => !dismissedAlerts.includes(`${a.profileId}-${a.subName}`))[0].profileName}"
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                const alert = crossProfileAlerts.filter(a => !dismissedAlerts.includes(`${a.profileId}-${a.subName}`))[0];
+                setDismissedAlerts(prev => [...prev, `${alert.profileId}-${alert.subName}`]);
+              }}
+              className="p-1 hover:bg-white/20 rounded-full transition-colors shrink-0"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 1. Urgent Renovals Banner */}
       {urgentSubscriptions.length > 0 && showUrgentBanner && (
         <div className="bg-red-500/10 border-b border-red-500/20 animate-in slide-in-from-top duration-500 backdrop-blur-md relative z-50">
