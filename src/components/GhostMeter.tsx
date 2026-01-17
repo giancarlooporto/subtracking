@@ -9,6 +9,7 @@ interface GhostMeterProps {
 }
 
 export const GhostMeter = memo(({ subscriptions }: GhostMeterProps) => {
+    const symbol = '$';
     const metrics = useMemo(() => {
         const monthlyTotal = subscriptions.reduce((sum, sub) => {
             const rawPrice = sub.regularPrice || sub.price;
@@ -25,9 +26,15 @@ export const GhostMeter = memo(({ subscriptions }: GhostMeterProps) => {
 
     if (!metrics.hasSubs) {
         return (
-            <div className="glass-panel rounded-2xl p-6 h-[380px] flex flex-col items-center justify-center text-slate-500 space-y-4 text-center">
-                <Ghost className="w-12 h-12 opacity-20" />
-                <p className="text-xs font-medium max-w-[150px]">Add subscriptions to see your future "Ghost Costs"</p>
+            <div className="glass-panel rounded-2xl p-6 h-[380px] flex flex-col text-slate-500 text-center relative overflow-hidden">
+                <div className="flex items-center space-x-2 text-purple-400 mb-2 z-10 text-left w-full absolute top-6 left-6">
+                    <Ghost className="w-5 h-5" />
+                    <h3 className="font-bold text-white">Ghost Meter</h3>
+                </div>
+                <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+                    <Ghost className="w-12 h-12 opacity-20" />
+                    <p className="text-xs font-medium max-w-[150px]">Add subscriptions to see your future "Ghost Costs"</p>
+                </div>
             </div>
         );
     }
@@ -47,7 +54,7 @@ export const GhostMeter = memo(({ subscriptions }: GhostMeterProps) => {
                     </p>
                     <div className="flex items-baseline gap-2">
                         <span className="text-4xl font-black text-white tracking-tighter">
-                            ${metrics.tenYear.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                            {symbol}{metrics.tenYear.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </span>
                         <span className="text-purple-400/80 text-xs font-bold">Lost Wealth</span>
                     </div>
@@ -57,13 +64,13 @@ export const GhostMeter = memo(({ subscriptions }: GhostMeterProps) => {
                     <div className="p-3 bg-slate-800/40 rounded-xl border border-slate-700/30 space-y-1">
                         <div className="text-[9px] font-bold text-slate-500 uppercase">5-Year Burn</div>
                         <div className="text-lg font-bold text-slate-200">
-                            ${metrics.fiveYear.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                            {symbol}{metrics.fiveYear.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </div>
                     </div>
                     <div className="p-3 bg-slate-800/40 rounded-xl border border-slate-700/30 space-y-1">
                         <div className="text-[9px] font-bold text-slate-500 uppercase">Monthly Tap</div>
                         <div className="text-lg font-bold text-slate-200">
-                            ${metrics.monthly.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                            {symbol}{metrics.monthly.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </div>
                     </div>
                 </div>

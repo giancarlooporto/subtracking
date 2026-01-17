@@ -2,9 +2,10 @@ import { memo } from 'react';
 import { Settings, Sparkles, ArrowRightLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { siteConfig } from '../../siteConfig';
+import { getCurrencySymbol } from '../types';
 
 interface StatsOverviewProps {
-    monthlyTotal: number;
+    averageMonthly: number;
     variableTotal: number;
     viewMode: 'monthly' | 'yearly';
     onViewModeChange: (mode: 'monthly' | 'yearly') => void;
@@ -12,19 +13,22 @@ interface StatsOverviewProps {
     onFinanceViewModeChange: (mode: 'focus' | 'total') => void;
     onOpenSettings: () => void;
     onStartAudit: () => void;
+    currency?: string;
 }
 
 export const StatsOverview = memo(({
-    monthlyTotal,
+    averageMonthly,
     variableTotal,
     viewMode,
     onViewModeChange,
     financeViewMode,
     onFinanceViewModeChange,
     onOpenSettings,
-    onStartAudit
+    onStartAudit,
+    currency = 'USD'
 }: StatsOverviewProps) => {
-    const displayAmount = viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12;
+    const symbol = getCurrencySymbol(currency);
+    const displayAmount = viewMode === 'monthly' ? averageMonthly : averageMonthly * 12;
     const displayVariable = viewMode === 'monthly' ? variableTotal : variableTotal * 12;
     const hasVariable = displayVariable > 0;
 
@@ -35,13 +39,6 @@ export const StatsOverview = memo(({
 
             <div className="relative z-10 flex flex-col items-center space-y-6">
 
-                {/* Title / Brand */}
-                <div className="flex items-center gap-3">
-                    <img src="/logo.png" alt="SubTracking Logo" className="w-8 h-8 rounded-lg shadow-lg" />
-                    <h1 className="text-2xl font-medium tracking-tight text-slate-200">
-                        {siteConfig.heroTitle}
-                    </h1>
-                </div>
 
                 {/* The Big Number */}
                 <div className="relative group">
@@ -60,7 +57,7 @@ export const StatsOverview = memo(({
                                     <span className="text-4xl sm:text-6xl font-extralight text-slate-500 mr-1">~</span>
                                 )}
                                 <span className="text-7xl sm:text-9xl font-extralight text-white tracking-tighter">
-                                    ${Math.floor(displayAmount).toLocaleString()}
+                                    {symbol}{Math.floor(displayAmount).toLocaleString()}
                                 </span>
                                 <span className="text-3xl sm:text-4xl font-light text-slate-500">
                                     .{displayAmount.toFixed(2).split('.')[1]}
@@ -73,9 +70,9 @@ export const StatsOverview = memo(({
                             </div>
                             {hasVariable && (
                                 <div className="text-[10px] text-slate-500 font-medium uppercase tracking-wider flex items-center gap-2 bg-slate-900/50 px-2 py-1 rounded-full border border-slate-800/50">
-                                    <span>${(displayAmount - displayVariable).toFixed(0)} Fixed</span>
+                                    <span>{symbol}{(displayAmount - displayVariable).toFixed(0)} Fixed</span>
                                     <span className="w-1 h-1 rounded-full bg-slate-600"></span>
-                                    <span className="text-indigo-400 font-bold">~${displayVariable.toFixed(0)} Variable</span>
+                                    <span className="text-indigo-400 font-bold">~{symbol}{displayVariable.toFixed(0)} Variable</span>
                                 </div>
                             )}
                         </div>

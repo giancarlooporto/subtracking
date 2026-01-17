@@ -43,8 +43,8 @@ const createEventBlock = (sub: Subscription, isTrial: boolean) => {
         'BEGIN:VEVENT',
         `SUMMARY:${summary}`,
         `DESCRIPTION:${description}`,
-        `DTSTART:${start}`,
-        `DTEND:${end}`,
+        `DTSTART:${start.replace('Z', '')}`,
+        `DTEND:${end.replace('Z', '')}`,
     ];
 
     if (rrule) block.push(rrule);

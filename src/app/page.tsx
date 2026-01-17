@@ -9,6 +9,7 @@ import { cn } from '../lib/utils';
 
 import { VideoModal } from '../components/VideoModal';
 import { FAQSection } from '../components/FAQSection';
+import { ImageCarousel } from '../components/ImageCarousel';
 
 export default function LandingPage() {
     const [isVideoOpen, setIsVideoOpen] = useState(false);
@@ -160,13 +161,82 @@ export default function LandingPage() {
                 >
                     <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] -z-10 group-hover:bg-indigo-500/30 transition-all duration-700" />
                     <div className="rounded-3xl border border-white/10 p-2 bg-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden">
-                        <img
-                            src="/dashboard-preview.png"
-                            alt="SubTracking Dashboard"
-                            className="rounded-2xl w-full h-auto shadow-2xl"
-                        />
+                        <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl bg-slate-900">
+                            <ImageCarousel />
+                        </div>
                     </div>
                 </motion.div>
+            </section>
+
+            {/* METHODOLOGY SECTION (New) */}
+            <section className="py-24 px-6 relative">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16 space-y-4">
+                        <span className="text-indigo-400 font-bold tracking-widest text-xs uppercase">The Methodology</span>
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white">
+                            Not just for subscriptions.<br />
+                            For your <span className="text-indigo-500">entire recurring life.</span>
+                        </h2>
+                        <p className="text-slate-400 max-w-2xl mx-auto text-lg">
+                            Most trackers fail because they treat your Rent the same as your Netflix.
+                            SubTracking uses a <b>Two-Bucket System</b> to separate your wants from your needs.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                        {/* WANTS BUCKET */}
+                        <div className="glass-panel p-10 rounded-[32px] border border-red-500/20 bg-red-500/[0.02] relative overflow-hidden group hover:border-red-500/40 transition-all">
+                            <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-500">
+                                <Sparkles className="w-32 h-32 text-red-500" />
+                            </div>
+
+                            <div className="relative z-10 space-y-6">
+                                <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
+                                    <Sparkles className="w-7 h-7 text-red-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black text-white mb-2">The "Audit" Bucket</h3>
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-red-500/10 text-red-400 text-xs font-bold uppercase tracking-wider mb-4">
+                                        Variable • Wants
+                                    </div>
+                                    <p className="text-slate-400 leading-relaxed font-medium">
+                                        Netflix, Spotify, Gym, Dropbox. These are lifestyle choices.
+                                        The app aggressively monitors these for "Ghost Costs" and unused leaks.
+                                    </p>
+                                </div>
+                                <div className="pt-4 border-t border-red-500/10">
+                                    <p className="text-white font-bold text-sm">Goal: <span className="text-red-400">Reduce & Cancel</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* NEEDS BUCKET */}
+                        <div className="glass-panel p-10 rounded-[32px] border border-emerald-500/20 bg-emerald-500/[0.02] relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+                            <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-500">
+                                <Shield className="w-32 h-32 text-emerald-500" />
+                            </div>
+
+                            <div className="relative z-10 space-y-6">
+                                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                                    <Shield className="w-7 h-7 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black text-white mb-2">The "Essential" Bucket</h3>
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-4">
+                                        Fixed • Needs
+                                    </div>
+                                    <p className="text-slate-400 leading-relaxed font-medium">
+                                        Rent, Insurance, Car Payments. These are non-negotiable.
+                                        Mark as "Essential" to safeguard them. We track due dates but ignore them for audits.
+                                    </p>
+                                </div>
+                                <div className="pt-4 border-t border-emerald-500/10">
+                                    <p className="text-white font-bold text-sm">Goal: <span className="text-emerald-400">Track & Protect</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             {/* STATS SECTION */}
@@ -287,15 +357,15 @@ export default function LandingPage() {
                             </div>
                         </div>
 
-                        {/* Feature 8 - Finance Focus Mode */}
+                        {/* Feature 8 - Multi-Profile Vaults (New) */}
                         <div className="glass-panel p-6 rounded-3xl space-y-4 border border-white/5 hover:border-indigo-500/20 transition-all group">
                             <div className="bg-indigo-500/10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform relative">
                                 <Layers className="w-6 h-6 text-indigo-400" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-lg font-bold">Finance Focus</h3>
+                                <h3 className="text-lg font-bold">Multi-Profile Vaults</h3>
                                 <p className="text-slate-400 text-sm leading-relaxed">
-                                    Toggle between "Discretionary Spending" and "Total Life Overview". Track fixed bills separately.
+                                    Separate "Personal", "Business", and "Family" expenses. Switch contexts instantly with one click.
                                 </p>
                             </div>
                         </div>
@@ -336,8 +406,8 @@ export default function LandingPage() {
                                     <HardDrive className="w-4 h-4 text-emerald-400" />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-white mb-1">Local Export</h4>
-                                    <p className="text-sm text-slate-500">Backup and restore your data manually via JSON files.</p>
+                                    <h4 className="font-bold text-white mb-1">Vault Backups</h4>
+                                    <p className="text-sm text-slate-500">Export your fully encrypted vault (JSON) and restore anywhere.</p>
                                 </div>
                             </div>
                         </div>
@@ -400,11 +470,11 @@ export default function LandingPage() {
 
                                 <ul className="space-y-4 pt-10">
                                     {[
+                                        "1 Active Profile",
                                         "Unlimited Subscriptions",
                                         "Billing Pulse Timeline",
-                                        "Data Export (.json)",
-                                        "Renewal Alerts",
-                                        "Audit Wizard (Basic)"
+                                        "Encrypted Data Export",
+                                        "Renewal Alerts"
                                     ].map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-slate-400 text-sm">
                                             <Check className="w-4 h-4 text-slate-600 shrink-0" />
@@ -438,12 +508,11 @@ export default function LandingPage() {
 
                                 <ul className="space-y-4 pt-10">
                                     {[
+                                        "Unlimited Multi-Profiles (Business/Family)",
                                         "Ghost Meter Pro (10Y Projections)",
                                         "Calendar Command Center",
                                         "Trial Shield (Calendar Alerts)",
-                                        "CSV Audit Report (Excel)",
-                                        "Vault Restore (Data Import)",
-                                        "Advanced Custom Categories"
+                                        "Full Vault Backups & Restore",
                                     ].map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-slate-200 text-sm font-medium">
                                             <Zap className="w-4 h-4 text-indigo-400 shrink-0" />

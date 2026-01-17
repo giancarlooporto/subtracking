@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { X, Plus, Calendar, DollarSign, Tag, RotateCcw, ShieldAlert, Sparkles, Bell, Zap } from 'lucide-react';
+import { X, Plus, Calendar, DollarSign, Tag, RotateCcw, ShieldAlert, Sparkles, Bell, Zap, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Subscription, DEFAULT_CATEGORIES } from '../types';
 import { cn, formatLocalDate } from '../lib/utils';
@@ -7,6 +8,7 @@ import { siteConfig } from '../../siteConfig';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+import 'react-datepicker/dist/react-datepicker.css';
 
 interface SubscriptionModalProps {
     isOpen: boolean;
@@ -29,7 +31,8 @@ export function SubscriptionModal({
 }: SubscriptionModalProps) {
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
-    const [category, setCategory] = useState('Other');
+
+    const [category, setCategory] = useState(initialData?.category || userCategories[0]);
     const [customCategory, setCustomCategory] = useState('');
     const [isAddingCustom, setIsAddingCustom] = useState(false);
     const [renewalDate, setRenewalDate] = useState(new Date());
@@ -74,6 +77,8 @@ export function SubscriptionModal({
                 setPrice(initialData.price.toString());
                 setTrialPrice('');
             }
+            // cast string to Currency type safely
+
             setCategory(initialData.category);
             // Fix: Parse YYYY-MM-DD manually to avoid UTC conversion shift
             const [rYear, rMonth, rDay] = initialData.renewalDate.split('-').map(Number);
@@ -100,6 +105,7 @@ export function SubscriptionModal({
             // Reset defaults
             setName('');
             setPrice('');
+
             setCategory('Other');
             setRenewalDate(new Date());
             setBillingCycle('monthly');
@@ -177,6 +183,7 @@ export function SubscriptionModal({
         onSave({
             name,
             price: savedPrice,
+
             category: finalCategory,
             renewalDate: formatLocalDate(renewalDate),
             billingCycle,
@@ -300,6 +307,9 @@ export function SubscriptionModal({
                                                 )}
                                                 placeholder="e.g. 14.99"
                                             />
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+
+                                            </div>
                                         </div>
                                         {errors.price && (
                                             <p className="text-xs text-red-400 mt-1 flex items-center gap-1">

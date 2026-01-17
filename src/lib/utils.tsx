@@ -29,6 +29,8 @@ export const getDaysRemaining = (dateString: string) => {
 };
 
 export const getNextOccurrence = (startDate: string, cycle: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly') => {
+    if (!startDate) return new Date().toISOString().split('T')[0];
+
     const today = new Date();
     today.setHours(12, 0, 0, 0); // Normalize to NOON
 

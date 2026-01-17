@@ -25,6 +25,7 @@ const PulseDot = memo(({
     tooltipPositionClass: string,
     baselineY: number
 }) => {
+    const symbol = '$';
     return (
         <div
             className="relative group/day flex flex-col items-center"
@@ -78,7 +79,7 @@ const PulseDot = memo(({
                     style={{ bottom: `calc(50% + ${pulseOffset + 16}px)` }}
                 >
                     <div className="text-[10px] uppercase font-bold text-slate-400 mb-2 border-b border-slate-800 pb-1 whitespace-nowrap text-center">
-                        Day {day} • ${totalOnDay.toFixed(0)}
+                        Day {day} • {symbol}{totalOnDay.toFixed(0)}
                     </div>
                     <div className="space-y-1.5">
                         {subs.map(sub => (
@@ -87,7 +88,7 @@ const PulseDot = memo(({
                                     <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: getCategoryColorHex(sub.category) }}></div>
                                     <span className="truncate font-medium">{sub.name}</span>
                                 </div>
-                                <span className="font-mono opacity-80 whitespace-nowrap">${sub.price.toFixed(0)}</span>
+                                <span className="font-mono opacity-80 whitespace-nowrap">{symbol}{sub.price.toFixed(0)}</span>
                             </div>
                         ))}
                     </div>
@@ -111,6 +112,7 @@ interface BillingPulseProps {
 }
 
 export function BillingPulse({ subscriptions }: BillingPulseProps) {
+    const symbol = '$';
     const now = new Date();
     const today = now.getDate();
     const currentYear = now.getFullYear();
@@ -204,7 +206,7 @@ export function BillingPulse({ subscriptions }: BillingPulseProps) {
                 <Activity className="w-5 h-5 text-indigo-400" />
                 <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Household Pulse</h3>
                 {maxSpend > 0 && (
-                    <span className="text-[10px] text-slate-500 ml-auto">Peak: ${maxSpend.toFixed(0)}</span>
+                    <span className="text-[10px] text-slate-500 ml-auto">Peak: {symbol}{maxSpend.toFixed(0)}</span>
                 )}
             </div>
 

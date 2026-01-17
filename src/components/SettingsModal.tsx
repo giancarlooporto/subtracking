@@ -1,4 +1,4 @@
-import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar, BookOpen } from 'lucide-react';
+import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar, BookOpen, User, Users } from 'lucide-react';
 import { useRef, ChangeEvent } from 'react';
 import { cn } from '../lib/utils';
 
@@ -13,9 +13,11 @@ interface SettingsModalProps {
     isPro: boolean;
     onActivatePro: () => void;
     onOpenGuide: () => void;
+    onManageProfiles: () => void;
+    profileCount: number;
 }
 
-export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExportCSV, onExportICS, onImport, isPro, onActivatePro, onOpenGuide }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExportCSV, onExportICS, onImport, isPro, onActivatePro, onOpenGuide, onManageProfiles, profileCount }: SettingsModalProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     if (!isOpen) return null;
@@ -70,7 +72,10 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <button
-                                onClick={onExport}
+                                onClick={() => {
+                                    onClose();
+                                    onExport();
+                                }}
                                 className="flex flex-col items-center justify-center p-4 bg-slate-800/40 border border-slate-700/50 rounded-2xl transition-all group hover:bg-slate-800"
                             >
                                 <Download className="w-5 h-5 text-indigo-400 mb-2 group-hover:scale-110 transition-transform" />
@@ -94,7 +99,10 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                             <input
                                 type="file"
                                 ref={fileInputRef}
-                                onChange={onImport}
+                                onChange={(e) => {
+                                    onClose();
+                                    onImport(e);
+                                }}
                                 className="hidden"
                                 accept=".json"
                             />

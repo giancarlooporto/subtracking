@@ -1,0 +1,147 @@
+{
+  "subscriptions": [
+    {
+      "id": "9075ef3f-41dd-4c20-9c00-db18266b90ff",
+      "name": "Apple Icloud",
+      "price": 0.99,
+      "category": "Software & Apps",
+      "renewalDate": "2026-01-17",
+      "billingCycle": "monthly",
+      "isTrial": false,
+      "hasEverBeenPaid": true
+    },
+    {
+      "id": "374da0b7-3de6-4eac-9ae1-e8fb31a91bfd",
+      "name": "Apple Music",
+      "price": 16.99,
+      "category": "Streaming",
+      "renewalDate": "2026-01-23",
+      "billingCycle": "monthly",
+      "isTrial": false
+    },
+    {
+      "id": "a60a4cb3-9d62-42d2-91b0-3ade6c0df4af",
+      "name": "Walmart+",
+      "price": 49,
+      "category": "Shopping & Retail",
+      "renewalDate": "2026-12-02",
+      "billingCycle": "yearly",
+      "isTrial": true,
+      "regularPrice": 98,
+      "isOneTimePayment": false,
+      "trialEndDate": "2026-12-02",
+      "isEssential": false
+    },
+    {
+      "id": "4fa94c86-5886-49d8-8d78-10b02cb82bb2",
+      "name": "Netflix ",
+      "price": 7.99,
+      "category": "Streaming",
+      "renewalDate": "2026-02-05",
+      "billingCycle": "monthly",
+      "isTrial": false
+    },
+    {
+      "id": "ab7cfd9a-3210-4d8a-810b-816266614ef8",
+      "name": "Amazon Prime ",
+      "price": 14.99,
+      "category": "Shopping & Retail",
+      "renewalDate": "2026-02-02",
+      "billingCycle": "monthly",
+      "isTrial": false,
+      "logo": "https://m.media-amazon.com/images/G/01/gc/designs/livepreview/amazon_dkblue_noto_email_v2016_us-main._CB468775337_.png"
+    },
+    {
+      "id": "380a3b1d-264b-429b-bcd6-68e0c0ca22ee",
+      "name": "Xfinity",
+      "price": 65,
+      "category": "Utility Bills",
+      "renewalDate": "2026-02-11",
+      "billingCycle": "monthly",
+      "isTrial": false,
+      "isEssential": true
+    },
+    {
+      "id": "df7fea53-0400-4507-b90c-e70f91843346",
+      "name": "Rent",
+      "price": 1350,
+      "category": "Housing & Rent",
+      "renewalDate": "2026-02-01",
+      "billingCycle": "monthly",
+      "isTrial": false,
+      "isEssential": true,
+      "hasEverBeenPaid": true
+    },
+    {
+      "id": "f66411e1-22d1-425d-8e08-ca4438672129",
+      "name": "Electric bill",
+      "price": 55,
+      "category": "Utility Bills",
+      "renewalDate": "2026-02-01",
+      "billingCycle": "monthly",
+      "isTrial": false,
+      "isVariable": true,
+      "isEssential": true,
+      "lastPaidDate": "2026-01-01",
+      "hasEverBeenPaid": true,
+      "paymentHistory": [
+        {
+          "date": "2026-01-01",
+          "amount": 55
+        }
+      ]
+    },
+    {
+      "id": "872f50a4-d7c3-4ab7-ad8f-1d2c2ce9aab0",
+      "name": "Water Bill",
+      "price": 92,
+      "category": "Utility Bills",
+      "renewalDate": "2026-02-01",
+      "billingCycle": "monthly",
+      "isTrial": false,
+      "isVariable": true,
+      "isEssential": true
+    },
+    {
+      "id": "4b8eb49e-03a5-43d2-bd48-51d9b7119bbd",
+      "name": "Gas",
+      "price": 35,
+      "category": "Utility Bills",
+      "renewalDate": "2026-02-01",
+      "billingCycle": "monthly",
+      "isTrial": false,
+      "isVariable": true,
+      "isEssential": true
+    },
+    {
+      "id": "3de51f2b-6471-418b-ad1e-9a9491163452",
+      "name": "AT&T Internet",
+      "price": 49.5,
+      "category": "Utility Bills",
+      "renewalDate": "2026-02-13",
+      "billingCycle": "monthly",
+      "isTrial": false,
+      "isEssential": true,
+      "lastPaidDate": "2026-01-13",
+      "hasEverBeenPaid": true
+    }
+  ],
+  "userCategories": [
+    "Streaming",
+    "Utility Bills",
+    "Software & Apps",
+    "Housing & Rent",
+    "Gaming & Social",
+    "Auto Loan",
+    "Shopping & Retail",
+    "Transportation",
+    "Finance & Insurance",
+    "Health & Wellness",
+    "News & Education",
+    "Food & Dining",
+    "Other"
+  ],
+  "cancelledSavings": 5,
+  "exportDate": "2026-01-14T05:05:05.876Z",
+  "version": "1.0"
+}

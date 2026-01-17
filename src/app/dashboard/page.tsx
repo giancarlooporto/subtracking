@@ -3,8 +3,21 @@
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type, Ghost, ChevronDown, ChevronUp } from 'lucide-react';
-import { Subscription, DEFAULT_CATEGORIES } from '../../types';
+import { Subscription, DEFAULT_CATEGORIES, Profile, getCurrencySymbol } from '../../types';
 import { getDaysRemaining, getNextOccurrence, getCategoryColorHex, getCategoryIcon, calculateMonthlyPrice, cn, formatLocalDate } from '../../lib/utils';
+import {
+  initializeProfiles,
+  getProfiles,
+  getActiveProfile,
+  createProfile,
+  updateProfile,
+  deleteProfile,
+  switchProfile,
+  generateId,
+  saveProfiles,
+  setActiveProfileId
+} from '../../lib/profileManager';
+
 import { motion, AnimatePresence } from 'framer-motion';
 
 import dynamic from 'next/dynamic';
@@ -21,6 +34,7 @@ import { InstallBanner } from '../../components/InstallBanner';
 import { generateICSFile, generateBulkICSFile } from '../../lib/calendar';
 
 import { PaymentModal } from '../../components/PaymentModal';
+import { siteConfig } from '../../../siteConfig';
 
 const SubscriptionModal = dynamic(() => import('../../components/SubscriptionModal').then(mod => mod.SubscriptionModal), { ssr: false });
 const SettingsModal = dynamic(() => import('../../components/SettingsModal').then(mod => mod.SettingsModal), { ssr: false });
@@ -29,6 +43,10 @@ const GhostMeter = dynamic(() => import('../../components/GhostMeter').then(mod 
 const WelcomeModal = dynamic(() => import('../../components/WelcomeModal').then(mod => mod.WelcomeModal), { ssr: false });
 const LicenseModal = dynamic(() => import('../../components/LicenseModal').then(mod => mod.LicenseModal), { ssr: false });
 const UserGuideModal = dynamic(() => import('../../components/UserGuideModal').then(mod => mod.UserGuideModal), { ssr: false });
+const ProfileSettingsModal = dynamic(() => import('../../components/ProfileSettingsModal').then(mod => mod.ProfileSettingsModal), { ssr: false });
+const ProfileManagerModal = dynamic(() => import('../../components/ProfileManagerModal').then(mod => mod.ProfileManagerModal), { ssr: false });
+import { PasswordModal } from '@/components/PasswordModal';
+import { encryptData, decryptData, EncryptedVault } from '@/lib/crypto';
 
 function HomeContent() {
   const { showToast } = useToast();
@@ -50,13 +68,27 @@ function HomeContent() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showUserGuide, setShowUserGuide] = useState(false);
 
+  // Profile State
+  const [activeProfile, setActiveProfile] = useState<Profile | null>(null);
+  const [allProfiles, setAllProfiles] = useState<Profile[]>([]);
+  const [showProfileManager, setShowProfileManager] = useState(false);
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
+  const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
+
   // Payment Modal State
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [activePaymentSub, setActivePaymentSub] = useState<Subscription | null>(null);
 
+  // Encryption State
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordMode, setPasswordMode] = useState<'encrypt' | 'decrypt'>('encrypt');
+  const [pendingImportFile, setPendingImportFile] = useState<File | null>(null);
+  const [passwordError, setPasswordError] = useState(false);
+
   // Filtering & Sorting
   const [sortBy, setSortBy] = useState('price-desc');
   const [filterCategory, setFilterCategory] = useState<string[]>(['All']);
+
   const [isSortOpen, setIsSortOpen] = useState(false);
 
   // Stats
@@ -130,102 +162,14 @@ function HomeContent() {
     };
   }, []);
 
-  // Load from localStorage on mount
+  // Check for first-time user and URL parameters
   useEffect(() => {
-    const savedData = localStorage.getItem('subtracking-data') || localStorage.getItem('digital-declutter-data');
-    const savedCats = localStorage.getItem('subtracking-categories') || localStorage.getItem('digital-declutter-categories');
-    const savedSavings = localStorage.getItem('subtracking-savings') || localStorage.getItem('digital-declutter-savings');
-
-    if (savedData) {
-      try {
-        setSubscriptions(JSON.parse(savedData));
-      } catch (e) {
-        console.error('Failed to parse subscriptions', e);
-      }
-    }
-
-    if (savedCats) {
-      try {
-        let loadedCats = JSON.parse(savedCats);
-        // Migration: Force update to new SubTracking categories if on the old 7-item list
-        const oldDefaults = ['Streaming', 'Software & Apps', 'Gaming', 'Health & Wellness', 'Meal Kits', 'Content & News', 'Other'];
-        const isOldList = loadedCats.length === 7 && loadedCats.every((c: string, i: number) => c === oldDefaults[i]);
-
-        if (isOldList || loadedCats.includes('Household Utilities')) {
-          loadedCats = DEFAULT_CATEGORIES;
-        } else {
-          // Auto-migrate: Add "Utility Bills", "Housing & Rent", "Auto & Transport" if missing
-          const ensureCategory = (cat: string) => {
-            if (!loadedCats.includes(cat)) {
-              // Try to insert before "Other"
-              const otherIndex = loadedCats.indexOf('Other');
-              if (otherIndex !== -1) loadedCats.splice(otherIndex, 0, cat);
-              else loadedCats.push(cat);
-            }
-          };
-
-          ensureCategory('Utility Bills');
-          ensureCategory('Housing & Rent');
-
-          // Migration: Split Auto & Transport into Auto Loan / Transportation
-          // Also rename "Automotive" -> "Auto Loan" if it exists from previous step
-
-          // 1. Ensure new categories exist
-          ensureCategory('Auto Loan');
-          ensureCategory('Transportation');
-
-          // 2. Remove old "Auto & Transport" or "Transport & Uber" from list
-          const oldAutoIndex = loadedCats.indexOf('Auto & Transport');
-          if (oldAutoIndex !== -1) loadedCats.splice(oldAutoIndex, 1);
-
-          const oldTransportIndex = loadedCats.indexOf('Transport & Uber');
-          if (oldTransportIndex !== -1) loadedCats.splice(oldTransportIndex, 1);
-
-          // 3. Rename "Automotive" -> "Auto Loan" if present
-          const automotiveIndex = loadedCats.indexOf('Automotive');
-          if (automotiveIndex !== -1) {
-            loadedCats[automotiveIndex] = 'Auto Loan';
-          }
-
-          // 4. Deduplicate (fix for potential "Auto Loan" double entry)
-          loadedCats = Array.from(new Set(loadedCats));
-
-          // 5. Force Re-order to match new defaults
-          // This ensures the "common" categories appear first as requested
-          loadedCats.sort((a: string, b: string) => {
-            const indexA = DEFAULT_CATEGORIES.indexOf(a);
-            const indexB = DEFAULT_CATEGORIES.indexOf(b);
-
-            // If both are defaults, sort by default order
-            if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-
-            // If one is default and other is custom, default comes first
-            if (indexA !== -1) return -1;
-            if (indexB !== -1) return 1;
-
-            // If both are custom, sort alphabetically
-            return a.localeCompare(b);
-          });
-        }
-        setUserCategories(loadedCats);
-      } catch (e) {
-        console.error('Failed to parse categories', e);
-      }
-    }
-
-    if (savedSavings) setCancelledSavings(parseFloat(savedSavings));
-
-    // Check Pro Status
-    const savedPro = localStorage.getItem('subtracking-pro');
-    if (savedPro === 'true') setIsPro(true);
-
-    setIsLoaded(true);
-
     // Check if first-time user
     const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
     if (!hasSeenWelcome) {
       setShowWelcome(true);
     }
+
     // Check for upgrade intent from landing page
     const upgrade = searchParams.get('upgrade');
     if (upgrade === 'true') {
@@ -233,7 +177,39 @@ function HomeContent() {
       // Clean up URL without reload
       window.history.replaceState({}, '', window.location.pathname);
     }
+
+    // Load cancelled savings (not profile-specific)
+    const savedSavings = localStorage.getItem('subtracking-savings') || localStorage.getItem('digital-declutter-savings');
+    if (savedSavings) setCancelledSavings(parseFloat(savedSavings));
+
+    // Check Pro Status
+    const savedPro = localStorage.getItem('subtracking-pro');
+    if (savedPro === 'true') setIsPro(true);
   }, [searchParams]);
+
+  // Initialize Profiles (NEW - replaces direct subscription loading)
+  useEffect(() => {
+    // Initialize profile system (creates default profile if needed, migrates legacy data)
+    initializeProfiles();
+
+    // Load all profiles and active profile
+    const profiles = getProfiles();
+    const active = getActiveProfile();
+
+    setAllProfiles(profiles);
+    setActiveProfile(active);
+
+    // Load subscriptions from active profile
+    if (active) {
+      setSubscriptions(active.subscriptions);
+      // Load custom categories if profile has them
+      if (active.categories) {
+        setUserCategories(active.categories);
+      }
+    }
+
+    setIsLoaded(true);
+  }, []);
 
   // Migration Effect: Smartly Split 'Auto & Transport' -> 'Automotive' vs 'Transportation'
   useEffect(() => {
@@ -273,20 +249,46 @@ function HomeContent() {
   }, [isLoaded, subscriptions.length]);
 
   // Save to localStorage (Debounced for performance)
+  // Save to Persistence (Profiles System)
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || !activeProfile) return;
 
     const timeout = setTimeout(() => {
+      // 1. Update the Active Profile in Storage
+      updateProfile(activeProfile.id, {
+        subscriptions,
+        categories: userCategories
+      });
+
+      // 2. Also update the Legacy Key for backup/redundancy (Optional, but good for safety)
       localStorage.setItem('subtracking-data', JSON.stringify(subscriptions));
       localStorage.setItem('subtracking-categories', JSON.stringify(userCategories));
       localStorage.setItem('subtracking-savings', cancelledSavings.toString());
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [subscriptions, userCategories, cancelledSavings, isLoaded]);
+  }, [subscriptions, userCategories, cancelledSavings, isLoaded, activeProfile]);
+
+
+
+
+
+  // Global Filter: Apply Category & Currency filters to ALL widgets
+  const filteredSubscriptions = useMemo(() => {
+    let result = [...subscriptions];
+
+    // Multi-Select Filter Logic
+    if (!filterCategory.includes('All')) {
+      result = result.filter(sub => filterCategory.includes(sub.category));
+    }
+
+
+
+    return result;
+  }, [subscriptions, filterCategory]);
 
   const monthlyTotal = useMemo(() => {
-    return subscriptions.reduce((sum, sub) => {
+    return filteredSubscriptions.reduce((sum, sub) => {
       // Finance View Mode Logic:
       // If in 'focus' mode, skip 'Essential' items (Rent, Loans, etc.)
       if (financeViewMode === 'focus' && sub.isEssential) return sum;
@@ -296,22 +298,20 @@ function HomeContent() {
         ? getDaysRemaining(sub.trialEndDate) < 0
         : false;
 
-      // Use regular price if trial expired, otherwise use current price
-      const currentPrice = isTrialExpired
-        ? (sub.regularPrice || sub.price)
-        : sub.price;
-
       // If it's a one-time trial payment and trial is active, don't add to recurring monthly total
       if (sub.isTrial && sub.isOneTimePayment && !isTrialExpired) {
         return sum;
       }
 
-      return sum + calculateMonthlyPrice(currentPrice, sub.billingCycle);
+      const currentPrice = sub.isTrial ? (sub.regularPrice || sub.price) : sub.price;
+      const monthlyPrice = calculateMonthlyPrice(currentPrice, sub.billingCycle);
+
+      return sum + monthlyPrice;
     }, 0);
-  }, [subscriptions, financeViewMode]);
+  }, [filteredSubscriptions, financeViewMode]);
 
   const variableTotal = useMemo(() => {
-    return subscriptions.reduce((sum, sub) => {
+    return filteredSubscriptions.reduce((sum, sub) => {
       if (!sub.isVariable) return sum;
 
       // Finance View Mode Logic
@@ -322,29 +322,21 @@ function HomeContent() {
         ? getDaysRemaining(sub.trialEndDate) < 0
         : false;
 
-      // Use regular price if trial expired, otherwise use current price
-      const currentPrice = isTrialExpired
-        ? (sub.regularPrice || sub.price)
-        : sub.price;
-
       // If it's a one-time trial payment and trial is active, don't add to recurring monthly total
       if (sub.isTrial && sub.isOneTimePayment && !isTrialExpired) {
         return sum;
       }
 
-      return sum + calculateMonthlyPrice(currentPrice, sub.billingCycle);
+      const currentPrice = sub.isTrial ? (sub.regularPrice || sub.price) : sub.price;
+      const monthlyPrice = calculateMonthlyPrice(currentPrice, sub.billingCycle);
+
+      return sum + monthlyPrice;
     }, 0);
-  }, [subscriptions, financeViewMode]);
+  }, [filteredSubscriptions, financeViewMode]);
 
   const sortedSubscriptions = useMemo(() => {
-    let result = [...subscriptions];
-
-    // Multi-Select Filter Logic
-    if (!filterCategory.includes('All')) {
-      result = result.filter(sub => filterCategory.includes(sub.category));
-    }
-
-    return result.sort((a, b) => {
+    // Sorting only now (Filtering is upstream)
+    return [...filteredSubscriptions].sort((a, b) => {
       switch (sortBy) {
         case 'price-desc': return b.price - a.price;
         case 'price-asc': return a.price - b.price;
@@ -356,21 +348,17 @@ function HomeContent() {
         default: return b.price - a.price;
       }
     });
-  }, [subscriptions, sortBy, filterCategory]);
+  }, [filteredSubscriptions, sortBy]);
 
-  // Calculate total for the filtered list
   const filteredListTotal = useMemo(() => {
     return sortedSubscriptions.reduce((sum, sub) => {
-      // Logic for list total should simpler, or match the View Mode? 
-      // User said "spend by category... also sync it with subs only and total life" earlier.
-      // But for this specific "selected categories total", let's assume monthly normalized cost.
       return sum + calculateMonthlyPrice(sub.price, sub.billingCycle);
     }, 0);
   }, [sortedSubscriptions]);
 
   const categorySpending = useMemo(() => {
     const spending: Record<string, number> = {};
-    subscriptions.forEach(sub => {
+    filteredSubscriptions.forEach(sub => {
       // Finance View Mode Logic:
       // If in 'focus' mode, skip 'Essential' items (Rent, Loans, etc.)
       if (financeViewMode === 'focus' && sub.isEssential) return;
@@ -406,7 +394,7 @@ function HomeContent() {
     return Object.entries(spending)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
-  }, [subscriptions, financeViewMode, viewMode]);
+  }, [filteredSubscriptions, financeViewMode, viewMode]);
 
   const isPaidThisCycle = (sub: Subscription) => {
     if (!sub.lastPaidDate) return false;
@@ -415,16 +403,16 @@ function HomeContent() {
   };
 
   const urgentSubscriptions = useMemo(() => {
-    return subscriptions.filter(sub => {
+    return filteredSubscriptions.filter(sub => {
       const nextRenewal = getNextOccurrence(sub.renewalDate, sub.billingCycle);
       const days = getDaysRemaining(nextRenewal);
       return days <= 2;
     }).sort((a, b) => new Date(getNextOccurrence(a.renewalDate, a.billingCycle)).getTime() - new Date(getNextOccurrence(b.renewalDate, b.billingCycle)).getTime());
-  }, [subscriptions]);
+  }, [filteredSubscriptions]);
 
   const upcomingBills = useMemo(() => {
     const today = formatLocalDate(new Date());
-    return [...subscriptions]
+    return [...filteredSubscriptions]
       .filter(sub => {
         // Use raw renewalDate. If it's in the past and not paid, it stays as 'Past Due'
         const days = getDaysRemaining(sub.renewalDate);
@@ -441,7 +429,7 @@ function HomeContent() {
         // Sort by raw renewal date so overdue items appear at the very top
         return new Date(a.renewalDate).getTime() - new Date(b.renewalDate).getTime();
       });
-  }, [subscriptions]);
+  }, [filteredSubscriptions]);
 
   const markAsPaid = (id: string, amount?: number, date?: Date) => {
     const today = formatLocalDate(date || new Date());
@@ -524,26 +512,28 @@ function HomeContent() {
 
 
   const handleSaveSubscription = (data: Omit<Subscription, 'id' | 'lastPaidDate' | 'hasEverBeenPaid'>) => {
-
+    if (!activeProfile) return;
 
     // Add custom category if needed (PRO ONLY FEATURE)
     if (isPro && !userCategories.includes(data.category)) {
       setUserCategories(prev => [...prev, data.category]);
     }
 
+    let updatedSubscriptions: Subscription[];
+
     if (editingId) {
-      setSubscriptions(subscriptions.map(sub =>
+      updatedSubscriptions = subscriptions.map(sub =>
         sub.id === editingId
           ? { ...sub, ...data }
           : sub
-      ));
+      );
       setEditingId(null);
     } else {
       const newSub: Subscription = {
-        id: crypto.randomUUID(),
+        id: generateId(),
         ...data
       };
-      setSubscriptions([...subscriptions, newSub]);
+      updatedSubscriptions = [...subscriptions, newSub];
 
       // Calendar Bridge: Trigger alert download for new trials
       if (data.isTrial && data.trialEndDate) {
@@ -551,6 +541,12 @@ function HomeContent() {
         showToast('Trial Shield Active: Calendar Alert Generated! 🗓️', 'success');
       }
     }
+
+    // Update local state
+    setSubscriptions(updatedSubscriptions);
+
+    // Save to active profile
+    updateProfile(activeProfile.id, { subscriptions: updatedSubscriptions });
   };
 
   const handleProSuccess = () => {
@@ -561,16 +557,22 @@ function HomeContent() {
   };
 
   const confirmDelete = () => {
-    if (deleteId) {
-      const subToDelete = subscriptions.find(s => s.id === deleteId);
-      if (subToDelete && subToDelete.hasEverBeenPaid) {
-        // Celebration logic simplified for now
-        const monthlyEquivalent = calculateMonthlyPrice(subToDelete.price, subToDelete.billingCycle);
-        setCancelledSavings(prev => prev + monthlyEquivalent);
-      }
-      setSubscriptions(subscriptions.filter(s => s.id !== deleteId));
-      setDeleteId(null);
+    if (!deleteId || !activeProfile) return;
+
+    const subToDelete = subscriptions.find(s => s.id === deleteId);
+    if (subToDelete && subToDelete.hasEverBeenPaid) {
+      // Celebration logic simplified for now
+      const monthlyEquivalent = calculateMonthlyPrice(subToDelete.price, subToDelete.billingCycle);
+      setCancelledSavings(prev => prev + monthlyEquivalent);
     }
+
+    const updatedSubscriptions = subscriptions.filter(s => s.id !== deleteId);
+    setSubscriptions(updatedSubscriptions);
+
+    // Save to active profile
+    updateProfile(activeProfile.id, { subscriptions: updatedSubscriptions });
+
+    setDeleteId(null);
   };
 
 
@@ -594,31 +596,230 @@ function HomeContent() {
     }
   };
 
+  // Profile Management Handlers
+  const handleCreateProfile = (profileData: { name: string; city: string; timezone: string; currency: string }) => {
+    const newProfile = createProfile(profileData.name, profileData.city, profileData.timezone, profileData.currency);
+    setAllProfiles(getProfiles());
+
+    // Auto-switch to the new profile
+    setActiveProfile(newProfile);
+    setSubscriptions(newProfile.subscriptions);
+    if (newProfile.categories) {
+      setUserCategories(newProfile.categories);
+    }
+
+    showToast(`Profile "${profileData.name}" created and active!`, 'success');
+    setShowProfileSettings(false);
+  };
+
+  const handleEditProfile = (profile: Profile) => {
+    setEditingProfile(profile);
+    setShowProfileManager(false);
+    setShowProfileSettings(true);
+  };
+
+  const handleUpdateProfile = (profileData: { name: string; city: string; timezone: string; currency: string }) => {
+    if (!editingProfile) return;
+
+    updateProfile(editingProfile.id, {
+      name: profileData.name,
+      city: profileData.city,
+      timezone: profileData.timezone,
+      currency: profileData.currency
+    });
+
+    setAllProfiles(getProfiles());
+
+    // If editing active profile, update it
+    if (editingProfile.id === activeProfile?.id) {
+      setActiveProfile(getActiveProfile());
+    }
+
+    showToast(`Profile "${profileData.name}" updated successfully!`, 'success');
+    setEditingProfile(null);
+    setShowProfileSettings(false);
+  };
+
+  const handleSwitchProfile = (profileId: string) => {
+    switchProfile(profileId);
+    const newActive = getActiveProfile();
+
+    if (newActive) {
+      setActiveProfile(newActive);
+      setSubscriptions(newActive.subscriptions);
+      if (newActive.categories) {
+        setUserCategories(newActive.categories);
+      }
+      showToast(`Switched to "${newActive.name}"`, 'success');
+    }
+
+    setShowProfileManager(false);
+  };
+
+  const handleDeleteProfile = (profileId: string) => {
+    const profileToDelete = allProfiles.find(p => p.id === profileId);
+    if (!profileToDelete) return;
+
+    deleteProfile(profileId);
+    const profiles = getProfiles();
+    setAllProfiles(profiles);
+
+    // If deleted profile was active, switch to first remaining profile
+    if (profileId === activeProfile?.id && profiles.length > 0) {
+      const newActive = getActiveProfile();
+      if (newActive) {
+        setActiveProfile(newActive);
+        setSubscriptions(newActive.subscriptions);
+        if (newActive.categories) {
+          setUserCategories(newActive.categories);
+        }
+      }
+    }
+
+    showToast(`Profile "${profileToDelete.name}" deleted`, 'success');
+  };
+
+  const processImportData = (data: any) => {
+    // 0. Handle Legacy Array Format (Root is Array of Subscriptions)
+    if (Array.isArray(data)) {
+      if (confirm('This will replace your current data with the imported legacy backup. Are you sure?')) {
+
+        let targetProfileId = activeProfile?.id;
+
+        // Safety: Use first profile or create new if none exists
+        if (!targetProfileId) {
+          const existing = getProfiles();
+          if (existing.length > 0) {
+            targetProfileId = existing[0].id;
+          } else {
+            const newPro = createProfile('Main Profile', 'Local', 'UTC', 'USD');
+            targetProfileId = newPro.id;
+          }
+        }
+
+        // 1. Storage Update
+        updateProfile(targetProfileId, { subscriptions: data });
+
+        // 2. React State Update
+        setSubscriptions(data);
+        const freshProfiles = getProfiles();
+        setAllProfiles(freshProfiles);
+
+        const freshActive = freshProfiles.find(p => p.id === targetProfileId);
+        if (freshActive) setActiveProfile(freshActive);
+
+        // 3. Legacy Storage Backup
+        localStorage.setItem('subtracking-data', JSON.stringify(data));
+
+        showToast('Legacy vault restored successfully', 'success');
+      }
+      return;
+    }
+
+    // Basic Schema Validation
+    if (!data.subscriptions && !data.profiles) {
+      showToast('Invalid backup file format', 'error');
+      return;
+    }
+
+    if (confirm('This will replace your current data. Are you sure?')) {
+      // 1. Restore Global State (Profiles) if present
+      if (data.profiles && Array.isArray(data.profiles)) {
+        // Storage
+        localStorage.setItem('subtracking_profiles', JSON.stringify(data.profiles)); // Correct Key (underscore)
+
+        // State
+        setAllProfiles(data.profiles);
+
+        // Switch to active profile from backup or default to first
+        const updatedActive = data.profiles.find((p: any) => p.id === activeProfile?.id) || data.profiles[0];
+        if (updatedActive) {
+          setActiveProfile(updatedActive);
+          localStorage.setItem('subtracking_active_profile', updatedActive.id); // Correct Key (Underscore from manager)
+          setSubscriptions(updatedActive.subscriptions || []);
+          setUserCategories(updatedActive.categories || []);
+        }
+      } else if (data.subscriptions) {
+        // Legacy/Single Profile Import (Object Format)
+        setSubscriptions(data.subscriptions);
+        if (data.userCategories) setUserCategories(data.userCategories);
+
+        if (activeProfile) {
+          updateProfile(activeProfile.id, {
+            subscriptions: data.subscriptions,
+            categories: data.userCategories || activeProfile.categories
+          });
+          // Refresh Profiles State
+          setAllProfiles(getProfiles());
+        }
+      }
+
+      if (data.cancelledSavings) setCancelledSavings(data.cancelledSavings);
+      showToast('Vault restored successfully', 'success');
+    }
+  };
+
+  const handlePasswordSubmit = async (password: string) => {
+    try {
+      setPasswordError(false);
+
+      if (passwordMode === 'encrypt') {
+        // EXPORT FLOW
+        const data = {
+          subscriptions,
+          userCategories,
+          profiles: allProfiles,
+          cancelledSavings,
+          exportDate: new Date().toISOString(),
+          version: '1.0'
+        };
+
+        const encrypted = await encryptData(data, password);
+
+        const fileName = "subtracking_vault_secure.json";
+        const blob = new Blob([JSON.stringify(encrypted, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        showToast('Vault exported successfully (Encrypted)', 'success');
+        setShowPasswordModal(false);
+      } else {
+        // IMPORT FLOW
+        if (!pendingImportFile) return;
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const content = e.target?.result as string;
+            const encryptedVault = JSON.parse(content);
+            const decryptedData = await decryptData(encryptedVault, password);
+
+            processImportData(decryptedData);
+            setShowPasswordModal(false);
+            setPendingImportFile(null);
+          } catch (error) {
+            console.error(error);
+            setPasswordError(true);
+          }
+        };
+        reader.readAsText(pendingImportFile);
+      }
+    } catch (error) {
+      console.error(error);
+      setPasswordError(true);
+    }
+  };
+
   const exportData = () => {
-    const data = {
-      subscriptions,
-      userCategories,
-      cancelledSavings,
-      exportDate: new Date().toISOString(),
-      version: '1.0'
-    };
-    const fileName = "subtracking_backup.json";
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = fileName;
-
-    document.body.appendChild(a);
-    a.click();
-
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-
-    // Feedback
-    showToast(`Vault exported successfully! Check Downloads for "${fileName}"`, 'success');
+    // Open password modal for export
+    setPasswordMode('encrypt');
+    setShowPasswordModal(true);
   };
 
   const exportCSV = () => {
@@ -699,23 +900,22 @@ function HomeContent() {
         const content = event.target?.result as string;
         const data = JSON.parse(content);
 
-        if (!data.subscriptions || !Array.isArray(data.subscriptions)) {
-          throw new Error('Invalid data format');
+        // 1. Check for Encrypted Vault
+        if (data.iv && data.salt && data.data) {
+          setPasswordMode('decrypt');
+          setPendingImportFile(file);
+          setShowPasswordModal(true);
+          return;
         }
 
-        if (confirm('Importing this vault will replace all your current data. This cannot be undone. Proceed?')) {
-          setSubscriptions(data.subscriptions);
-          if (data.userCategories) setUserCategories(data.userCategories);
-          if (data.cancelledSavings) setCancelledSavings(data.cancelledSavings);
-          showToast('Vault restored successfully!', 'success');
-        }
+        // 2. Standard Import
+        processImportData(data);
+
       } catch (err) {
-        showToast('Error importing vault. Please check the file format.', 'error');
-        console.error(err);
+        showToast('Invalid backup file', 'error');
       }
     };
     reader.readAsText(file);
-    // Reset input so the same file can be uploaded again if needed
     e.target.value = '';
   };
 
@@ -765,9 +965,39 @@ function HomeContent() {
 
       <div className="max-w-7xl mx-auto p-4 sm:p-8 space-y-8 relative z-10">
 
+        {/* HEADER SECTION (Full Width) */}
+        <div className="flex justify-between items-start mb-8 z-20 relative animate-in fade-in slide-in-from-top duration-700">
+          {/* Logo Area */}
+          <div className="flex items-center gap-3 opacity-90 hover:opacity-100 transition-opacity">
+            <img src="/logo.png" alt="SubTracking Logo" className="w-10 h-10 rounded-xl shadow-2xl border border-white/5" />
+            <h1 className="text-xl font-medium tracking-tight text-slate-200 hidden sm:block">
+              {siteConfig.heroTitle || 'SubTracking'}
+            </h1>
+          </div>
+
+          {/* Profile Switcher */}
+          <button
+            onClick={() => setShowProfileManager(true)}
+            className="flex items-center gap-2 bg-slate-900/60 hover:bg-slate-800/80 backdrop-blur-md pl-1.5 pr-4 py-1.5 rounded-full border border-white/5 transition-all group shadow-lg hover:border-indigo-500/30 hover:scale-105 active:scale-95 duration-200"
+          >
+            <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shadow-inner group-hover:bg-indigo-500/20 transition-colors">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10">
+                <Wallet className="w-4 h-4 text-white" />
+              </div>
+            </div>
+            <div className="flex flex-col items-start mr-1">
+              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">VAULT</span>
+              <span className="text-sm font-bold text-slate-200 group-hover:text-white transition-colors max-w-[120px] truncate leading-none">
+                {activeProfile?.name || 'Main Profile'}
+              </span>
+            </div>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-400 transition-colors" />
+          </button>
+        </div>
+
         {/* HERO SECTION */}
         <StatsOverview
-          monthlyTotal={monthlyTotal}
+          averageMonthly={monthlyTotal}
           variableTotal={variableTotal}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
@@ -775,7 +1005,10 @@ function HomeContent() {
           onFinanceViewModeChange={setFinanceViewMode}
           onOpenSettings={() => setShowSettingsModal(true)}
           onStartAudit={() => setShowWizard(true)}
+          currency={activeProfile?.currency || 'USD'}
         />
+
+        {/* Region Filter (Smart Visibility) */}
 
         {/* Payment Modal */}
         <PaymentModal
@@ -788,7 +1021,7 @@ function HomeContent() {
 
         {/* HOUSEHOLD PULSE (Timeline) */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 relative group">
-          <BillingPulse subscriptions={subscriptions} />
+          <BillingPulse subscriptions={filteredSubscriptions} />
         </div>
 
         {/* ACTION DECK (3-Column Grid) */}
@@ -978,7 +1211,7 @@ function HomeContent() {
 
           <div className="relative group">
             <GhostMeter
-              subscriptions={financeViewMode === 'focus' ? subscriptions.filter(s => !s.isEssential) : subscriptions}
+              subscriptions={financeViewMode === 'focus' ? filteredSubscriptions.filter(s => !s.isEssential) : filteredSubscriptions}
             />
             {!isPro && (
               <div className="absolute inset-0 top-12 backdrop-blur-[6px] bg-slate-900/20 z-20 flex items-center justify-center rounded-b-2xl">
@@ -1409,6 +1642,8 @@ function HomeContent() {
         isPro={isPro}
         onActivatePro={() => setShowLicenseModal(true)}
         onOpenGuide={() => setShowUserGuide(true)}
+        onManageProfiles={() => setShowProfileManager(true)}
+        profileCount={allProfiles.length}
       />
 
       <SubTrackingWizard
@@ -1416,6 +1651,35 @@ function HomeContent() {
         onClose={() => setShowWizard(false)}
         subscriptions={subscriptions.filter(s => !s.isEssential && s.category !== 'Utility Bills')}
         onFinish={handleAuditFinish}
+      />
+
+      {/* Profile Modals */}
+      <ProfileManagerModal
+        isOpen={showProfileManager}
+        onClose={() => setShowProfileManager(false)}
+        profiles={allProfiles}
+        activeProfileId={activeProfile?.id || null}
+        onSwitchProfile={handleSwitchProfile}
+        onEditProfile={handleEditProfile}
+        onDeleteProfile={handleDeleteProfile}
+        onCreateProfile={() => {
+          setEditingProfile(null);
+          setShowProfileManager(false);
+          setShowProfileSettings(true);
+        }}
+        isPro={isPro}
+        onUnlockPro={() => setShowLicenseModal(true)}
+      />
+
+      <ProfileSettingsModal
+        isOpen={showProfileSettings}
+        onClose={() => {
+          setShowProfileSettings(false);
+          setEditingProfile(null);
+        }}
+        onSave={editingProfile ? handleUpdateProfile : handleCreateProfile}
+        initialData={editingProfile || undefined}
+        title={editingProfile ? 'Edit Profile' : 'Create New Profile'}
       />
 
       {/* Confirmations - Kept inline for now or extract later if needed. 
@@ -1550,6 +1814,23 @@ function HomeContent() {
           <div className="absolute inset-0 rounded-full bg-indigo-500/20 animate-ping pointer-events-none" />
         )}
       </motion.button>
+
+      {/* Password Modal */}
+      <PasswordModal
+        isOpen={showPasswordModal}
+        onClose={() => {
+          setShowPasswordModal(false);
+          setPendingImportFile(null);
+          setPasswordError(false);
+        }}
+        onSubmit={handlePasswordSubmit}
+        title={passwordMode === 'encrypt' ? 'Encrypt Vault Export' : 'Unlock Vault Backup'}
+        description={passwordMode === 'encrypt'
+          ? 'Set a password to protect your financial data. You will need this to restore your backup.'
+          : 'Enter the password you set when exporting this vault.'}
+        submitLabel={passwordMode === 'encrypt' ? 'Download Secure Vault' : 'Unlock & Restore'}
+        isError={passwordError}
+      />
 
       <ToastContainer />
 
