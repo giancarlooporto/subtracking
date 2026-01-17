@@ -96,7 +96,10 @@ function HomeContent() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
   const [showUrgentBanner, setShowUrgentBanner] = useState(true);
-  const [dismissedAlerts, setDismissedAlerts] = useState<string[]>([]);
+  const [dismissedAlerts, setDismissedAlerts] = useState<string[]>(() => {
+    const saved = localStorage.getItem('dismissedCrossProfileAlerts');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [dashboardView, setDashboardView] = useState<'list' | 'calendar'>('list');
   const [isHeaderCompact, setIsHeaderCompact] = useState(false);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
@@ -210,6 +213,11 @@ function HomeContent() {
     }
 
     setIsLoaded(true);
+  }, []);
+
+  // Save dismissed alerts to localStorage
+  useEffect(() => {
+    localStorage.setItem('dismissedCrossProfileAlerts', JSON.stringify(dismissedAlerts));
   }, []);
 
   // Migration Effect: Smartly Split 'Auto & Transport' -> 'Automotive' vs 'Transportation'
