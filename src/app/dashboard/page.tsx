@@ -431,6 +431,39 @@ function HomeContent() {
       });
   }, [filteredSubscriptions]);
 
+  // Cross-Profile Alerts (Check other profiles for urgent bills)
+  const crossProfileAlerts = useMemo(() => {
+    if (!allProfiles || allProfiles.length <= 1) return [];
+
+    const alerts: Array<{ profileId: string; profileName: string; subName: string; days: number; isOverdue: boolean }> = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    allProfiles.forEach(profile => {
+      // Skip current profile
+      if (profile.id === activeProfile?.id) return;
+
+      profile.subscriptions.forEach(sub => {
+        const nextRenewal = getNextOccurrence(sub.renewalDate, sub.billingCycle);
+        const days = getDaysRemaining(nextRenewal);
+        const isPaid = sub.lastPaidDate === formatLocalDate(today);
+
+        // Trigger if: Overdue OR Due within 3 days AND Not Paid Today
+        if ((days <= 3) && !isPaid) {
+          alerts.push({
+            profileId: profile.id,
+            profileName: profile.name,
+            subName: sub.name,
+            days,
+            isOverdue: days < 0
+          });
+        }
+      });
+    });
+
+    return alerts.sort((a, b) => a.days - b.days);
+  }, [allProfiles, activeProfile]);
+
   const markAsPaid = (id: string, amount?: number, date?: Date) => {
     const today = formatLocalDate(date || new Date());
     setSubscriptions(prev => prev.map(sub => {
@@ -994,6 +1027,66 @@ function HomeContent() {
             <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-400 transition-colors" />
           </button>
         </div>
+
+        {/* HERO SECTION */}
+        {/* Cross-Profile Alerts Banner */}
+        {crossProfileAlerts.length > 0 && (
+          <div className="mb-6 space-y-2">
+            {crossProfileAlerts.map((alert, idx) => (
+              <div
+                key={`${alert.profileId}-${alert.subName}-${idx}`}
+                className={cn(
+                  "p-3 rounded-2xl flex items-center justify-between shadow-lg border backdrop-blur-md",
+                  alert.isOverdue
+                    ? "bg-red-500/10 border-red-500/20 shadow-red-500/5 text-red-200"
+                    : "bg-amber-500/10 border-amber-500/20 shadow-amber-500/5 text-amber-200"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                    alert.isOverdue ? "bg-red-500/20" : "bg-amber-500/20"
+                  )}>
+                    <AlertCircle className={cn(
+                      "w-4 h-4",
+                      alert.isOverdue ? "text-red-400" : "text-amber-400"
+                    )} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold leading-none">
+                      {alert.subName} is {alert.isOverdue ? 'Overdue!' : `due in ${alert.days} days`}
+                    </p>
+                    <p className={cn("text-[10px] uppercase tracking-wider font-bold opacity-60 mt-0.5", alert.isOverdue ? "text-red-400" : "text-amber-400")}>
+                      In "{alert.profileName}" Profile
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    // Instant Switch Logic
+                    const target = allProfiles.find(p => p.id === alert.profileId);
+                    if (target) {
+                      setActiveProfile(target);
+                      setSubscriptions(target.subscriptions);
+                      if (target.categories) setUserCategories(target.categories);
+                      localStorage.setItem('subtracking_active_profile', target.id);
+                      showToast(`Switched to ${target.name}`, 'success');
+                    }
+                  }}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shrink-0 ml-4",
+                    alert.isOverdue
+                      ? "bg-red-500 hover:bg-red-600 text-white"
+                      : "bg-amber-500 hover:bg-amber-600 text-black"
+                  )}
+                >
+                  Switch
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* HERO SECTION */}
         <StatsOverview
