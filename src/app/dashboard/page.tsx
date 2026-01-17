@@ -1030,59 +1030,21 @@ function HomeContent() {
 
         {/* HERO SECTION */}
         {/* Cross-Profile Alerts Banner */}
+        {/* Cross-Profile Alerts Banner (Non-intrusive) */}
         {crossProfileAlerts.length > 0 && (
-          <div className="mb-6 space-y-2">
+          <div className="mb-4 flex flex-col items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-500">
             {crossProfileAlerts.map((alert, idx) => (
               <div
                 key={`${alert.profileId}-${alert.subName}-${idx}`}
                 className={cn(
-                  "p-3 rounded-2xl flex items-center justify-between shadow-lg border backdrop-blur-md",
-                  alert.isOverdue
-                    ? "bg-red-500/10 border-red-500/20 shadow-red-500/5 text-red-200"
-                    : "bg-amber-500/10 border-amber-500/20 shadow-amber-500/5 text-amber-200"
+                  "flex items-center gap-2 text-xs font-medium px-4 py-1.5 rounded-full bg-slate-900/50 backdrop-blur-sm border border-slate-800",
+                  alert.isOverdue ? "text-red-400 border-red-500/20" : "text-amber-400 border-amber-500/20"
                 )}
               >
-                <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                    alert.isOverdue ? "bg-red-500/20" : "bg-amber-500/20"
-                  )}>
-                    <AlertCircle className={cn(
-                      "w-4 h-4",
-                      alert.isOverdue ? "text-red-400" : "text-amber-400"
-                    )} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold leading-none">
-                      {alert.subName} is {alert.isOverdue ? 'Overdue!' : `due in ${alert.days} days`}
-                    </p>
-                    <p className={cn("text-[10px] uppercase tracking-wider font-bold opacity-60 mt-0.5", alert.isOverdue ? "text-red-400" : "text-amber-400")}>
-                      In "{alert.profileName}" Profile
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => {
-                    // Instant Switch Logic
-                    const target = allProfiles.find(p => p.id === alert.profileId);
-                    if (target) {
-                      setActiveProfile(target);
-                      setSubscriptions(target.subscriptions);
-                      if (target.categories) setUserCategories(target.categories);
-                      localStorage.setItem('subtracking_active_profile', target.id);
-                      showToast(`Switched to ${target.name}`, 'success');
-                    }
-                  }}
-                  className={cn(
-                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shrink-0 ml-4",
-                    alert.isOverdue
-                      ? "bg-red-500 hover:bg-red-600 text-white"
-                      : "bg-amber-500 hover:bg-amber-600 text-black"
-                  )}
-                >
-                  Switch
-                </button>
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>
+                  <span className="font-bold">{alert.subName}</span> is {alert.isOverdue ? 'Overdue!' : `due in ${alert.days} days`} in <span className="font-bold">"{alert.profileName}"</span>
+                </span>
               </div>
             ))}
           </div>
