@@ -449,9 +449,6 @@ function HomeContent() {
     today.setHours(0, 0, 0, 0);
 
     allProfiles.forEach(profile => {
-      // Skip current profile
-      if (profile.id === activeProfile?.id) return;
-
       profile.subscriptions.forEach(sub => {
         const nextRenewal = getNextOccurrence(sub.renewalDate, sub.billingCycle);
         const days = getDaysRemaining(nextRenewal);
