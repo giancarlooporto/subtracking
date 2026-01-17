@@ -1095,14 +1095,9 @@ function HomeContent() {
                         isUrgent ? "text-red-400" : "text-amber-400"
                       )} />
                     </div>
-                    <div>
-                      <p className="text-xs font-bold leading-none">
-                        {alert.subName} is {alert.isOverdue ? 'Overdue!' : `due in ${alert.days} days`}
-                      </p>
-                      <p className={cn("text-[10px] uppercase tracking-wider font-bold opacity-60 mt-0.5", isUrgent ? "text-red-400" : "text-amber-400")}>
-                        In "{alert.profileName}" Profile
-                      </p>
-                    </div>
+                    <p className="text-xs font-bold leading-none">
+                      {alert.subName} is {alert.isOverdue ? 'Overdue!' : `due in ${alert.days} days`} <span className={cn("text-[10px] uppercase tracking-wider font-bold opacity-60 ml-2", isUrgent ? "text-red-400" : "text-amber-400")}>in "{alert.profileName}"</span>
+                    </p>
                   </div>
 
                   <button
