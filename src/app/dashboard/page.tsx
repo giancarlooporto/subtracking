@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type, Ghost, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type, Ghost, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { Subscription, DEFAULT_CATEGORIES, Profile, getCurrencySymbol } from '../../types';
 import { getDaysRemaining, getNextOccurrence, getCategoryColorHex, getCategoryIcon, calculateMonthlyPrice, cn, formatLocalDate } from '../../lib/utils';
 import {
@@ -1007,10 +1007,6 @@ function HomeContent() {
 
           {/* Actions Area */}
           <div className="flex items-center gap-3">
-            <div className="hidden sm:block">
-              <ShareButton variant="footer" />
-            </div>
-
             {/* Profile Switcher */}
             <button
               onClick={() => setShowProfileManager(true)}
@@ -1095,6 +1091,31 @@ function HomeContent() {
           onStartAudit={() => setShowWizard(true)}
           currency={activeProfile?.currency || 'USD'}
         />
+
+        {!isPro && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={() => setShowLicenseModal(true)}
+            className="cursor-pointer bg-gradient-to-r from-emerald-600/10 to-indigo-600/10 border border-emerald-500/20 p-4 rounded-2xl flex items-center justify-between group hover:border-emerald-500/40 transition-all shadow-lg"
+          >
+            <div className="flex items-center gap-3">
+              <div className="bg-emerald-500/20 p-2 rounded-xl text-emerald-400 group-hover:scale-110 transition-transform">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                  70% Social Discount Available
+                  <span className="bg-emerald-500/20 text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-black uppercase">Limited Time</span>
+                </h4>
+                <p className="text-xs text-slate-400">Share SubTracking with friends to unlock $5.70 Lifetime Access (regular $19).</p>
+              </div>
+            </div>
+            <div className="bg-emerald-500 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20 hidden sm:block">
+              Claim Discount
+            </div>
+          </motion.div>
+        )}
 
         {/* Region Filter (Smart Visibility) */}
 
