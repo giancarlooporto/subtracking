@@ -80,11 +80,11 @@ export default function FindUnusedSubscriptionsPost() {
                         <h2 className="text-3xl font-black mt-16 mb-6">Why Skip the Bank Login?</h2>
 
                         <p>
-                            Services like Rocket Money, Truebill, and others use Plaid to connect to your bank. While convenient, this approach has serious drawbacks:
+                            Many popular subscription tracking apps use third-party connection services to link to your bank. While convenient, this approach has serious drawbacks:
                         </p>
 
                         <ul className="space-y-3">
-                            <li><strong>Security Risk:</strong> Your bank credentials are stored by a third party. If Plaid or the app is hacked, your entire financial history is exposed.</li>
+                            <li><strong>Security Risk:</strong> Your bank credentials are stored by a third-party service. If the connection provider or the app is hacked, your entire financial history is exposed.</li>
                             <li><strong>Terms of Service Violations:</strong> Many banks explicitly forbid sharing login credentials. You could void fraud protection.</li>
                             <li><strong>Privacy Concerns:</strong> These apps see ALL transactions, not just subscriptions. Your grocery purchases, medical bills, everything.</li>
                             <li><strong>Data Sales:</strong> Some "free" apps make money by selling your financial data to advertisers.</li>

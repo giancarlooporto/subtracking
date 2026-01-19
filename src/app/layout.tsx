@@ -47,9 +47,9 @@ export const metadata: Metadata = {
     "multi-profile subscription manager",
 
     // Competitor alternative keywords
-    "rocket money alternative",
-    "truebill alternative privacy",
-    "subscription tracker without plaid",
+    "automated tracker alternative",
+    "subscription tracker alternative privacy",
+    "subscription tracker without bank sync",
 
     // Value proposition keywords
     "lifetime subscription tracker",

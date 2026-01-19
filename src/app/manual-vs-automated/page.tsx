@@ -3,22 +3,21 @@ import Link from 'next/link';
 import { Shield, DollarSign, Lock, Zap, Check, X, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-    title: 'Privacy-First Alternative to Rocket Money | SubTracking',
-    description: 'Looking for a Rocket Money alternative that doesn\'t require bank login? SubTracking offers manual tracking, complete privacy, and one-time payment. Compare features and pricing.',
+    title: 'Manual vs Automated Subscription Trackers | Privacy Comparison',
+    description: 'Compare manual subscription tracking vs automated bank-connected apps. See which approach offers better privacy, security, and cost savings.',
     keywords: [
-        'rocket money alternative',
-        'truebill alternative',
-        'rocket money privacy alternative',
-        'subscription tracker no bank login',
-        'rocket money vs subtracking',
-        'manual subscription tracker',
+        'manual vs automated subscription tracker',
+        'subscription tracker privacy comparison',
+        'bank connected tracker risks',
+        'manual subscription manager benefits',
+        'automated subscription tracker pros cons',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/vs-rocket-money',
+        canonical: 'https://subtracking.app/manual-vs-automated',
     },
 };
 
-export default function VsRocketMoneyPage() {
+export default function ManualVsAutomatedPage() {
     return (
         <div className="min-h-screen bg-slate-950 text-slate-100">
             {/* Navigation */}
@@ -42,17 +41,16 @@ export default function VsRocketMoneyPage() {
                 <div className="max-w-4xl mx-auto text-center space-y-8">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-xs font-black uppercase tracking-widest">
                         <Shield className="w-3.5 h-3.5" />
-                        Privacy-First Alternative
+                        Privacy-First Comparison
                     </div>
 
                     <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.1]">
-                        Looking for a<br />
-                        <span className="text-indigo-500">Privacy-First Alternative</span><br />
-                        to Rocket Money?
+                        Manual Tracking vs.<br />
+                        <span className="text-indigo-500">Automated Apps</span>
                     </h1>
 
                     <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-                        If you're concerned about sharing bank credentials or prefer a one-time payment over monthly subscriptions, SubTracking might be the alternative you're looking for.
+                        Should you connect your bank account to an app or track subscriptions manually? Here's an honest comparison of privacy, security, and features.
                     </p>
                 </div>
             </section>
@@ -62,7 +60,7 @@ export default function VsRocketMoneyPage() {
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-black mb-4">Feature Comparison</h2>
-                        <p className="text-slate-400">Rocket Money vs. SubTracking</p>
+                        <p className="text-slate-400">Automated Trackers vs. SubTracking (Manual)</p>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -70,8 +68,8 @@ export default function VsRocketMoneyPage() {
                             <thead className="bg-white/5">
                                 <tr>
                                     <th className="text-left p-4 font-bold">Feature</th>
-                                    <th className="text-center p-4 font-bold">Rocket Money</th>
-                                    <th className="text-center p-4 font-bold text-indigo-400">SubTracking</th>
+                                    <th className="text-center p-4 font-bold text-slate-400">Automated Apps</th>
+                                    <th className="text-center p-4 font-bold text-indigo-400">SubTracking (Manual)</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
@@ -79,33 +77,31 @@ export default function VsRocketMoneyPage() {
                                     {
                                         category: 'Privacy & Security',
                                         features: [
-                                            { name: 'Requires Bank Login', rm: true, st: false },
-                                            { name: 'Uses Plaid', rm: true, st: false },
-                                            { name: 'Cloud Data Storage', rm: true, st: false },
-                                            { name: 'Local Data Only', rm: false, st: true },
-                                            { name: 'Zero Data Collection', rm: false, st: true },
+                                            { name: 'Requires Bank Login', auto: true, manual: false },
+                                            { name: 'Uses 3rd Party Connectors', auto: true, manual: false },
+                                            { name: 'Cloud Data Storage', auto: true, manual: false },
+                                            { name: 'Local Data Only', auto: false, manual: true },
+                                            { name: 'Zero Data Collection', auto: false, manual: true },
                                         ],
                                     },
                                     {
                                         category: 'Pricing',
                                         features: [
-                                            { name: 'Monthly Cost', rm: '$6-12/month', st: false },
-                                            { name: 'One-Time Payment', rm: false, st: '$19 lifetime' },
-                                            { name: 'Free Trial', rm: '7 days', st: 'Forever (basic)' },
-                                            { name: 'Bill Negotiation Fee', rm: '35-60% of savings', st: false },
+                                            { name: 'Monthly Cost', auto: '$5-15/month', manual: false },
+                                            { name: 'One-Time Payment', auto: false, manual: '$19 lifetime' },
+                                            { name: 'Free Trial', auto: 'Often limited', manual: 'Forever (basic)' },
+                                            { name: 'Bill Negotiation Fee', auto: '30-60% of savings', manual: false },
                                         ],
                                     },
                                     {
                                         category: 'Features',
                                         features: [
-                                            { name: 'Subscription Tracking', rm: true, st: true },
-                                            { name: 'Renewal Alerts', rm: true, st: true },
-                                            { name: 'Spending Analytics', rm: true, st: true },
-                                            { name: 'Calendar View', rm: 'Limited', st: true },
-                                            { name: 'Multi-Profile Support', rm: false, st: true },
-                                            { name: 'Ghost Cost Calculator', rm: false, st: true },
-                                            { name: 'Automatic Bill Negotiation', rm: true, st: false },
-                                            { name: 'Automatic Transaction Tracking', rm: true, st: false },
+                                            { name: 'Subscription Tracking', auto: true, manual: true },
+                                            { name: 'Renewal Alerts', auto: true, manual: true },
+                                            { name: 'Spending Analytics', auto: true, manual: true },
+                                            { name: 'Ghost Cost Calculator', auto: false, manual: true },
+                                            { name: 'Automatic Bill Negotiation', auto: true, manual: false },
+                                            { name: 'Automatic Transaction Import', auto: true, manual: false },
                                         ],
                                     },
                                 ].flatMap((section) =>
@@ -113,25 +109,25 @@ export default function VsRocketMoneyPage() {
                                         <tr key={`${section.category}-${i}`}>
                                             <td className="p-4">{feature.name}</td>
                                             <td className="p-4 text-center">
-                                                {typeof feature.rm === 'boolean' ? (
-                                                    feature.rm ? (
-                                                        <Check className="w-5 h-5 text-green-400 mx-auto" />
+                                                {typeof feature.auto === 'boolean' ? (
+                                                    feature.auto ? (
+                                                        <Check className="w-5 h-5 text-green-400/50 mx-auto" />
                                                     ) : (
                                                         <X className="w-5 h-5 text-slate-600 mx-auto" />
                                                     )
                                                 ) : (
-                                                    <span className="text-slate-300">{feature.rm}</span>
+                                                    <span className="text-slate-300">{feature.auto}</span>
                                                 )}
                                             </td>
                                             <td className="p-4 text-center">
-                                                {typeof feature.st === 'boolean' ? (
-                                                    feature.st ? (
+                                                {typeof feature.manual === 'boolean' ? (
+                                                    feature.manual ? (
                                                         <Check className="w-5 h-5 text-indigo-400 mx-auto" />
                                                     ) : (
                                                         <X className="w-5 h-5 text-slate-600 mx-auto" />
                                                     )
                                                 ) : (
-                                                    <span className="text-indigo-300 font-bold">{feature.st}</span>
+                                                    <span className="text-indigo-300 font-bold">{feature.manual}</span>
                                                 )}
                                             </td>
                                         </tr>
@@ -147,18 +143,18 @@ export default function VsRocketMoneyPage() {
             <section className="py-20 px-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl font-black mb-4">Which is Right for You?</h2>
+                        <h2 className="text-4xl font-black mb-4">Which approach is right for you?</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Choose Rocket Money */}
+                        {/* Choose Automated */}
                         <div className="p-8 rounded-3xl border border-white/10 bg-white/5">
-                            <h3 className="text-2xl font-bold mb-6">Choose Rocket Money if...</h3>
+                            <h3 className="text-2xl font-bold mb-6">Choose Automated Apps if...</h3>
                             <ul className="space-y-4">
                                 {[
-                                    'You want fully automatic tracking (despite bank login)',
-                                    'You need bill negotiation services',
-                                    'You prefer AI-powered insights',
+                                    'You want automatic tracking (despite bank login)',
+                                    'You specifically need bill negotiation services',
+                                    'You prefer AI-powered insights over privacy',
                                     'You don\'t mind monthly subscription fees',
                                     'You\'re comfortable with cloud data storage',
                                 ].map((item, i) => (
@@ -196,31 +192,24 @@ export default function VsRocketMoneyPage() {
             <section className="py-20 px-6 bg-slate-900/30">
                 <div className="max-w-4xl mx-auto">
                     <div className="p-8 rounded-3xl border border-blue-500/20 bg-blue-500/5">
-                        <h3 className="text-2xl font-bold mb-4">Our Honest Take</h3>
+                        <h3 className="text-2xl font-bold mb-4">The Verdict</h3>
                         <div className="space-y-4 text-slate-300 leading-relaxed">
                             <p>
-                                <strong>Rocket Money</strong> is a powerful tool if you want automated tracking and bill negotiation. Their AI-powered features can help you save money, and many users love the convenience of automatic transaction categorization.
+                                <strong>Automated trackers</strong> are powerful tools if you prioritize convenience over privacy. Their automatic features can save time, and many users enjoy the hands-off approach to transaction categorization.
                             </p>
                             <p>
-                                However, it requires linking your bank account via Plaid, which means:
+                                However, this convenience comes at a cost: connecting your bank account means storing credentials with third parties, sharing transaction data, and usually paying a monthly recurring fee.
                             </p>
-                            <ul className="list-disc list-inside space-y-2 ml-4">
-                                <li>Your bank credentials are stored by a third party</li>
-                                <li>Rocket Money can see ALL your transactions (not just subscriptions)</li>
-                                <li>You\'re paying $6-12/month indefinitely ($72-144/year)</li>
-                                <li>Your financial data is stored in the cloud</li>
-                            </ul>
                             <p>
-                                <strong>SubTracking</strong> takes a different approach. We believe your financial data should stay on your device. Yes, it requires manual entry, but in exchange you get:
+                                <strong>SubTracking</strong> offers a privacy-first alternative. By focusing on manual tracking, we ensure your financial data stays on your device.
                             </p>
                             <ul className="list-disc list-inside space-y-2 ml-4">
                                 <li>Complete privacy—no bank login ever</li>
-                                <li>One-time $19 payment (own it forever)</li>
+                                <li>One-time payment (own it forever)</li>
                                 <li>Local storage only (works offline)</li>
-                                <li>Simple, focused features without bloat</li>
                             </ul>
                             <p className="pt-4 font-bold">
-                                Bottom line: If automation is worth trading privacy and paying monthly, Rocket Money is solid. If privacy matters more and you prefer ownership over subscription, try SubTracking.
+                                Bottom line: If you prefer automation and don't mind data sharing, automated apps are a good choice. If privacy, security, and ownership matter more to you, SubTracking is the safer option.
                             </p>
                         </div>
                     </div>
@@ -231,7 +220,7 @@ export default function VsRocketMoneyPage() {
             <section className="py-20 px-6">
                 <div className="max-w-4xl mx-auto rounded-[40px] bg-gradient-to-b from-indigo-600 to-indigo-700 p-12 md:p-20 text-center space-y-8">
                     <h2 className="text-4xl md:text-6xl font-black text-white">
-                        Try the privacy-first alternative
+                        Try the privacy-first tracker
                     </h2>
                     <p className="text-indigo-100/80 text-lg max-w-xl mx-auto">
                         Free to start. $19 for lifetime PRO access. No bank login required.
