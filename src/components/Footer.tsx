@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { siteConfig } from '../../siteConfig';
 import { Zap } from 'lucide-react';
+import { ShareButton } from './ShareButton';
 
 interface FooterProps {
     isPro?: boolean;
@@ -30,6 +31,11 @@ export function Footer({ isPro, onUnlockPro }: FooterProps) {
                             Unlock Pro Features
                         </button>
                     )}
+                </div>
+
+                {/* Share Button */}
+                <div className="mb-2">
+                    <ShareButton variant="footer" />
                 </div>
 
                 {/* Copyright */}

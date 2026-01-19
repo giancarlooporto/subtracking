@@ -10,6 +10,7 @@ import { cn } from '../lib/utils';
 import { VideoModal } from '../components/VideoModal';
 import { FAQSection } from '../components/FAQSection';
 import { ImageCarousel } from '../components/ImageCarousel';
+import { ShareButton } from '../components/ShareButton';
 
 export default function LandingPage() {
     const [isVideoOpen, setIsVideoOpen] = useState(false);
@@ -584,6 +585,9 @@ export default function LandingPage() {
                                 Get Started Free
                                 <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
                             </Link>
+                            <div className="mt-6 flex justify-center">
+                                <ShareButton variant="cta" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -601,6 +605,9 @@ export default function LandingPage() {
                         <p className="text-slate-500 text-sm leading-relaxed">
                             The privacy-first subscription tracker. No bank logins, no cloud tracking, just simple manual control.
                         </p>
+                        <div className="pt-2">
+                            <ShareButton variant="footer" />
+                        </div>
                     </div>
 
                     {/* Product */}

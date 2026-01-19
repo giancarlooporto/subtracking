@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
+import { ShareButton } from '../../../components/ShareButton';
 
 export const metadata: Metadata = {
     title: 'How to Find Unused Subscriptions Without Linking Your Bank Account',
@@ -239,12 +240,15 @@ export default function FindUnusedSubscriptionsPost() {
                             <p className="text-slate-400 mb-6">
                                 SubTracking helps you stay on top of recurring payments without connecting your bank.
                             </p>
-                            <Link
-                                href="/dashboard"
-                                className="inline-flex bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-indigo-500 transition-colors"
-                            >
-                                Try Free →
-                            </Link>
+                            <div className="flex flex-col sm:flex-row items-center gap-4">
+                                <Link
+                                    href="/dashboard"
+                                    className="inline-flex bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-indigo-500 transition-colors"
+                                >
+                                    Try Free →
+                                </Link>
+                                <ShareButton variant="default" />
+                            </div>
                         </div>
                     </div>
                 </div>

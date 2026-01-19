@@ -31,6 +31,7 @@ import { ToastProvider, useToast } from '../../hooks/useToast';
 import ToastContainer from '../../components/ToastContainer';
 import { Footer } from '../../components/Footer';
 import { InstallBanner } from '../../components/InstallBanner';
+import { ShareButton } from '../../components/ShareButton';
 import { generateICSFile, generateBulkICSFile } from '../../lib/calendar';
 
 import { PaymentModal } from '../../components/PaymentModal';
@@ -1004,24 +1005,31 @@ function HomeContent() {
             </h1>
           </div>
 
-          {/* Profile Switcher */}
-          <button
-            onClick={() => setShowProfileManager(true)}
-            className="flex items-center gap-2 bg-slate-900/60 hover:bg-slate-800/80 backdrop-blur-md pl-1.5 pr-4 py-1.5 rounded-full border border-white/5 transition-all group shadow-lg hover:border-indigo-500/30 hover:scale-105 active:scale-95 duration-200"
-          >
-            <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shadow-inner group-hover:bg-indigo-500/20 transition-colors">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10">
-                <Wallet className="w-4 h-4 text-white" />
+          {/* Actions Area */}
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:block">
+              <ShareButton variant="footer" />
+            </div>
+
+            {/* Profile Switcher */}
+            <button
+              onClick={() => setShowProfileManager(true)}
+              className="flex items-center gap-2 bg-slate-900/60 hover:bg-slate-800/80 backdrop-blur-md pl-1.5 pr-4 py-1.5 rounded-full border border-white/5 transition-all group shadow-lg hover:border-indigo-500/30 hover:scale-105 active:scale-95 duration-200"
+            >
+              <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shadow-inner group-hover:bg-indigo-500/20 transition-colors">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10">
+                  <Wallet className="w-4 h-4 text-white" />
+                </div>
               </div>
-            </div>
-            <div className="flex flex-col items-start mr-1">
-              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">VAULT</span>
-              <span className="text-sm font-bold text-slate-200 group-hover:text-white transition-colors max-w-[120px] truncate leading-none">
-                {activeProfile?.name || 'Main Profile'}
-              </span>
-            </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-400 transition-colors" />
-          </button>
+              <div className="flex flex-col items-start mr-1">
+                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">VAULT</span>
+                <span className="text-sm font-bold text-slate-200 group-hover:text-white transition-colors max-w-[120px] truncate leading-none">
+                  {activeProfile?.name || 'Main Profile'}
+                </span>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-400 transition-colors" />
+            </button>
+          </div>
         </div>
 
         {/* Cross-Profile Alert Cards (Yellow Kind Style) */}
