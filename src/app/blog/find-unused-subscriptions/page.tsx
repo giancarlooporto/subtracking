@@ -254,6 +254,12 @@ export default function FindUnusedSubscriptionsPost() {
                             </div>
                         </div>
                     </div>
+                    {/* Legal Disclaimer */}
+                    <div className="mt-20 pt-8 border-t border-white/5 text-center">
+                        <p className="text-[10px] text-slate-700 leading-relaxed uppercase tracking-widest">
+                            Disclaimer: All brand names and logos mentioned in this article (e.g., Netflix, Spotify, Adobe, Planet Fitness, Dropbox) are trademarks of their respective owners. Their mention is for informational and educational purposes only and does not imply any affiliation, sponsorship, or endorsement. SubTracking is an independent tracking tool.
+                        </p>
+                    </div>
                 </div>
             </article>
         </div>
