@@ -180,7 +180,9 @@ export default function ManualVsAutomatedPage() {
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-start gap-3 text-slate-300">
                                         <Check className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
-                                        {item}
+                                        {i === 0 ? 'Privacy is your #1 priority' : item}
+                                        {i === 1 && <Link href="/no-bank-login" className="text-indigo-400 hover:underline ml-1">(See Why)</Link>}
+                                        {i === 3 && <Link href="/privacy-subscription-tracker" className="text-indigo-400 hover:underline ml-1">(Read More)</Link>}
                                     </li>
                                 ))}
                             </ul>

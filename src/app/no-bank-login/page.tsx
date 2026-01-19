@@ -98,7 +98,12 @@ export default function NoBankLoginPage() {
                             {
                                 icon: <ShieldOff className="w-6 h-6" />,
                                 title: 'Privacy Concerns',
-                                description: 'Connected apps can see ALL transactions, not just subscriptions. Your data may be sold to advertisers.',
+                                description: (
+                                    <>
+                                        Connected apps can see ALL transactions, not just subscriptions. {' '}
+                                        <Link href="/privacy-subscription-tracker" className="text-yellow-400 hover:underline">Read about our privacy-first approach.</Link>
+                                    </>
+                                ),
                                 color: 'yellow',
                             },
                         ].map((risk, i) => (
@@ -122,7 +127,10 @@ export default function NoBankLoginPage() {
                 <div className="max-w-5xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-black mb-4">Manual Tracking Made Easy</h2>
-                        <p className="text-slate-400 text-lg">3 simple steps to complete control</p>
+                        <p className="text-slate-400 text-lg">
+                            3 simple steps to complete control. {' '}
+                            <Link href="/blog/find-unused-subscriptions" className="text-blue-400 hover:underline font-bold">Read our full audit guide.</Link>
+                        </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

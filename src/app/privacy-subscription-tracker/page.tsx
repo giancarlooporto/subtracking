@@ -88,7 +88,12 @@ export default function PrivacySubscriptionTrackerPage() {
                             {
                                 icon: <Lock className="w-6 h-6" />,
                                 title: 'No Bank Login',
-                                description: 'Never connect your bank account. Manual tracking means complete control.',
+                                description: (
+                                    <>
+                                        Never connect your bank account. Manual tracking means complete control. {' '}
+                                        <Link href="/no-bank-login" className="text-emerald-400 hover:underline">Learn why skipping the bank login is safer.</Link>
+                                    </>
+                                ),
                             },
                             {
                                 icon: <Eye className="w-6 h-6" />,
@@ -121,7 +126,10 @@ export default function PrivacySubscriptionTrackerPage() {
                 <div className="max-w-5xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-black mb-4">Privacy Comparison</h2>
-                        <p className="text-slate-400 text-lg">SubTracking vs. Cloud-Based Trackers</p>
+                        <p className="text-slate-400 text-lg">
+                            SubTracking vs. Cloud-Based Trackers. {' '}
+                            <Link href="/manual-vs-automated" className="text-emerald-400 hover:underline font-bold">See the full comparison.</Link>
+                        </p>
                     </div>
 
                     <div className="overflow-x-auto">

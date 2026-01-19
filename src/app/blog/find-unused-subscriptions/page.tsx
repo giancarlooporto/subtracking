@@ -75,13 +75,15 @@ export default function FindUnusedSubscriptionsPost() {
                         </p>
 
                         <p>
-                            This guide shows you how to find and cancel unused subscriptions <strong>without</strong> sharing bank credentials, using Plaid, or trusting third-party apps with your transaction history.
+                            This guide shows you how to find and cancel unused subscriptions <strong>without</strong> sharing bank credentials,
+                            using Plaid, or <Link href="/no-bank-login" className="text-indigo-400 hover:underline">trusting third-party apps</Link> with your transaction history.
                         </p>
 
                         <h2 className="text-3xl font-black mt-16 mb-6">Why Skip the Bank Login?</h2>
 
                         <p>
-                            Many popular subscription tracking apps use third-party connection services to link to your bank. While convenient, this approach has serious drawbacks:
+                            Many popular subscription tracking apps use third-party connection services to link to your bank.
+                            While convenient, this approach has <Link href="/privacy-subscription-tracker" className="text-indigo-400 hover:underline">serious privacy drawbacks</Link>:
                         </p>
 
                         <ul className="space-y-3">
@@ -196,7 +198,8 @@ export default function FindUnusedSubscriptionsPost() {
                         </p>
 
                         <p>
-                            This is where tools like <strong>SubTracking</strong> come in. Unlike bank-connected apps, SubTracking:
+                            This is where tools like <Link href="/" className="text-indigo-400 font-bold hover:underline">SubTracking</Link> come in.
+                            Unlike bank-connected apps, SubTracking:
                         </p>
 
                         <ul>
