@@ -590,18 +590,52 @@ export default function LandingPage() {
             </section>
 
             {/* FOOTER */}
-            <footer className="py-12 border-t border-white/5 text-center px-6">
-                <div className="max-w-7xl mx-auto flex flex-col items-center gap-6">
-                    <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded bg-indigo-500 flex items-center justify-center">
-                            <Wallet className="w-4 h-4 text-white" />
+            <footer className="py-20 border-t border-white/5 px-6 bg-slate-950">
+                <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-8">
+                    {/* Brand Column */}
+                    <div className="col-span-2 md:col-span-1 space-y-4">
+                        <div className="flex items-center gap-2">
+                            <img src="/logo.png" alt="SubTracking" className="w-8 h-8 rounded-lg" />
+                            <span className="font-bold text-slate-200 text-lg">SubTracking</span>
                         </div>
-                        <span className="font-bold text-slate-200">SubTracking</span>
+                        <p className="text-slate-500 text-sm leading-relaxed">
+                            The privacy-first subscription tracker. No bank logins, no cloud tracking, just simple manual control.
+                        </p>
                     </div>
-                    <p className="text-slate-500 text-xs">
-                        Built for those who value privacy and financial freedom.<br />
-                        &copy; 2026 SubTracking. No rights reserved. Go build something great.
-                    </p>
+
+                    {/* Product */}
+                    <div className="space-y-4">
+                        <h4 className="font-bold text-slate-200">Product</h4>
+                        <ul className="space-y-3 text-sm text-slate-400">
+                            <li><Link href="/dashboard" className="hover:text-indigo-400 transition-colors">Dashboard</Link></li>
+                            <li><Link href="/privacy-subscription-tracker" className="hover:text-indigo-400 transition-colors">Privacy Features</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Resources */}
+                    <div className="space-y-4">
+                        <h4 className="font-bold text-slate-200">Resources</h4>
+                        <ul className="space-y-3 text-sm text-slate-400">
+                            <li><Link href="/blog/find-unused-subscriptions" className="hover:text-indigo-400 transition-colors">Blog: Find Unused Subs</Link></li>
+                            <li><Link href="/no-bank-login" className="hover:text-indigo-400 transition-colors">Why No Bank Login?</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Compare */}
+                    <div className="space-y-4">
+                        <h4 className="font-bold text-slate-200">Compare</h4>
+                        <ul className="space-y-3 text-sm text-slate-400">
+                            <li><Link href="/manual-vs-automated" className="hover:text-indigo-400 transition-colors">Manual vs Automated</Link></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-600">
+                    <p>&copy; 2026 SubTracking. Built for privacy.</p>
+                    <div className="flex gap-6">
+                        <Link href="/privacy" className="hover:text-slate-400">Privacy Policy</Link>
+                        <Link href="/terms" className="hover:text-slate-400">Terms of Service</Link>
+                    </div>
                 </div>
             </footer>
 
