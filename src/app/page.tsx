@@ -149,6 +149,17 @@ export default function LandingPage() {
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </Link>
 
+                        {/* Early Bird Discount Nudge */}
+                        <div className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 backdrop-blur-sm">
+                            <div className="flex items-center justify-center gap-2 flex-wrap">
+                                <span className="text-amber-400 font-black text-sm">🔥 First 100 Users:</span>
+                                <span className="text-white font-bold text-sm">60% OFF with code</span>
+                                <code className="text-xs font-mono font-black bg-amber-500/20 text-amber-300 px-2.5 py-1 rounded border border-amber-500/40">
+                                    TUVCUUX
+                                </code>
+                            </div>
+                        </div>
+
                     </motion.div>
                 </div>
 
@@ -500,11 +511,33 @@ export default function LandingPage() {
                                     PRO
                                     <Zap className="w-5 h-5 text-indigo-400 fill-indigo-400" />
                                 </h3>
+
+                                {/* Early Bird Discount Banner */}
+                                <div className="my-4 p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-2 border-amber-500/40 relative overflow-hidden group/discount">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-orange-500/10 animate-pulse" />
+                                    <div className="relative z-10 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest">🎉 First 100 Users</span>
+                                            <span className="text-xs font-black text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded-full">60% OFF</span>
+                                        </div>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-3xl font-black text-white">$7.60</span>
+                                            <span className="text-lg font-bold text-slate-400 line-through">$19</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 pt-1">
+                                            <code className="text-xs font-mono font-bold bg-slate-900/60 text-amber-300 px-3 py-1.5 rounded-lg border border-amber-500/30">
+                                                TUVCUUX
+                                            </code>
+                                            <span className="text-[10px] text-amber-200/60 font-medium">← Use at checkout</span>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-5xl font-black">$19</span>
+                                    <span className="text-5xl font-black text-slate-500/40 line-through">$19</span>
                                     <span className="text-slate-500 font-medium tracking-tight">/one-time</span>
                                 </div>
-                                <p className="text-indigo-200/60 text-sm pt-4">For the optimization masters.</p>
+                                <p className="text-indigo-200/60 text-sm pt-2">For the optimization masters.</p>
 
                                 <ul className="space-y-4 pt-10">
                                     {[
