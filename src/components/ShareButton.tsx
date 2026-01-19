@@ -12,20 +12,45 @@ export function ShareButton({ variant = 'default', onShare }: ShareButtonProps) 
     const [copied, setCopied] = useState(false);
 
     const shareText = "I'm using SubTracking to track my subscriptions without connecting my bank account. Everything stays private and local. Worth checking out: https://subtracking.app";
+    const shareUrl = "https://subtracking.app";
 
     const handleShare = async () => {
         try {
-            await navigator.clipboard.writeText(shareText);
-            setCopied(true);
+            // 1. Try Native Web Share API (Mobile/Safari/Chrome popup)
+            if (navigator.share) {
+                await navigator.share({
+                    title: 'SubTracking',
+                    text: shareText,
+                    url: shareUrl,
+                });
+                // After the share sheet closes, we treat as shared
+                localStorage.setItem('subtracking-has-shared', 'true');
+                if (onShare) onShare();
+                setCopied(true);
+            }
+            // 2. Fallback to Twitter/X Popup Window
+            else {
+                const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+                window.open(twitterUrl, 'share-subtracking', 'width=600,height=400,menubar=no,toolbar=no,status=no');
 
-            // Set persistence
-            localStorage.setItem('subtracking-has-shared', 'true');
+                // Copy to clipboard as backup
+                await navigator.clipboard.writeText(shareText);
 
-            if (onShare) onShare();
+                // Mark as shared immediately upon opening intent
+                localStorage.setItem('subtracking-has-shared', 'true');
+                if (onShare) onShare();
+                setCopied(true);
+            }
 
             setTimeout(() => setCopied(false), 2000);
         } catch (err) {
-            console.error('Failed to copy:', err);
+            // Only handle if it wasn't a user-cancel
+            if (err instanceof Error && err.name !== 'AbortError') {
+                console.error('Failed to share:', err);
+                // Fallback to clipboard if everything else fails
+                await navigator.clipboard.writeText(shareText);
+                setCopied(true);
+            }
         }
     };
 
