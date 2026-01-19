@@ -4,7 +4,7 @@ import { ArrowLeft, Calendar, User } from 'lucide-react';
 
 export const metadata: Metadata = {
     title: 'How to Find Unused Subscriptions Without Linking Your Bank Account',
-    description: 'A step-by-step guide to finding and canceling unused subscriptions without giving apps access to your bank. Save $450/year while keeping your financial data private.',
+    description: 'A step-by-step guide to finding and canceling unused subscriptions without giving apps access to your bank. Reduce wasted spending while keeping your financial data private.',
     keywords: [
         'find unused subscriptions',
         'cancel subscriptions without bank login',
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     },
     openGraph: {
         title: 'How to Find Unused Subscriptions Without Bank Login',
-        description: 'Save $450/year by finding unused subscriptions—no bank login required.',
+        description: 'Find unused subscriptions and reduce wasted spending—no bank login required.',
         type: 'article',
         publishedTime: '2026-01-19T00:00:00.000Z',
         authors: ['SubTracking'],
@@ -66,7 +66,7 @@ export default function FindUnusedSubscriptionsPost() {
                     {/* Content */}
                     <div className="prose prose-invert prose-lg max-w-none">
                         <p className="text-xl text-slate-300 leading-relaxed mb-8">
-                            The average person wastes <strong>$450 per year</strong> on subscriptions they don't use. Credit card statements show services you forgot existed, trial periods that auto-renewed, and "just $9.99/month" charges that add up fast.
+                            Studies show the average person wastes <strong>up to $450 per year</strong> on subscriptions they don't use. Credit card statements show services you forgot existed, trial periods that auto-renewed, and "just $9.99/month" charges that add up fast.
                         </p>
 
                         <p>

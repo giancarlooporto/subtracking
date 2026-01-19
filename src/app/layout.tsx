@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "SubTracking - Privacy-First Subscription Tracker App",
 
   // SEO-optimized description (155 chars for ideal snippet length)
-  description: "Track subscriptions without bank logins. Find unused subscriptions, save $450/year. Privacy-first expense tracker. $19 lifetime. No cloud storage.",
+  description: "Track subscriptions without bank logins. Find unused subscriptions and reduce wasted spending. Privacy-first expense tracker. $19 lifetime. No cloud storage.",
 
   // Enhanced keywords based on search volume research
   keywords: [
@@ -82,8 +82,8 @@ export const metadata: Metadata = {
 
   // Enhanced OpenGraph with more details
   openGraph: {
-    title: "SubTracking - Privacy-First Subscription Tracker (Save $450/Year)",
-    description: "Track subscriptions without giving up privacy. No bank logins, no cloud storage. Find unused subscriptions and stop wasting money. $19 lifetime access.",
+    title: "SubTracking - Privacy-First Subscription Tracker",
+    description: "Track subscriptions without giving up privacy. No bank logins, no cloud storage. Find unused subscriptions and reduce wasted spending. $19 lifetime access.",
     url: "https://subtracking.app",
     siteName: "SubTracking",
     images: [
@@ -102,7 +102,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "SubTracking - Track Subscriptions Privately (No Bank Login)",
-    description: "Privacy-first subscription tracker. Find unused subscriptions and save $450/year. $19 lifetime, no monthly fees.",
+    description: "Privacy-first subscription tracker. Find unused subscriptions and reduce wasted spending. $19 lifetime, no monthly fees.",
     images: ["https://subtracking.app/og-image.png"],
     creator: "@subtracking",
     site: "@subtracking",

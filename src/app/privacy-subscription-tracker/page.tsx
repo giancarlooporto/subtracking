@@ -42,7 +42,7 @@ export default function PrivacySubscriptionTrackerPage() {
                 <div className="max-w-4xl mx-auto text-center space-y-8">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-emerald-400 text-xs font-black uppercase tracking-widest">
                         <Shield className="w-3.5 h-3.5" />
-                        100% Privacy Guaranteed
+                        Privacy by Design
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[1.1]">
@@ -180,7 +180,7 @@ export default function PrivacySubscriptionTrackerPage() {
                         Ready to take back your privacy?
                     </h2>
                     <p className="text-emerald-100/80 text-lg max-w-xl mx-auto">
-                        Join thousands tracking subscriptions without sacrificing privacy.
+                        Start tracking subscriptions without sacrificing privacy.
                     </p>
                     <Link
                         href="/dashboard"
