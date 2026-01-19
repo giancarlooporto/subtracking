@@ -255,7 +255,7 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
                     <div className="space-y-2">
                         <div className="text-4xl font-black text-white">$450+</div>
-                        <div className="text-slate-500 text-sm font-bold uppercase tracking-widest">Avg. Yearly Savings</div>
+                        <div className="text-slate-500 text-sm font-bold uppercase tracking-widest">Potential Yearly Savings</div>
                     </div>
                     <div className="space-y-2">
                         <div className="text-4xl font-black text-white">100%</div>
@@ -574,7 +574,7 @@ export default function LandingPage() {
                             Ready to stop the leaks?
                         </h2>
                         <p className="text-indigo-100/80 text-lg max-w-xl mx-auto font-medium">
-                            Join thousands who are decluttering their digital lives and saving real money every month.
+                            Start decluttering your digital life and saving real money every month.
                         </p>
                         <div className="pt-10">
                             <Link
