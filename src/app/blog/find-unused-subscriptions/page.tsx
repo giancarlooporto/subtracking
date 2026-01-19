@@ -182,10 +182,10 @@ export default function FindUnusedSubscriptionsPost() {
                         </p>
 
                         <ul>
-                            <li><strong>Streaming services you shared with an ex</strong> - Still paying for Hulu? Who's watching it?</li>
+                            <li><strong>Streaming services</strong> - Still paying for <Link href="/guides/how-to-cancel-netflix" className="text-indigo-400 hover:underline">Netflix</Link>? Who's watching it?</li>
                             <li><strong>Free trial auto-renewals</strong> - That 7-day HBO Max trial from 6 months ago.</li>
-                            <li><strong>App Store subscriptions</strong> - iPhone users: Settings → Your Name → Subscriptions.</li>
-                            <li><strong>Gym memberships</strong> - The classic. $50/month, haven't gone in a year.</li>
+                            <li><strong>Professional Software</strong> - Escape the <Link href="/guides/how-to-cancel-adobe" className="text-indigo-400 hover:underline">Adobe Creative Cloud</Link> annual plan trap.</li>
+                            <li><strong>Gym memberships</strong> - The classic <Link href="/guides/how-to-cancel-planet-fitness" className="text-indigo-400 hover:underline">Planet Fitness</Link> membership you haven't used in a year.</li>
                             <li><strong>Cloud storage</strong> - Do you really need 2TB on Dropbox AND Google Drive?</li>
                             <li><strong>News/magazine subscriptions</strong> - When did you last read The Athletic?</li>
                             <li><strong>Productivity tools</strong> - That project management app you tried once.</li>

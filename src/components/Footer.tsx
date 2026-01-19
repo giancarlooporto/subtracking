@@ -49,17 +49,41 @@ export function Footer({ isPro, onUnlockPro }: FooterProps) {
                     We do not provide financial advice. Users are responsible for their own data backups and financial decisions.
                 </p>
 
-                {/* Links */}
-                <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-2">
-                    <Link href="/privacy" className="text-xs text-slate-500 hover:text-indigo-400 transition-colors">
-                        Privacy Policy
-                    </Link>
-                    <Link href="/terms" className="text-xs text-slate-500 hover:text-indigo-400 transition-colors">
-                        Terms of Service
-                    </Link>
-                    <a href={`mailto:support@subtracking.app`} className="text-xs text-slate-500 hover:text-indigo-400 transition-colors">
-                        Support
-                    </a>
+                {/* SEO Navigation Links */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-left w-full max-w-4xl pt-8 border-t border-slate-900/30">
+                    <div className="space-y-3">
+                        <h4 className="text-[10px] font-black uppercase tracking-wider text-slate-500">Product</h4>
+                        <ul className="space-y-2">
+                            <li><Link href="/privacy-subscription-tracker" className="text-xs text-slate-400 hover:text-indigo-400">Privacy Features</Link></li>
+                            <li><Link href="/no-bank-login" className="text-xs text-slate-400 hover:text-indigo-400">Why No Bank Login?</Link></li>
+                            <li><Link href="/manual-vs-automated" className="text-xs text-slate-400 hover:text-indigo-400">Manual vs Automated</Link></li>
+                        </ul>
+                    </div>
+                    <div className="space-y-3">
+                        <h4 className="text-[10px] font-black uppercase tracking-wider text-slate-500">Guides</h4>
+                        <ul className="space-y-2">
+                            <li><Link href="/blog/find-unused-subscriptions" className="text-xs text-slate-400 hover:text-indigo-400">Find Unused Subs</Link></li>
+                            <li><Link href="/guides/how-to-cancel-adobe" className="text-xs text-slate-400 hover:text-indigo-400">Cancel Adobe</Link></li>
+                            <li><Link href="/guides/how-to-cancel-netflix" className="text-xs text-slate-400 hover:text-indigo-400">Cancel Netflix</Link></li>
+                            <li><Link href="/guides/how-to-cancel-planet-fitness" className="text-xs text-slate-400 hover:text-indigo-400">Cancel Planet Fitness</Link></li>
+                        </ul>
+                    </div>
+                    <div className="space-y-3">
+                        <h4 className="text-[10px] font-black uppercase tracking-wider text-slate-500">Compare</h4>
+                        <ul className="space-y-2">
+                            <li><Link href="/compare/rocket-money" className="text-xs text-slate-400 hover:text-indigo-400">vs Rocket Money</Link></li>
+                            <li><Link href="/compare/copilot" className="text-xs text-slate-400 hover:text-indigo-400">vs Copilot</Link></li>
+                            <li><Link href="/compare/monarch-money" className="text-xs text-slate-400 hover:text-indigo-400">vs Monarch Money</Link></li>
+                        </ul>
+                    </div>
+                    <div className="space-y-3">
+                        <h4 className="text-[10px] font-black uppercase tracking-wider text-slate-500">Company</h4>
+                        <ul className="space-y-2">
+                            <li><Link href="/privacy" className="text-xs text-slate-400 hover:text-indigo-400">Privacy Policy</Link></li>
+                            <li><Link href="/terms" className="text-xs text-slate-400 hover:text-indigo-400">Terms of Service</Link></li>
+                            <li><a href="mailto:support@subtracking.app" className="text-xs text-slate-400 hover:text-indigo-400">Support</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </footer>
