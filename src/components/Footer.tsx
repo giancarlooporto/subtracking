@@ -63,8 +63,14 @@ export function Footer({ isPro, onUnlockPro }: FooterProps) {
                         <h4 className="text-[10px] font-black uppercase tracking-wider text-slate-500">Guides</h4>
                         <ul className="space-y-2">
                             <li><Link href="/blog/find-unused-subscriptions" className="text-xs text-slate-400 hover:text-indigo-400">Find Unused Subs</Link></li>
+                            <li><Link href="/blog/subscription-tracker-template" className="text-xs text-slate-400 hover:text-indigo-400">Free Excel Template</Link></li>
                             <li><Link href="/guides/how-to-cancel-adobe" className="text-xs text-slate-400 hover:text-indigo-400">Cancel Adobe</Link></li>
                             <li><Link href="/guides/how-to-cancel-netflix" className="text-xs text-slate-400 hover:text-indigo-400">Cancel Netflix</Link></li>
+                            <li><Link href="/guides/how-to-cancel-spotify" className="text-xs text-slate-400 hover:text-indigo-400">Cancel Spotify</Link></li>
+                            <li><Link href="/guides/how-to-cancel-hulu" className="text-xs text-slate-400 hover:text-indigo-400">Cancel Hulu</Link></li>
+                            <li><Link href="/guides/how-to-cancel-disney-plus" className="text-xs text-slate-400 hover:text-indigo-400">Cancel Disney+</Link></li>
+                            <li><Link href="/guides/how-to-cancel-amazon-prime" className="text-xs text-slate-400 hover:text-indigo-400">Cancel Prime</Link></li>
+                            <li><Link href="/guides/how-to-cancel-youtube-premium" className="text-xs text-slate-400 hover:text-indigo-400">Cancel YouTube</Link></li>
                             <li><Link href="/guides/how-to-cancel-planet-fitness" className="text-xs text-slate-400 hover:text-indigo-400">Cancel Planet Fitness</Link></li>
                         </ul>
                     </div>
@@ -74,6 +80,7 @@ export function Footer({ isPro, onUnlockPro }: FooterProps) {
                             <li><Link href="/compare/rocket-money" className="text-xs text-slate-400 hover:text-indigo-400">vs Rocket Money</Link></li>
                             <li><Link href="/compare/copilot" className="text-xs text-slate-400 hover:text-indigo-400">vs Copilot</Link></li>
                             <li><Link href="/compare/monarch-money" className="text-xs text-slate-400 hover:text-indigo-400">vs Monarch Money</Link></li>
+                            <li><Link href="/compare/excel-vs-subtracking" className="text-xs text-slate-400 hover:text-indigo-400">vs Excel / Sheets</Link></li>
                         </ul>
                     </div>
                     <div className="space-y-3">

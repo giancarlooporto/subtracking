@@ -136,7 +136,11 @@ export default function FindUnusedSubscriptionsPost() {
                         <h3 className="text-2xl font-bold mt-12 mb-4">Step 3: Create a Subscription List</h3>
 
                         <p>
-                            Open a spreadsheet or notes app and list every subscription you find:
+                            Open a spreadsheet or notes app and list every subscription you find. If you don't have one yet, you can use our <Link href="/blog/subscription-tracker-template" className="text-indigo-400 hover:underline font-bold">Free Subscription Tracker Template</Link> to get started.
+                        </p>
+
+                        <p>
+                            While a spreadsheet is a great first step, many users find they quickly outgrow it. You can see how SubTracking compares to a <Link href="/compare/excel-vs-subtracking" className="text-indigo-400 hover:underline">manual Excel sheet here</Link>.
                         </p>
 
                         <ul>
@@ -181,14 +185,14 @@ export default function FindUnusedSubscriptionsPost() {
                             Based on data, here are the most commonly forgotten subscriptions:
                         </p>
 
-                        <ul>
-                            <li><strong>Streaming services</strong> - Still paying for <Link href="/guides/how-to-cancel-netflix" className="text-indigo-400 hover:underline">Netflix</Link>? Who's watching it?</li>
-                            <li><strong>Free trial auto-renewals</strong> - That 7-day HBO Max trial from 6 months ago.</li>
+                        <ul className="space-y-3">
+                            <li><strong>Streaming services</strong> - Still paying for <Link href="/guides/how-to-cancel-netflix" className="text-indigo-400 hover:underline">Netflix</Link>, <Link href="/guides/how-to-cancel-hulu" className="text-indigo-400 hover:underline">Hulu</Link>, or <Link href="/guides/how-to-cancel-disney-plus" className="text-indigo-400 hover:underline">Disney+</Link>? Who's actually watching?</li>
+                            <li><strong>Music Subscriptions</strong> - Switch to the free version of <Link href="/guides/how-to-cancel-spotify" className="text-indigo-400 hover:underline">Spotify</Link> or stop paying for <Link href="/guides/how-to-cancel-youtube-premium" className="text-indigo-400 hover:underline">YouTube Premium</Link>.</li>
                             <li><strong>Professional Software</strong> - Escape the <Link href="/guides/how-to-cancel-adobe" className="text-indigo-400 hover:underline">Adobe Creative Cloud</Link> annual plan trap.</li>
+                            <li><strong>Shopping & Shipping</strong> - If you're not ordering daily, it's time to <Link href="/guides/how-to-cancel-amazon-prime" className="text-indigo-400 hover:underline">cancel Amazon Prime</Link>.</li>
                             <li><strong>Gym memberships</strong> - The classic <Link href="/guides/how-to-cancel-planet-fitness" className="text-indigo-400 hover:underline">Planet Fitness</Link> membership you haven't used in a year.</li>
                             <li><strong>Cloud storage</strong> - Do you really need 2TB on Dropbox AND Google Drive?</li>
                             <li><strong>News/magazine subscriptions</strong> - When did you last read The Athletic?</li>
-                            <li><strong>Productivity tools</strong> - That project management app you tried once.</li>
                         </ul>
 
                         <h2 className="text-3xl font-black mt-16 mb-6">Use a Privacy-First Tracker (Like SubTracking)</h2>
