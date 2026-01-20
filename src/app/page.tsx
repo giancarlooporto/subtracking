@@ -251,6 +251,47 @@ export default function LandingPage() {
                 </div>
             </section>
 
+            {/* MISSION STORY SECTION */}
+            <section className="py-24 px-6 relative overflow-hidden bg-indigo-500/[0.02]">
+                <div className="max-w-4xl mx-auto space-y-12 text-center md:text-left">
+                    <div className="flex flex-col md:flex-row items-center gap-12">
+                        <div className="w-48 h-48 rounded-[40px] bg-gradient-to-br from-indigo-500 to-purple-500 p-1 shrink-0 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-2xl mx-auto md:mx-0">
+                            <div className="w-full h-full rounded-[38px] bg-slate-900 flex items-center justify-center overflow-hidden">
+                                <Shield className="w-20 h-20 text-indigo-400 opacity-50" />
+                            </div>
+                        </div>
+                        <div className="space-y-6">
+                            <h2 className="text-3xl font-black text-white">The Mission for Financial Privacy.</h2>
+                            <p className="text-slate-400 text-lg leading-relaxed">
+                                SubTracking was built out of a simple frustration: why does every subscription tracker want full, persistent access to your bank account?
+                            </p>
+                            <p className="text-slate-400 text-lg leading-relaxed">
+                                We believe that your digital life should be private. You shouldn't have to invite a data broker into your wallet just to see if you're overpaying for streaming services or a gym membership.
+                            </p>
+                            <div className="flex items-center gap-4 pt-4 justify-center md:justify-start">
+                                <span className="font-black text-white italic">The SubTracking Team</span>
+                                <div className="h-px w-12 bg-indigo-500/50" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12 border-t border-white/5">
+                        <div className="p-6 rounded-3xl bg-white/5 border border-white/5 text-center space-y-2 group hover:border-indigo-500/30 transition-all">
+                            <div className="text-indigo-400 font-black text-xs tracking-widest uppercase">The Promise</div>
+                            <p className="text-xs text-slate-500 leading-relaxed font-bold">Privacy is the feature. We will never build a "bank sync" that harvests your data.</p>
+                        </div>
+                        <div className="p-6 rounded-3xl bg-white/5 border border-white/5 text-center space-y-2 group hover:border-indigo-500/30 transition-all">
+                            <div className="text-indigo-400 font-black text-xs tracking-widest uppercase">The Cost</div>
+                            <p className="text-xs text-slate-500 leading-relaxed font-bold">Simple one-time payment. No recurring fees to track your fees. Simple.</p>
+                        </div>
+                        <div className="p-6 rounded-3xl bg-white/5 border border-white/5 text-center space-y-2 group hover:border-indigo-500/30 transition-all">
+                            <div className="text-indigo-400 font-black text-xs tracking-widest uppercase">The Data</div>
+                            <p className="text-xs text-slate-500 leading-relaxed font-bold">Stored in your browser. We literally cannot see your subscriptions.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* STATS SECTION */}
             <section className="py-20 border-y border-white/5 bg-slate-900/30">
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">

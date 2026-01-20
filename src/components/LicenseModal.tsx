@@ -78,58 +78,75 @@ export function LicenseModal({ isOpen, onClose, onSuccess }: LicenseModalProps) 
                             </button>
                         </div>
 
-                        {/* Social Incentive Section */}
-                        {!hasShared ? (
-                            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 text-center space-y-4">
-                                <div className="space-y-2">
-                                    <h3 className="text-emerald-400 font-black text-2xl flex items-center justify-center gap-2">
-                                        <Sparkles className="w-6 h-6" />
-                                        Unlock 70% Discount!
-                                    </h3>
-                                    <p className="text-slate-400 text-sm">
-                                        Help us stay private and independent. Share the link with friends to get SubTracking PRO for just <span className="text-emerald-400 font-bold">$5.70</span> (normally $19).
-                                    </p>
-                                </div>
-                                <div className="flex justify-center">
-                                    <ShareButton
-                                        variant="discount"
-                                        onShare={() => setHasShared(true)}
-                                    />
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                <div className="space-y-1 text-center sm:text-left">
-                                    <p className="text-emerald-400 font-bold text-sm uppercase flex items-center justify-center sm:justify-start gap-2">
-                                        <CheckCircle className="w-4 h-4" />
-                                        70% Discount Unlocked
-                                    </p>
-                                    <p className="text-xs text-slate-400">Your social support makes this possible. Thank you!</p>
-                                </div>
-                                <a
-                                    href={GUMROAD_CONFIG.discountUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-6 py-3 rounded-xl transition-all flex items-center gap-2 shadow-xl shadow-emerald-500/20 whitespace-nowrap"
-                                >
-                                    <ShoppingBag className="w-4 h-4" />
-                                    Get PRO ($5.70)
-                                </a>
-                            </div>
-                        )}
+                        {/* Primary Purchase Action */}
+                        <div className="space-y-4">
+                            {!hasShared ? (
+                                <div className="space-y-4">
+                                    <a
+                                        href={GUMROAD_CONFIG.productUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-xl shadow-indigo-600/20"
+                                    >
+                                        <ShoppingBag className="w-5 h-5" />
+                                        Get PRO Lifetime ($19)
+                                    </a>
 
-                        {!hasShared && (
-                            <div className="text-center">
-                                <a
-                                    href={GUMROAD_CONFIG.productUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-xs text-slate-600 hover:text-slate-400 underline decoration-slate-800"
+                                    <div className="relative">
+                                        <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                                            <div className="w-full border-t border-slate-800"></div>
+                                        </div>
+                                        <div className="relative flex justify-center text-[10px] uppercase">
+                                            <span className="bg-slate-900 px-4 text-slate-500 font-black tracking-widest">Wait! Want a discount?</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Optional Share Incentive */}
+                                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 text-center space-y-4">
+                                        <div className="space-y-1">
+                                            <h3 className="text-emerald-400 font-black text-lg flex items-center justify-center gap-2">
+                                                <Sparkles className="w-5 h-5" />
+                                                Share for 70% OFF
+                                            </h3>
+                                            <p className="text-slate-400 text-xs">
+                                                Help us grow by sharing SubTracking and unlock a special launch price of just <span className="text-emerald-400 font-bold">$5.70</span>.
+                                            </p>
+                                        </div>
+                                        <div className="flex justify-center">
+                                            <ShareButton
+                                                variant="discount"
+                                                onShare={() => setHasShared(true)}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-6 space-y-4"
                                 >
-                                    No thanks, I'll pay full price ($19)
-                                </a>
-                            </div>
-                        )}
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-emerald-500/20 p-2 rounded-lg">
+                                            <CheckCircle className="w-5 h-5 text-emerald-400" />
+                                        </div>
+                                        <div>
+                                            <p className="text-emerald-400 font-black text-sm uppercase tracking-wider">70% Discount Unlocked!</p>
+                                            <p className="text-xs text-slate-400">Thanks for supporting our privacy-first mission.</p>
+                                        </div>
+                                    </div>
+                                    <a
+                                        href={GUMROAD_CONFIG.discountUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20"
+                                    >
+                                        <ShoppingBag className="w-5 h-5" />
+                                        Get PRO for $5.70
+                                    </a>
+                                </motion.div>
+                            )}
+                        </div>
 
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center" aria-hidden="true">
