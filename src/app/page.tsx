@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock, MousePointer2, X, Play, Globe, HardDrive, ShieldAlert, Menu, Layers, Users, Download, FileSpreadsheet, CalendarRange } from 'lucide-react';
+import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock, MousePointer2, X, Play, Globe, HardDrive, ShieldAlert, Menu, Layers, Users, Download, FileSpreadsheet, CalendarRange, Home, Smartphone, Car } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 import { VideoModal } from '../components/VideoModal';
@@ -134,7 +134,7 @@ export default function LandingPage() {
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="max-w-2xl mx-auto text-slate-400 text-lg md:text-xl font-medium"
                     >
-                        The privacy-first audit tool that helps you find unused subscriptions and stop the "Ghost Cost" of future spending. No bank logins required.
+                        The privacy-first vault for every recurring cost in your life. From Netflix and Spotify to Rent, Utilities, and Car Insurance. See your true monthly "burn rate" in seconds.
                     </motion.p>
 
                     <motion.div
@@ -164,6 +164,34 @@ export default function LandingPage() {
 
                     </motion.div>
                 </div>
+
+                {/* WHAT ARE YOU TRACKING? TICKER */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1, delay: 0.6 }}
+                    className="max-w-5xl mx-auto mt-16 px-6"
+                >
+                    <div className="flex flex-col items-center gap-6">
+                        <span className="text-slate-500 text-xs font-black uppercase tracking-[0.2em]">What are you tracking?</span>
+                        <div className="flex flex-wrap justify-center gap-x-8 gap-y-6 opacity-60 hover:opacity-100 transition-opacity duration-500">
+                            {[
+                                { icon: Home, label: "Rent/Housing", color: "text-indigo-400" },
+                                { icon: Smartphone, label: "Phone Bill", color: "text-sky-400" },
+                                { icon: Shield, label: "Insurance", color: "text-emerald-400" },
+                                { icon: Zap, label: "Electricity", color: "text-amber-400" },
+                                { icon: Globe, label: "Internet", color: "text-blue-400" },
+                                { icon: Car, label: "Auto Loan", color: "text-purple-400" },
+                                { icon: Sparkles, label: "Streaming", color: "text-pink-400" },
+                            ].map((item, i) => (
+                                <div key={i} className="flex items-center gap-2 group cursor-default">
+                                    <item.icon className={cn("w-4 h-4 transition-transform group-hover:scale-110", item.color)} />
+                                    <span className="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">{item.label}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </motion.div>
 
                 {/* Hero App Preview */}
                 <motion.div
