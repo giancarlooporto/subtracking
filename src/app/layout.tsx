@@ -62,7 +62,7 @@ export const metadata: Metadata = {
   creator: "SubTracking",
   publisher: "SubTracking",
 
-  // Add robots meta for SEO
+  // robot meta logic...
   robots: {
     index: true,
     follow: true,
@@ -73,11 +73,6 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
-  },
-
-  // Add alternates for canonical URL
-  alternates: {
-    canonical: 'https://subtracking.app',
   },
 
   // Enhanced OpenGraph with more details

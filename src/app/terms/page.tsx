@@ -1,4 +1,13 @@
 import { siteConfig } from '../../../siteConfig';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: `Terms of Service | ${siteConfig.siteName}`,
+    description: 'Read our Terms of Service. Learn your rights and responsibilities when using SubTracking to manage your subscriptions.',
+    alternates: {
+        canonical: 'https://subtracking.app/terms',
+    },
+};
 
 export default function TermsOfService() {
     return (

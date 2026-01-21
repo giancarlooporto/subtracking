@@ -1,4 +1,13 @@
 import { siteConfig } from '../../../siteConfig';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: `Privacy Policy | ${siteConfig.siteName}`,
+    description: 'Learn how we protect your financial data with our local-first, zero-knowledge architecture. Your privacy is our priority.',
+    alternates: {
+        canonical: 'https://subtracking.app/privacy',
+    },
+};
 
 export default function PrivacyPolicy() {
     return (
