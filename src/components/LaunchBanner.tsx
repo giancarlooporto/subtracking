@@ -1,12 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sparkles, X, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
 export function LaunchBanner() {
     const [isVisible, setIsVisible] = useState(true);
+
+    useEffect(() => {
+        // Hide banner for PRO users
+        const isPro = localStorage.getItem('subtracking-pro') === 'true';
+        if (isPro) {
+            setIsVisible(false);
+        }
+    }, []);
 
     if (!isVisible) return null;
 
