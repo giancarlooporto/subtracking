@@ -196,14 +196,6 @@ export default function RocketMoneyComparisonPage() {
                     </div>
                 </div>
             </section>
-            {/* Legal Disclaimer */}
-            <footer className="py-10 px-6 border-t border-white/5">
-                <div className="max-w-4xl mx-auto text-center">
-                    <p className="text-[10px] text-slate-600 leading-relaxed uppercase tracking-widest">
-                        Disclaimer: Rocket Money and Truebill are trademarks of their respective owners. This comparison is for informational purposes only and is based on publicly available information as of January 2026. SubTracking is an independent software application and is not affiliated with, sponsored by, or endorsed by Rocket Money or its parent companies.
-                    </p>
-                </div>
-            </footer>
         </div>
     );
 }

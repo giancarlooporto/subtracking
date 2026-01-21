@@ -151,12 +151,6 @@ export default function ExcelComparison() {
                         </div>
                     </div>
 
-                    {/* Footer */}
-                    <div className="mt-20 pt-8 border-t border-white/5 text-center">
-                        <p className="text-[10px] text-slate-700 leading-relaxed uppercase tracking-widest">
-                            Disclaimer: Excel is a trademark of Microsoft Corporation. Google Sheets is a trademark of Google LLC. SubTracking is an independent tool designed for manual expense tracking and is not affiliated with or endorsed by Microsoft or Google.
-                        </p>
-                    </div>
                 </div>
             </article>
         </div>

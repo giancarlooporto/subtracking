@@ -132,11 +132,6 @@ export default function TemplateGuide() {
                         </div>
                     </div>
 
-                    <div className="mt-20 pt-8 border-t border-white/5 text-center">
-                        <p className="text-[10px] text-slate-700 leading-relaxed uppercase tracking-widest">
-                            Disclaimer: Template provided for informational purposes. SubTracking is an independent tool and is not affiliated with Google or Microsoft.
-                        </p>
-                    </div>
                 </div>
             </article>
         </div>

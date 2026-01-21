@@ -1946,6 +1946,7 @@ function HomeContent() {
       <Footer
         isPro={isPro}
         onUnlockPro={() => setShowLicenseModal(true)}
+        minimal={true}
       />
     </main >
   );

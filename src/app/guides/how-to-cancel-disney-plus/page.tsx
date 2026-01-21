@@ -117,12 +117,6 @@ export default function CancelDisneyGuide() {
                         </div>
                     </div>
 
-                    {/* Legal Disclaimer */}
-                    <div className="mt-20 pt-8 border-t border-white/5 text-center">
-                        <p className="text-[10px] text-slate-700 leading-relaxed uppercase tracking-widest">
-                            Disclaimer: Disney+ is a trademark of Disney Enterprises, Inc. This guide is for informational purposes only and is based on publicly available cancellation procedures as of January 2026. SubTracking is an independent software application and is not affiliated with, sponsored by, or endorsed by Disney Enterprises, Inc.
-                        </p>
-                    </div>
                 </div>
             </article>
         </div>

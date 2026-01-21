@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/no-bank-login',
         '/manual-vs-automated',
         '/blog/find-unused-subscriptions',
+        '/guides',
         '/guides/how-to-cancel-adobe',
         '/guides/how-to-cancel-netflix',
         '/guides/how-to-cancel-planet-fitness',

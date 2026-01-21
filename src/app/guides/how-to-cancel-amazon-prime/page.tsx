@@ -118,12 +118,6 @@ export default function CancelPrimeGuide() {
                         </div>
                     </div>
 
-                    {/* Legal Disclaimer */}
-                    <div className="mt-20 pt-8 border-t border-white/5 text-center">
-                        <p className="text-[10px] text-slate-700 leading-relaxed uppercase tracking-widest">
-                            Disclaimer: Amazon and Amazon Prime are trademarks of Amazon.com, Inc. This guide is for informational purposes only and is based on publicly available cancellation procedures as of January 2026. SubTracking is an independent software application and is not affiliated with, sponsored by, or endorsed by Amazon.com, Inc.
-                        </p>
-                    </div>
                 </div>
             </article>
         </div>
