@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Shield, DollarSign, Lock, Zap, Check, X, ArrowRight } from 'lucide-react';
 import { ShareButton } from '../../components/ShareButton';
+import { Footer } from '../../components/Footer';
 
 export const metadata: Metadata = {
     title: 'Manual vs Automated Subscription Trackers | Privacy Comparison',
@@ -240,6 +241,7 @@ export default function ManualVsAutomatedPage() {
                     </div>
                 </div>
             </section>
+            <Footer />
         </div>
     );
 }

@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, User, Tv, CheckCircle, Smartphone, Info } from 'lucide-react';
+import { Footer } from "../../../components/Footer";
 import { ShareButton } from '../../../components/ShareButton';
 
 export const metadata: Metadata = {

@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Search, GraduationCap, Zap, Shield, Sparkles } from 'lucide-react';
+import { Footer } from '../../components/Footer';
 
 export const metadata: Metadata = {
     title: 'Subscription Cancellation Guides & Resources | SubTracking',
@@ -149,6 +150,7 @@ export default function GuidesIndex() {
                     </div>
                 </div>
             </main>
+            <Footer />
         </div>
     );
 }

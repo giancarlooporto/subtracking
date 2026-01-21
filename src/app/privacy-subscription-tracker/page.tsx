@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Shield, Lock, HardDrive, Eye, ArrowRight, Check, X } from 'lucide-react';
 import { ShareButton } from '../../components/ShareButton';
+import { Footer } from '../../components/Footer';
 
 export const metadata: Metadata = {
     title: 'Privacy-First Subscription Tracker | No Cloud, No Tracking',
@@ -202,6 +203,7 @@ export default function PrivacySubscriptionTrackerPage() {
                     </div>
                 </div>
             </section>
+            <Footer />
         </div>
     );
 }

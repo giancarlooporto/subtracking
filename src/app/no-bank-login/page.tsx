@@ -1,10 +1,10 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import {
-
     ShieldOff, Lock, AlertCircle, CheckCircle, ArrowRight, X, Check
 } from 'lucide-react';
 import { ShareButton } from '../../components/ShareButton';
+import { Footer } from '../../components/Footer';
 
 export const metadata: Metadata = {
     title: 'Track Subscriptions Without Bank Login | No Plaid Required',
@@ -231,11 +231,9 @@ export default function NoBankLoginPage() {
                     >
                         Start Free Today
                     </Link>
-                    <div className="pt-4 flex justify-center">
-                        <ShareButton variant="footer" />
-                    </div>
                 </div>
             </section>
+            <Footer />
         </div>
     );
 }
