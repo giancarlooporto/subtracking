@@ -160,9 +160,9 @@ export function SubscriptionModal({
         if (isTrial && trialEndDate) {
             if (!(trialEndDate instanceof Date) || isNaN(trialEndDate.getTime())) {
                 newErrors.trialEndDate = 'Invalid trial end date';
-            } else if (trialEndDate > renewalDate) {
-                newErrors.trialEndDate = 'Trial must end before or on renewal date';
             }
+            // Note: Trial end date CAN be after renewal date - user may have multiple renewals at trial rate
+            // e.g., 3-month trial with monthly billing means 3 renewals at the intro price
         }
 
         setErrors(newErrors);
