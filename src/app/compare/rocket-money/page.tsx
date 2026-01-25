@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'private rocket money alternative',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/compare/rocket-money',
+        canonical: 'https://www.subtracking.app/compare/rocket-money',
     },
 };
 

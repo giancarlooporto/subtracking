@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'automated subscription tracker pros cons',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/manual-vs-automated',
+        canonical: 'https://www.subtracking.app/manual-vs-automated',
     },
 };
 

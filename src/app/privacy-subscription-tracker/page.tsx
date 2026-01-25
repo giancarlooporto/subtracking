@@ -16,7 +16,7 @@ export const metadata: Metadata = {
         'subscription tracker without cloud',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/privacy-subscription-tracker',
+        canonical: 'https://www.subtracking.app/privacy-subscription-tracker',
     },
 };
 

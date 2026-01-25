@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'subscription audit checklist',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/blog/subscription-tracker-template',
+        canonical: 'https://www.subtracking.app/blog/subscription-tracker-template',
     },
 };
 

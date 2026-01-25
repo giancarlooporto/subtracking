@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'subscription auditor app',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/guides/how-to-cancel-amazon-prime',
+        canonical: 'https://www.subtracking.app/guides/how-to-cancel-amazon-prime',
     },
 };
 

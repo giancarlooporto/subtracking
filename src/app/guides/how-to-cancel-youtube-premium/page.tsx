@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'google subscription tracker',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/guides/how-to-cancel-youtube-premium',
+        canonical: 'https://www.subtracking.app/guides/how-to-cancel-youtube-premium',
     },
 };
 

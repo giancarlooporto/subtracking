@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'track gym membership costs',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/guides/how-to-cancel-planet-fitness',
+        canonical: 'https://www.subtracking.app/guides/how-to-cancel-planet-fitness',
     },
 };
 

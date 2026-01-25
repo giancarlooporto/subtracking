@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'private copilot alternative',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/compare/copilot',
+        canonical: 'https://www.subtracking.app/compare/copilot',
     },
 };
 

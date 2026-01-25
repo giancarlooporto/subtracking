@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'manual finance tracker vs monarch',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/compare/monarch-money',
+        canonical: 'https://www.subtracking.app/compare/monarch-money',
     },
 };
 

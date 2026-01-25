@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     "cancel unused subscriptions app"
   ],
 
-  authors: [{ name: "SubTracking", url: "https://subtracking.app" }],
+  authors: [{ name: "SubTracking", url: "https://www.subtracking.app" }],
   creator: "SubTracking",
   publisher: "SubTracking",
 
@@ -79,11 +79,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SubTracking - Privacy-First Subscription Tracker",
     description: "Track subscriptions without giving up privacy. No bank logins, no cloud storage. Find unused subscriptions and reduce wasted spending. $19 lifetime access.",
-    url: "https://subtracking.app",
+    url: "https://www.subtracking.app",
     siteName: "SubTracking",
     images: [
       {
-        url: "https://subtracking.app/og-image.png",
+        url: "https://www.subtracking.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "SubTracking App - Privacy-First Subscription Tracker Dashboard",
@@ -98,7 +98,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "SubTracking - Track Subscriptions Privately (No Bank Login)",
     description: "Privacy-first subscription tracker. Find unused subscriptions and reduce wasted spending. $19 lifetime, no monthly fees.",
-    images: ["https://subtracking.app/og-image.png"],
+    images: ["https://www.subtracking.app/og-image.png"],
     creator: "@subtracking",
     site: "@subtracking",
   },
@@ -153,7 +153,7 @@ export default function RootLayout({
     "operatingSystem": "Web",
     "applicationCategory": "FinanceApplication",
     "description": "A privacy-first subscription tracking and audit tool that helps users manage digital spending without linking bank accounts. Track subscriptions, find unused services, and save money with complete privacy.",
-    "url": "https://subtracking.app",
+    "url": "https://www.subtracking.app",
     "offers": {
       "@type": "Offer",
       "price": "19.00",
@@ -178,11 +178,11 @@ export default function RootLayout({
       "Calendar integration"
     ],
     "softwareVersion": "1.0",
-    "screenshot": "https://subtracking.app/og-image.png",
+    "screenshot": "https://www.subtracking.app/og-image.png",
     "author": {
       "@type": "Organization",
       "name": "SubTracking",
-      "url": "https://subtracking.app"
+      "url": "https://www.subtracking.app"
     }
   };
 

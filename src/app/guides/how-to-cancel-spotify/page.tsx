@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'manual subscription tracking',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/guides/how-to-cancel-spotify',
+        canonical: 'https://www.subtracking.app/guides/how-to-cancel-spotify',
     },
 };
 

@@ -11,8 +11,8 @@ interface ShareButtonProps {
 export function ShareButton({ variant = 'default', onShare }: ShareButtonProps) {
     const [copied, setCopied] = useState(false);
 
-    const shareText = "I'm using SubTracking to track my subscriptions without connecting my bank account. Everything stays private and local. Worth checking out: https://subtracking.app";
-    const shareUrl = "https://subtracking.app";
+    const shareText = "I'm using SubTracking to track my subscriptions without connecting my bank account. Everything stays private and local. Worth checking out: https://www.subtracking.app";
+    const shareUrl = "https://www.subtracking.app";
 
     const handleShare = async () => {
         try {

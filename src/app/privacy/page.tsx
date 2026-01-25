@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: `Privacy Policy | ${siteConfig.siteName}`,
     description: 'Learn how we protect your financial data with our local-first, zero-knowledge architecture. Your privacy is our priority.',
     alternates: {
-        canonical: 'https://subtracking.app/privacy',
+        canonical: 'https://www.subtracking.app/privacy',
     },
 };
 

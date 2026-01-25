@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'how to cancel hulu bundle',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/guides/how-to-cancel-hulu',
+        canonical: 'https://www.subtracking.app/guides/how-to-cancel-hulu',
     },
 };
 

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'creative cloud alternatives',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/guides/how-to-cancel-adobe',
+        canonical: 'https://www.subtracking.app/guides/how-to-cancel-adobe',
     },
 };
 

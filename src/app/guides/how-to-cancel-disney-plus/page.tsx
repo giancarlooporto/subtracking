@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'streaming audit tool',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/guides/how-to-cancel-disney-plus',
+        canonical: 'https://www.subtracking.app/guides/how-to-cancel-disney-plus',
     },
 };
 

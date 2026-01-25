@@ -18,7 +18,7 @@ export const metadata: Metadata = {
         'manual subscription tracking',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/no-bank-login',
+        canonical: 'https://www.subtracking.app/no-bank-login',
     },
 };
 

@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-    const baseUrl = 'https://subtracking.app'
+    const baseUrl = 'https://www.subtracking.app'
 
     return {
         rules: [

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
         'stop unused subscriptions',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/guides',
+        canonical: 'https://www.subtracking.app/guides',
     },
 };
 

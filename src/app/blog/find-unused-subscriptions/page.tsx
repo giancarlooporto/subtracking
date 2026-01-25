@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'manual subscription tracking',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/blog/find-unused-subscriptions',
+        canonical: 'https://www.subtracking.app/blog/find-unused-subscriptions',
     },
     openGraph: {
         title: 'How to Find Unused Subscriptions Without Bank Login',

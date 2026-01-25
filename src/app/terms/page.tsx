@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     title: `Terms of Service | ${siteConfig.siteName}`,
     description: 'Read our Terms of Service. Learn your rights and responsibilities when using SubTracking to manage your subscriptions.',
     alternates: {
-        canonical: 'https://subtracking.app/terms',
+        canonical: 'https://www.subtracking.app/terms',
     },
 };
 
@@ -23,7 +23,7 @@ export default function TermsOfService() {
                 <section className="space-y-4">
                     <p>
                         Please read these Terms of Service ("Terms") carefully before using the <strong>{siteConfig.siteName}</strong> application
-                        ("App", "Service", "us", "we", or "our") located at https://subtracking.app.
+                        ("App", "Service", "us", "we", or "our") located at https://www.subtracking.app.
                     </p>
                     <p>
                         By accessing or using the Service, you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the Service.

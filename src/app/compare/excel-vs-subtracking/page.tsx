@@ -13,7 +13,7 @@ export const metadata: Metadata = {
         'privacy-first finance tool',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/compare/excel-vs-subtracking',
+        canonical: 'https://www.subtracking.app/compare/excel-vs-subtracking',
     },
 };
 

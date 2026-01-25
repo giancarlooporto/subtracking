@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         'track streaming subscriptions',
     ],
     alternates: {
-        canonical: 'https://subtracking.app/guides/how-to-cancel-netflix',
+        canonical: 'https://www.subtracking.app/guides/how-to-cancel-netflix',
     },
 };
 
