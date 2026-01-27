@@ -444,6 +444,17 @@ function HomeContent() {
       });
   }, [filteredSubscriptions]);
 
+  const upcomingUnpaidTotal = useMemo(() => {
+    return upcomingBills.reduce((sum, sub) => {
+      if (isPaidThisCycle(sub)) return sum;
+      // If it's a trial and the renewal happens on/after trial end, it's the full price
+      const priceDue = (sub.isTrial && sub.trialEndDate && sub.renewalDate >= sub.trialEndDate)
+        ? (sub.regularPrice || sub.price)
+        : sub.price;
+      return sum + priceDue;
+    }, 0);
+  }, [upcomingBills]);
+
   // Cross-Profile Alerts (Check other profiles for urgent bills)
   const crossProfileAlerts = useMemo(() => {
     if (!allProfiles || allProfiles.length === 0) return [];
@@ -1143,9 +1154,16 @@ function HomeContent() {
                 <Calendar className="w-5 h-5" />
                 <h3 className="font-bold text-white">Upcoming (7 Days)</h3>
               </div>
-              <span className="bg-indigo-500/10 text-indigo-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-500/20">
-                {upcomingBills.length} Due
-              </span>
+              <div className="flex items-center gap-3">
+                {upcomingUnpaidTotal > 0 && (
+                  <span className="text-emerald-400 font-bold text-xs animate-in fade-in zoom-in duration-300">
+                    ${upcomingUnpaidTotal.toFixed(0)}
+                  </span>
+                )}
+                <span className="bg-indigo-500/10 text-indigo-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-500/20">
+                  {upcomingBills.filter(s => !isPaidThisCycle(s)).length} Due
+                </span>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto pr-1 space-y-2 custom-scrollbar z-10">
@@ -1191,7 +1209,9 @@ function HomeContent() {
                       </div>
                       <div className="flex items-center gap-3">
                         <span className={cn("font-bold text-sm", isPaid ? "text-slate-600 line-through" : "text-slate-300")}>
-                          ${sub.price.toFixed(0)}
+                          ${((sub.isTrial && sub.trialEndDate && sub.renewalDate >= sub.trialEndDate)
+                            ? (sub.regularPrice || sub.price)
+                            : sub.price).toFixed(0)}
                         </span>
                         {!isPaid && (
                           <button
