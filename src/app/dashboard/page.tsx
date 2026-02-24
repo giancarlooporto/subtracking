@@ -124,7 +124,7 @@ function HomeContent() {
 
   // Progress from 0 (top) to 1 (scrolled 120px)
   const scrollProgress = useTransform(scrollY, [0, 120], [0, 1]);
-  const smoothProgress = useSpring(scrollProgress, { damping: 25, stiffness: 120 });
+  const smoothProgress = useSpring(scrollProgress, { damping: 50, stiffness: 500 });
 
   // Scaling: 1.15 (Hero - 15% bigger) down to 0.54 (Header - 10% smaller than before)
   const numberScale = useTransform(smoothProgress, [0, 1], [1.15, 0.54]);
