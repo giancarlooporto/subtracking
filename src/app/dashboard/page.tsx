@@ -145,6 +145,9 @@ function HomeContent() {
   // Opacity for the "Label" (Total Monthly Spend) which fades out
   const labelOpacity = useTransform(scrollProgress, [0, 0.5], [1, 0]);
 
+  // Opacity for the sticky mobile title which fades in as you scroll past the hero
+  const mobileHeaderOpacity = useTransform(scrollProgress, [0.5, 1], [0, 1]);
+
   // Header background / border logic
   const headerBg = useTransform(scrollProgress, [0.8, 1], ["rgba(15, 23, 42, 0)", "rgba(15, 23, 42, 0.9)"]);
   const headerBlur = useTransform(scrollProgress, [0.8, 1], ["blur(0px)", "blur(20px)"]);
@@ -1419,7 +1422,7 @@ function HomeContent() {
 
             {/* 📱 SMALL MOBILE TITLE (Fades in on scroll) */}
             <motion.div
-              style={{ opacity: useTransform(scrollProgress, [0.5, 1], [0, 1]) }}
+              style={{ opacity: mobileHeaderOpacity }}
               className="flex sm:hidden absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex-col items-center justify-center pointer-events-none"
             >
               <div className="text-lg font-bold text-white tracking-tight">
