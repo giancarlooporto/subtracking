@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, Suspense } from 'react';
+import React, { useState, useMemo, useEffect, Suspense, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type, Ghost, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type, Ghost, ChevronDown, ChevronUp, Sparkles, RefreshCw, ArrowRight } from 'lucide-react';
 import { Subscription, DEFAULT_CATEGORIES, Profile, getCurrencySymbol } from '../../types';
 import { getDaysRemaining, getNextOccurrence, getCategoryColorHex, getCategoryIcon, calculateMonthlyPrice, cn, formatLocalDate } from '../../lib/utils';
 import {
@@ -18,7 +18,7 @@ import {
   setActiveProfileId
 } from '../../lib/profileManager';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 
 import dynamic from 'next/dynamic';
 
@@ -43,13 +43,17 @@ const SubTrackingWizard = dynamic(() => import('../../components/SubTrackingWiza
 const GhostMeter = dynamic(() => import('../../components/GhostMeter').then(mod => mod.GhostMeter), { ssr: false });
 const WelcomeModal = dynamic(() => import('../../components/WelcomeModal').then(mod => mod.WelcomeModal), { ssr: false });
 const LicenseModal = dynamic(() => import('../../components/LicenseModal').then(mod => mod.LicenseModal), { ssr: false });
+const CancellationReviewModal = dynamic(() => import('../../components/CancellationReviewModal').then(mod => mod.default), { ssr: false });
 const UserGuideModal = dynamic(() => import('../../components/UserGuideModal').then(mod => mod.UserGuideModal), { ssr: false });
 const ProfileSettingsModal = dynamic(() => import('../../components/ProfileSettingsModal').then(mod => mod.ProfileSettingsModal), { ssr: false });
 const ProfileManagerModal = dynamic(() => import('../../components/ProfileManagerModal').then(mod => mod.ProfileManagerModal), { ssr: false });
 import { PasswordModal } from '@/components/PasswordModal';
 import { encryptData, decryptData, EncryptedVault } from '@/lib/crypto';
+import { useAuth } from '@/context/AuthContext';
+import { uploadVault, downloadVault } from '@/lib/supabaseClient';
 
 function HomeContent() {
+  const { user } = useAuth();
   const { showToast } = useToast();
   const searchParams = useSearchParams();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
@@ -57,15 +61,16 @@ function HomeContent() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
   const [financeViewMode, setFinanceViewMode] = useState<'focus' | 'total'>('focus'); // 'focus' = Discretionary, 'total' = Everything
-  const [isPro, setIsPro] = useState(false);
+  const [isPro, setIsPro] = useState(true); // All users get Pro features (App Store compliance)
 
   // Modals & UI State
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [showLicenseModal, setShowLicenseModal] = useState(false);
   const [showFactoryResetConfirm, setShowFactoryResetConfirm] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
+  const [showCancellationReview, setShowCancellationReview] = useState(false);
+  const [pendingCancellations, setPendingCancellations] = useState<Subscription[]>([]);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showUserGuide, setShowUserGuide] = useState(false);
 
@@ -98,8 +103,11 @@ function HomeContent() {
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
   const [showUrgentBanner, setShowUrgentBanner] = useState(true);
   const [dismissedAlerts, setDismissedAlerts] = useState<string[]>(() => {
-    const saved = localStorage.getItem('dismissedCrossProfileAlerts');
-    return saved ? JSON.parse(saved) : [];
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('dismissedCrossProfileAlerts');
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
   });
   const [dashboardView, setDashboardView] = useState<'list' | 'calendar'>('list');
   const [isHeaderCompact, setIsHeaderCompact] = useState(false);
@@ -107,6 +115,133 @@ function HomeContent() {
   const stickyHeaderRef = React.useRef<HTMLDivElement>(null);
   const lastScrollY = React.useRef(0);
   const isHeaderSticky = React.useRef(false);
+  const checkMobile = () => typeof window !== 'undefined' && window.innerWidth < 640;
+  const lastLocalAction = React.useRef<number>(0);
+  const lastUploadedDataHash = React.useRef<string>('');
+
+  // 🎢 SCROLL-LINKED ANIMATIONS (Hero to Sticky Header)
+  const { scrollY } = useScroll();
+
+  // Progress from 0 (top) to 1 (scrolled 120px)
+  const scrollProgress = useTransform(scrollY, [0, 120], [0, 1]);
+  const smoothProgress = useSpring(scrollProgress, { damping: 25, stiffness: 120 });
+
+  // Scaling: 1.15 (Hero - 15% bigger) down to 0.54 (Header - 10% smaller than before)
+  const numberScale = useTransform(smoothProgress, [0, 1], [1.15, 0.54]);
+
+  // Y-Position: Start centered in hero space (120px below header) -> Header center (8px offset down)
+  const numberY = useTransform(smoothProgress, [0, 1], [120, 8]);
+
+  // Opacity for the "Label" (Total Monthly Spend) which fades out
+  const labelOpacity = useTransform(smoothProgress, [0, 0.5], [1, 0]);
+
+  // Header background / border logic
+  const headerBg = useTransform(smoothProgress, [0.8, 1], ["rgba(15, 23, 42, 0)", "rgba(15, 23, 42, 0.9)"]);
+  const headerBlur = useTransform(smoothProgress, [0.8, 1], ["blur(0px)", "blur(20px)"]);
+  const headerBorder = useTransform(smoothProgress, [0.9, 1], ["rgba(255, 255, 255, 0)", "rgba(255, 255, 255, 0.05)"]);
+
+  // Pull-to-refresh state
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const touchStartRef = useRef(0);
+  const PULL_THRESHOLD = 80;
+  const isSyncingFromCloud = useRef(false); // 🛡️ Sync Shield
+
+  const performMagicSync = useCallback(async (isManual = false) => {
+    if (!isLoaded) return;
+
+    if (!user) {
+      if (isManual) {
+        showToast('Please sign in to sync with cloud ☁️', 'info');
+        // Reset pull-to-refresh UI
+        setIsRefreshing(false);
+        setPullDistance(0);
+      }
+      return;
+    }
+
+    if (isManual) setIsRefreshing(true);
+
+    try {
+      // 1. Download vault (NO LOCK YET - allows local edits during download)
+      const { data, error } = await downloadVault(user.id);
+
+      if (error || !data) {
+        if (isManual) {
+          setIsRefreshing(false);
+          setPullDistance(0);
+        }
+        return;
+      }
+
+      const localLastUpdated = localStorage.getItem('subtracking-last-sync') || '0';
+      const cloudLastUpdated = data.lastUpdated || '0';
+      const cloudTime = new Date(cloudLastUpdated).getTime();
+      const localTime = new Date(localLastUpdated).getTime();
+
+      console.log(`🔍 Sync Debug (${user.id.substring(0, 4)}):`, {
+        manual: isManual,
+        local: localLastUpdated,
+        cloud: cloudLastUpdated,
+        diff: cloudTime - localTime
+      });
+
+      const shouldUpdate = isManual || (cloudTime > localTime);
+
+      if (shouldUpdate) {
+        isSyncingFromCloud.current = true; // Lock local persistence ONLY when writing
+        console.log(`✨ Syncing: ${user.id.substring(0, 4)} | Cloud: ${cloudLastUpdated}`);
+
+        // 1. Update Profile List and Active ID (if available in vault)
+        saveProfiles(data.profiles);
+        if (data.activeProfileId) setActiveProfileId(data.activeProfileId);
+
+        // 2. Refresh local state
+        const profiles = getProfiles();
+        const active = getActiveProfile();
+
+        console.log('🔄 Reloading State:', {
+          profilesFound: profiles.length,
+          activeFound: !!active,
+          activeInfo: active ? `${active.name} (${active.id})` : 'None',
+          subCount: active?.subscriptions.length
+        });
+
+        setAllProfiles(profiles);
+        if (active) {
+          console.log(`⚡ Updating UI with ${active.subscriptions.length} subs`);
+          setActiveProfile(active);
+          setSubscriptions(active.subscriptions);
+          if (active.categories) setUserCategories(active.categories);
+        } else {
+          console.error('❌ No active profile found after sync!');
+        }
+
+        localStorage.setItem('subtracking-last-sync', cloudLastUpdated);
+        const subCount = active?.subscriptions.length || 0;
+        console.log(`✅ Sync complete: ${subCount} subs loaded from cloud`);
+        showToast(isManual ? `Vault Restored (${subCount} subs)` : 'Vault Updated ☁️', 'success');
+      } else if (isManual) {
+        showToast(`Already up to date (${user.id.substring(0, 4)})`, 'info');
+      }
+    } catch (err) {
+      console.error('Magic Sync failed:', err);
+      if (isManual) showToast('Sync Failed: Check Connection', 'error');
+    } finally {
+      // Keep shield active for 2.5s to let React state settle and persistence effect abort
+      setTimeout(() => {
+        isSyncingFromCloud.current = false;
+      }, 2500);
+
+      if (isManual) {
+        setIsRefreshing(true); // Smooth transition
+        setTimeout(() => {
+          setIsRefreshing(false);
+          setPullDistance(0);
+        }, 800);
+      }
+    }
+  }, [user, isLoaded, showToast]);
 
   // Scroll-based header collapse for mobile
   useEffect(() => {
@@ -175,21 +310,13 @@ function HomeContent() {
       setShowWelcome(true);
     }
 
-    // Check for upgrade intent from landing page
-    const upgrade = searchParams.get('upgrade');
-    if (upgrade === 'true') {
-      setShowLicenseModal(true);
-      // Clean up URL without reload
-      window.history.replaceState({}, '', window.location.pathname);
-    }
+    // (No upgrade intent redirect needed — all features are available)
 
     // Load cancelled savings (not profile-specific)
     const savedSavings = localStorage.getItem('subtracking-savings') || localStorage.getItem('digital-declutter-savings');
     if (savedSavings) setCancelledSavings(parseFloat(savedSavings));
 
-    // Check Pro Status
-    const savedPro = localStorage.getItem('subtracking-pro');
-    if (savedPro === 'true') setIsPro(true);
+    // (Pro is always enabled — no localStorage check needed)
   }, [searchParams]);
 
   // Initialize Profiles (NEW - replaces direct subscription loading)
@@ -197,7 +324,15 @@ function HomeContent() {
     // Initialize profile system (creates default profile if needed, migrates legacy data)
     initializeProfiles();
 
-    // Load all profiles and active profile
+    // 🛡️ If user is logged in, wait for cloud sync to populate state
+    // This prevents loading stale localStorage data that might overwrite cloud data
+    if (user) {
+      console.log('✅ User logged in - waiting for cloud sync to populate data');
+      setIsLoaded(true);
+      return; // performMagicSync will handle loading
+    }
+
+    // Only load from localStorage if NOT logged in (offline mode)
     const profiles = getProfiles();
     const active = getActiveProfile();
 
@@ -214,7 +349,7 @@ function HomeContent() {
     }
 
     setIsLoaded(true);
-  }, []);
+  }, [user]);
 
   // Save dismissed alerts to localStorage
   useEffect(() => {
@@ -261,9 +396,14 @@ function HomeContent() {
   // Save to localStorage (Debounced for performance)
   // Save to Persistence (Profiles System)
   useEffect(() => {
-    if (!isLoaded || !activeProfile) return;
+    if (!isLoaded || !activeProfile || isSyncingFromCloud.current) return;
 
     const timeout = setTimeout(() => {
+      // 🛡️ Final check before write
+      if (isSyncingFromCloud.current) {
+        console.log('⚠️ Persistence blocked: Sync in progress');
+        return;
+      }
       // 1. Update the Active Profile in Storage
       updateProfile(activeProfile.id, {
         subscriptions,
@@ -273,14 +413,112 @@ function HomeContent() {
       // Refresh allProfiles state to trigger alert recalculation
       setAllProfiles(getProfiles());
 
-      // 2. Also update the Legacy Key for backup/redundancy (Optional, but good for safety)
+      // 2. Maintain list of all profiles (important for multi-profile users)
+      const allProfs = getProfiles();
+      if (allProfs.length > 0) {
+        saveProfiles(allProfs);
+      }
+
+      // 3. Also update the Legacy Key for backup/redundancy (Optional, but good for safety)
       localStorage.setItem('subtracking-data', JSON.stringify(subscriptions));
       localStorage.setItem('subtracking-categories', JSON.stringify(userCategories));
       localStorage.setItem('subtracking-savings', cancelledSavings.toString());
-    }, 500);
+      console.log('💾 Local persistence complete.');
+    }, 500); // Fast local save (500ms) to ensure state is ready for sync
 
     return () => clearTimeout(timeout);
   }, [subscriptions, userCategories, cancelledSavings, isLoaded, activeProfile]);
+
+  // 🪄 MAGIC SYNC: Auto-download newer version on startup & focus
+  useEffect(() => {
+    if (user && isLoaded) {
+      // 🚀 INITIAL STARTUP SYNC
+      // We use a small delay and force=true for the very first sync 
+      // to ensure the UI matches the cloud immediately on app open.
+      const initSyncTimeout = setTimeout(() => {
+        console.log('🚀 Initial Startup Sync: Ensuring cloud data is loaded...');
+        performMagicSync(true); // Force update on first boot
+      }, 800);
+
+      // Also run when user switches back to this tab/app
+      const handleSyncTrigger = () => {
+        if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+          console.log('🏁 App visible/focused: Checking for cloud updates...');
+          performMagicSync();
+        }
+      };
+
+      window.addEventListener('focus', handleSyncTrigger);
+      document.addEventListener('visibilitychange', handleSyncTrigger);
+
+      return () => {
+        clearTimeout(initSyncTimeout);
+        window.removeEventListener('focus', handleSyncTrigger);
+        document.removeEventListener('visibilitychange', handleSyncTrigger);
+      };
+    }
+  }, [user, isLoaded, performMagicSync]);
+
+  // ☁️ CLOUD SYNC: Auto-upload to Supabase if logged in
+  useEffect(() => {
+    if (user && isLoaded) {
+      const timeoutId = setTimeout(async () => {
+        // 🛡️ Check if sync is in progress
+        if (isSyncingFromCloud.current) {
+          console.log('⚠️ Auto-upload blocked: Sync in progress');
+          return;
+        }
+
+        try {
+          // 🛡️ SAFETY CHECK: Download the cloud timestamp first!
+          const { data: cloudData } = await downloadVault(user.id);
+          const localLastUpdated = localStorage.getItem('subtracking-last-sync') || '0';
+
+          if (cloudData && cloudData.lastUpdated) {
+            if (new Date(cloudData.lastUpdated).getTime() > new Date(localLastUpdated).getTime()) {
+              console.warn('⚠️ Cloud is newer than local. Aborting auto-upload.');
+              return;
+            }
+          }
+
+          // 🛡️ Check if this tab has performed a recent action (within last 2 minutes)
+          if (Date.now() - lastLocalAction.current > 120000) {
+            return;
+          }
+
+          // Use React state instead of localStorage to avoid stale data
+          const profiles = allProfiles;
+          const activeId = activeProfile?.id;
+          const timestamp = new Date().toISOString();
+          const vault = {
+            profiles,
+            activeProfileId: activeId,
+            version: 1,
+            lastUpdated: timestamp
+          };
+
+          // 🛡️ Prevent redundant uploads of identical data
+          const currentDataHash = JSON.stringify({ profiles, activeId });
+          if (currentDataHash === lastUploadedDataHash.current) {
+            console.log('⏭️ Skipping: Cloud data already matches local.');
+            return;
+          }
+
+          const { error: uploadError } = await uploadVault(user.id, vault);
+          if (uploadError) throw uploadError;
+
+          lastUploadedDataHash.current = currentDataHash; // Update hash after success
+          localStorage.setItem('subtracking-last-sync', timestamp);
+          console.log(`☁️ Uploaded: ${user.id.substring(0, 8)} @ ${timestamp}`);
+          showToast('Changes Saved to Cloud ☁️', 'info');
+        } catch (err) {
+          console.error('Failed to auto-sync:', err);
+          showToast('Cloud Sync Failed ❌', 'error');
+        }
+      }, 3000); // 3s debounce allows persistence to finish first
+      return () => clearTimeout(timeoutId);
+    }
+  }, [subscriptions, userCategories, user, isLoaded, allProfiles, activeProfile]);
 
 
 
@@ -409,11 +647,11 @@ function HomeContent() {
       .sort((a, b) => b.value - a.value);
   }, [filteredSubscriptions, financeViewMode, viewMode]);
 
-  const isPaidThisCycle = (sub: Subscription) => {
+  const isPaidThisCycle = useCallback((sub: Subscription) => {
     if (!sub.lastPaidDate) return false;
     const todayStr = formatLocalDate(new Date());
     return sub.lastPaidDate === todayStr;
-  };
+  }, []); // No deps — formatLocalDate is pure, date is read at call time
 
   const urgentSubscriptions = useMemo(() => {
     return filteredSubscriptions.filter(sub => {
@@ -424,7 +662,6 @@ function HomeContent() {
   }, [filteredSubscriptions]);
 
   const upcomingBills = useMemo(() => {
-    const today = formatLocalDate(new Date());
     return [...filteredSubscriptions]
       .filter(sub => {
         // Use raw renewalDate. If it's in the past and not paid, it stays as 'Past Due'
@@ -442,7 +679,7 @@ function HomeContent() {
         // Sort by raw renewal date so overdue items appear at the very top
         return new Date(a.renewalDate).getTime() - new Date(b.renewalDate).getTime();
       });
-  }, [filteredSubscriptions]);
+  }, [filteredSubscriptions, isPaidThisCycle]);
 
   const upcomingUnpaidTotal = useMemo(() => {
     return upcomingBills.reduce((sum, sub) => {
@@ -453,7 +690,7 @@ function HomeContent() {
         : sub.price;
       return sum + priceDue;
     }, 0);
-  }, [upcomingBills]);
+  }, [upcomingBills, isPaidThisCycle]);
 
   // Cross-Profile Alerts (Check other profiles for urgent bills)
   const crossProfileAlerts = useMemo(() => {
@@ -487,6 +724,7 @@ function HomeContent() {
   }, [allProfiles, activeProfile]);
 
   const markAsPaid = (id: string, amount?: number, date?: Date) => {
+    lastLocalAction.current = Date.now();
     const today = formatLocalDate(date || new Date());
     setSubscriptions(prev => prev.map(sub => {
       if (sub.id !== id) return sub;
@@ -539,6 +777,7 @@ function HomeContent() {
   };
 
   const unmarkAsPaid = (id: string) => {
+    lastLocalAction.current = Date.now();
     setSubscriptions(prev => prev.map(sub => {
       if (sub.id !== id) return sub;
 
@@ -567,6 +806,7 @@ function HomeContent() {
 
 
   const handleSaveSubscription = (data: Omit<Subscription, 'id' | 'lastPaidDate' | 'hasEverBeenPaid'>) => {
+    lastLocalAction.current = Date.now();
     if (!activeProfile) return;
 
     // Add custom category if needed (PRO ONLY FEATURE)
@@ -602,16 +842,15 @@ function HomeContent() {
 
     // Save to active profile
     updateProfile(activeProfile.id, { subscriptions: updatedSubscriptions });
+
+    // 🛡️ Mark local change immediately to prevent race conditions
+    localStorage.setItem('subtracking-last-sync', new Date().toISOString());
   };
 
-  const handleProSuccess = () => {
-    setIsPro(true);
-    localStorage.setItem('subtracking-pro', 'true');
-    setShowLicenseModal(false);
-    showToast('Pro features unlocked! Welcome to the club 🚀', 'success');
-  };
+
 
   const confirmDelete = () => {
+    lastLocalAction.current = Date.now();
     if (!deleteId || !activeProfile) return;
 
     const subToDelete = subscriptions.find(s => s.id === deleteId);
@@ -626,6 +865,9 @@ function HomeContent() {
 
     // Save to active profile
     updateProfile(activeProfile.id, { subscriptions: updatedSubscriptions });
+
+    // 🛡️ Mark local change immediately to prevent race conditions  
+    localStorage.setItem('subtracking-last-sync', new Date().toISOString());
 
     setDeleteId(null);
   };
@@ -642,6 +884,7 @@ function HomeContent() {
   };
 
   const confirmCategoryDelete = () => {
+    lastLocalAction.current = Date.now();
     if (categoryToDelete) {
       setSubscriptions(subscriptions.map(sub =>
         sub.category === categoryToDelete ? { ...sub, category: 'Other' } : sub
@@ -653,6 +896,7 @@ function HomeContent() {
 
   // Profile Management Handlers
   const handleCreateProfile = (profileData: { name: string; city: string; timezone: string; currency: string }) => {
+    lastLocalAction.current = Date.now();
     const newProfile = createProfile(profileData.name, profileData.city, profileData.timezone, profileData.currency);
     setAllProfiles(getProfiles());
 
@@ -674,6 +918,7 @@ function HomeContent() {
   };
 
   const handleUpdateProfile = (profileData: { name: string; city: string; timezone: string; currency: string }) => {
+    lastLocalAction.current = Date.now();
     if (!editingProfile) return;
 
     updateProfile(editingProfile.id, {
@@ -696,6 +941,7 @@ function HomeContent() {
   };
 
   const handleSwitchProfile = (profileId: string) => {
+    lastLocalAction.current = Date.now();
     switchProfile(profileId);
     const newActive = getActiveProfile();
 
@@ -712,6 +958,7 @@ function HomeContent() {
   };
 
   const handleDeleteProfile = (profileId: string) => {
+    lastLocalAction.current = Date.now();
     const profileToDelete = allProfiles.find(p => p.id === profileId);
     if (!profileToDelete) return;
 
@@ -735,6 +982,7 @@ function HomeContent() {
   };
 
   const processImportData = (data: any) => {
+    lastLocalAction.current = Date.now();
     // 0. Handle Legacy Array Format (Root is Array of Subscriptions)
     if (Array.isArray(data)) {
       if (confirm('This will replace your current data with the imported legacy backup. Are you sure?')) {
@@ -975,12 +1223,27 @@ function HomeContent() {
   };
 
   const handleAuditFinish = (idsToDelete: string[]) => {
+    lastLocalAction.current = Date.now();
     setShowWizard(false);
 
-    // Calculate total savings for toast/celebration (logic could be enhanced)
+    // Get the subscriptions that are marked for cancellation
+    const subsToCancel = subscriptions.filter(sub => idsToDelete.includes(sub.id));
+
+    if (subsToCancel.length > 0) {
+      // Show review modal instead of immediately deleting
+      setPendingCancellations(subsToCancel);
+      setShowCancellationReview(true);
+    }
+  };
+
+  const handleConfirmCancellations = (selectedIds: string[]) => {
+    lastLocalAction.current = Date.now();
+    setShowCancellationReview(false);
+
+    // Calculate total savings
     let totalSavings = 0;
     const newSubs = subscriptions.filter(sub => {
-      if (idsToDelete.includes(sub.id)) {
+      if (selectedIds.includes(sub.id)) {
         const monthly = calculateMonthlyPrice(sub.price, sub.billingCycle);
         totalSavings += monthly;
         return false; // Remove
@@ -989,55 +1252,178 @@ function HomeContent() {
     });
 
     setSubscriptions(newSubs);
+    setPendingCancellations([]);
+
     if (totalSavings > 0) {
       setCancelledSavings(prev => prev + totalSavings);
-      showToast(`Audit complete! You're saving $${totalSavings.toFixed(2)}/month`, 'success');
+      showToast(`${selectedIds.length} subscription${selectedIds.length !== 1 ? 's' : ''} cancelled! Saving $${totalSavings.toFixed(2)}/month`, 'success');
     }
   };
 
   if (!isLoaded) return null;
 
   return (
-    <main className="min-h-screen bg-aurora text-slate-100 font-[family-name:var(--font-geist-sans)] relative" style={{ overflowX: 'clip' }}>
+    <main
+      className="min-h-screen bg-aurora text-slate-100 font-[family-name:var(--font-geist-sans)] relative"
+      style={{ overflowX: 'clip', touchAction: 'pan-y' }}
+      // TOUCH EVENTS (Mobile)
+      onTouchStart={(e) => {
+        if (window.scrollY === 0) touchStartRef.current = e.touches[0].clientY;
+      }}
+      onTouchMove={(e) => {
+        if (touchStartRef.current > 0 && window.scrollY === 0) {
+          const currentY = e.touches[0].clientY;
+          const distance = Math.max(0, currentY - touchStartRef.current);
+          const dampen = distance > PULL_THRESHOLD ? PULL_THRESHOLD + (distance - PULL_THRESHOLD) * 0.4 : distance;
+          setPullDistance(dampen);
+        }
+      }}
+      onTouchEnd={() => {
+        if (pullDistance > PULL_THRESHOLD && !isRefreshing) performMagicSync(true);
+        else setPullDistance(0);
+        touchStartRef.current = 0;
+      }}
+      // MOUSE EVENTS (Desktop/Browser)
+      onMouseDown={(e) => {
+        if (window.scrollY === 0) touchStartRef.current = e.clientY;
+      }}
+      onMouseMove={(e) => {
+        if (touchStartRef.current > 0 && window.scrollY === 0) {
+          const distance = Math.max(0, e.clientY - touchStartRef.current);
+          const dampen = distance > PULL_THRESHOLD ? PULL_THRESHOLD + (distance - PULL_THRESHOLD) * 0.4 : distance;
+          setPullDistance(dampen);
+        }
+      }}
+      onMouseUp={() => {
+        if (pullDistance > PULL_THRESHOLD && !isRefreshing) performMagicSync(true);
+        else setPullDistance(0);
+        touchStartRef.current = 0;
+      }}
+      onMouseLeave={() => {
+        setPullDistance(0);
+        touchStartRef.current = 0;
+      }}
+    >
+      {/* 🔄 Pull-to-Refresh Indicator */}
+      <motion.div
+        className="fixed top-0 left-0 w-full flex justify-center z-40 pointer-events-none"
+        style={{
+          y: Math.min(pullDistance - 40, PULL_THRESHOLD - 20),
+          opacity: pullDistance / PULL_THRESHOLD
+        }}
+        animate={{
+          y: isRefreshing ? 40 : Math.min(pullDistance - 40, PULL_THRESHOLD - 20),
+          opacity: isRefreshing || pullDistance > 0 ? 1 : 0
+        }}
+      >
+        <div className="bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-full p-2 shadow-2xl flex items-center gap-2">
+          <div className={cn(
+            "w-8 h-8 rounded-full border-2 border-indigo-500/30 border-t-indigo-500",
+            (isRefreshing || pullDistance >= PULL_THRESHOLD) && "animate-spin"
+          )} />
+          {pullDistance >= PULL_THRESHOLD && !isRefreshing && (
+            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 pr-2">Release to Sync</span>
+          )}
+          {isRefreshing && (
+            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 pr-2">Syncing Vault...</span>
+          )}
+        </div>
+      </motion.div>
       <InstallBanner />
 
+      {/* 📱 Mobile Status Bar Shield: Prevents content from peeking behind status bar icons */}
+      <div
+        className="fixed top-0 left-0 w-full z-[50] pointer-events-none sm:hidden"
+        style={{
+          height: 'env(safe-area-inset-top, 47px)',
+          background: 'rgba(15, 23, 42, 0.9)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
+        }}
+      />
 
 
 
-      <div className="max-w-7xl mx-auto p-4 sm:p-8 space-y-8 relative z-10">
 
-        {/* HEADER SECTION (Full Width) */}
-        <div className="flex justify-between items-start mb-8 z-20 relative animate-in fade-in slide-in-from-top duration-700">
-          {/* Logo Area */}
-          <div className="flex items-center gap-3 opacity-90 hover:opacity-100 transition-opacity">
-            <img src="/logo.png" alt="SubTracking Logo" className="w-10 h-10 rounded-xl shadow-2xl border border-white/5" />
-            <h1 className="text-xl font-medium tracking-tight text-slate-200 hidden sm:block">
-              {siteConfig.heroTitle || 'SubTracking'}
-            </h1>
-          </div>
+      <div className="max-w-7xl mx-auto p-4 sm:p-8 pt-8 space-y-8 relative z-10 safe-top">
 
-          {/* Actions Area */}
-          <div className="flex items-center gap-3">
-            {/* Profile Switcher */}
-            <button
-              onClick={() => setShowProfileManager(true)}
-              className="flex items-center gap-2 bg-slate-900/60 hover:bg-slate-800/80 backdrop-blur-md pl-1.5 pr-4 py-1.5 rounded-full border border-white/5 transition-all group shadow-lg hover:border-indigo-500/30 hover:scale-105 active:scale-95 duration-200"
+        {/* 🏗️ STICKY HEADER WRAPPER */}
+        <motion.div
+          style={{
+            backgroundColor: headerBg,
+            backdropFilter: headerBlur,
+            borderBottomColor: headerBorder
+          }}
+          className="fixed top-0 left-0 w-full z-[60] pb-1 safe-top transition-none border-b"
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-8 flex justify-between items-center relative min-h-[60px]">
+            {/* Logo Area */}
+            <div className="flex items-center gap-3 pointer-events-auto transition-all duration-500 origin-left">
+              <button
+                onClick={async () => {
+                  // Scroll to top
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  // Fetch fresh data from cloud
+                  if (user) {
+                    await performMagicSync(true);
+                  }
+                }}
+                className="hover:opacity-80 active:scale-95 transition-all duration-200 cursor-pointer"
+              >
+                <img src="/logo.png" alt="SubTracking Logo" className="w-10 h-10 rounded-xl shadow-2xl border border-white/5" />
+              </button>
+              <motion.h1
+                style={{ opacity: labelOpacity }}
+                className="text-xl font-medium tracking-tight text-slate-200 hidden sm:block"
+              >
+                {siteConfig.heroTitle || 'SubTracking'}
+              </motion.h1>
+            </div>
+
+            {/* 💎 GRADUAL SCALING SPENDING NUMBER (Sticky Centerpiece) */}
+            <motion.div
+              style={{
+                scale: numberScale,
+                y: numberY,
+              }}
+              className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none"
             >
-              <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shadow-inner group-hover:bg-indigo-500/20 transition-colors">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10">
-                  <Wallet className="w-4 h-4 text-white" />
-                </div>
-              </div>
-              <div className="flex flex-col items-start mr-1">
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">VAULT</span>
-                <span className="text-sm font-bold text-slate-200 group-hover:text-white transition-colors max-w-[120px] truncate leading-none">
-                  {activeProfile?.name || 'Main Profile'}
+              <div className="flex items-baseline gap-1">
+                <span className="text-7xl sm:text-9xl font-extralight text-white tracking-tighter">
+                  {getCurrencySymbol(activeProfile?.currency || 'USD')}{Math.floor(viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12).toLocaleString()}
+                </span>
+                <span className="text-3xl sm:text-4xl font-light text-slate-500">
+                  .{(viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12).toFixed(2).split('.')[1]}
                 </span>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-400 transition-colors" />
-            </button>
+
+              {/* Legend label that fades as we scroll */}
+              <motion.div
+                style={{ opacity: labelOpacity }}
+                className="mt-2 text-sm font-medium text-indigo-300/80 uppercase tracking-[0.2em] text-center whitespace-nowrap"
+              >
+                Total {viewMode === 'monthly' ? 'Monthly' : 'Annual'} Spend
+              </motion.div>
+            </motion.div>
+
+            {/* Actions Area */}
+            <div className="flex items-center gap-3 pointer-events-auto">
+              <button
+                onClick={() => setShowProfileManager(true)}
+                className="flex items-center bg-slate-900/60 hover:bg-slate-800/80 backdrop-blur-md rounded-full border border-white/5 transition-all group shadow-lg hover:border-indigo-500/30 hover:scale-105 active:scale-95 duration-200 p-0"
+                title={activeProfile?.name || 'Main Profile'}
+              >
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg border border-white/10">
+                  <Wallet className="w-5 h-5 text-white" />
+                </div>
+              </button>
+            </div>
           </div>
-        </div>
+        </motion.div>
+
+        {/* Hero Area Spacer (Gives room for the Big Number in its initial position) */}
+        <div className="h-[210px] sm:h-[230px] pointer-events-none" />
 
         {/* Cross-Profile Alert Cards (Yellow Kind Style) */}
         {crossProfileAlerts.length > 0 && (
@@ -1364,12 +1750,13 @@ function HomeContent() {
             ref={stickyHeaderRef}
             className={cn(
               "sticky top-0 z-30 rounded-2xl border border-white/5 mb-6 transition-all duration-300",
-              isHeaderCompact ? "p-3 sm:p-6" : "p-4 sm:p-6"
+              isHeaderCompact ? "p-3 sm:p-6 safe-top" : "p-4 sm:p-6"
             )}
             style={{
               background: 'rgba(15, 23, 42, 0.96)',
               backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)'
+              WebkitBackdropFilter: 'blur(20px)',
+              top: 'env(safe-area-inset-top, 0px)'
             }}
           >
             {/* Compact Header (Mobile when scrolled) */}
@@ -1749,11 +2136,7 @@ function HomeContent() {
         }}
       />
 
-      <LicenseModal
-        isOpen={showLicenseModal}
-        onClose={() => setShowLicenseModal(false)}
-        onSuccess={handleProSuccess}
-      />
+
 
       <UserGuideModal
         isOpen={showUserGuide}
@@ -1781,6 +2164,19 @@ function HomeContent() {
         subscriptions={subscriptions.filter(s => !s.isEssential && s.category !== 'Utility Bills')}
         onFinish={handleAuditFinish}
       />
+
+      {/* Cancellation Review Modal */}
+      {showCancellationReview && (
+        <CancellationReviewModal
+          subscriptions={pendingCancellations}
+          onConfirm={handleConfirmCancellations}
+          onCancel={() => {
+            setShowCancellationReview(false);
+            setPendingCancellations([]);
+          }}
+          currency={activeProfile?.currency || 'USD'}
+        />
+      )}
 
       {/* Profile Modals */}
       <ProfileManagerModal
@@ -1933,7 +2329,7 @@ function HomeContent() {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setShowAddModal(true)}
-        className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)] z-40 group border border-white/20"
+        className="fixed safe-fab w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)] z-40 group border border-white/20"
         aria-label="Add new subscription"
       >
         <Plus className="w-8 h-8 text-white transition-transform group-hover:rotate-90 duration-300" />
