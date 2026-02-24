@@ -1391,19 +1391,19 @@ function HomeContent() {
               </motion.h1>
             </div>
 
-            {/* 💎 GRADUAL SCALING SPENDING NUMBER (Sticky Centerpiece) */}
+            {/* 💎 GRADUAL SCALING SPENDING NUMBER (Sticky Centerpiece - DESKTOP ONLY) */}
             <motion.div
               style={{
                 scale: numberScale,
                 y: numberY,
               }}
-              className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none"
+              className="hidden sm:flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex-col items-center justify-center pointer-events-none"
             >
               <div className="flex items-baseline gap-1">
-                <span className="text-7xl sm:text-9xl font-extralight text-white tracking-tighter">
+                <span className="text-9xl font-extralight text-white tracking-tighter">
                   {getCurrencySymbol(activeProfile?.currency || 'USD')}{Math.floor(viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12).toLocaleString()}
                 </span>
-                <span className="text-3xl sm:text-4xl font-light text-slate-500">
+                <span className="text-4xl font-light text-slate-500">
                   .{(viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12).toFixed(2).split('.')[1]}
                 </span>
               </div>
@@ -1415,6 +1415,16 @@ function HomeContent() {
               >
                 Total {viewMode === 'monthly' ? 'Monthly' : 'Annual'} Spend
               </motion.div>
+            </motion.div>
+
+            {/* 📱 SMALL MOBILE TITLE (Fades in on scroll) */}
+            <motion.div
+              style={{ opacity: useTransform(scrollProgress, [0.5, 1], [0, 1]) }}
+              className="flex sm:hidden absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex-col items-center justify-center pointer-events-none"
+            >
+              <div className="text-lg font-bold text-white tracking-tight">
+                {getCurrencySymbol(activeProfile?.currency || 'USD')}{(viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12).toFixed(2).toLocaleString()}
+              </div>
             </motion.div>
 
             {/* Actions Area */}
@@ -1433,7 +1443,22 @@ function HomeContent() {
         </motion.div>
 
         {/* Hero Area Spacer (Gives room for the Big Number in its initial position) */}
-        <div className="h-[210px] sm:h-[230px] pointer-events-none" />
+        <div className="relative h-[210px] sm:h-[230px] w-full flex items-center justify-center pointer-events-none">
+          {/* 📱 STATIC MOBILE NUMBER (Scrolls natively off-screen) */}
+          <div className="flex sm:hidden flex-col items-center justify-center mt-12">
+            <div className="flex items-baseline gap-1">
+              <span className="text-7xl font-extralight text-white tracking-tighter">
+                {getCurrencySymbol(activeProfile?.currency || 'USD')}{Math.floor(viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12).toLocaleString()}
+              </span>
+              <span className="text-3xl font-light text-slate-500">
+                .{(viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12).toFixed(2).split('.')[1]}
+              </span>
+            </div>
+            <div className="mt-2 text-xs font-medium text-indigo-300/80 uppercase tracking-[0.2em] text-center whitespace-nowrap">
+              Total {viewMode === 'monthly' ? 'Monthly' : 'Annual'} Spend
+            </div>
+          </div>
+        </div>
 
         {/* Cross-Profile Alert Cards (Yellow Kind Style) */}
         {crossProfileAlerts.length > 0 && (
