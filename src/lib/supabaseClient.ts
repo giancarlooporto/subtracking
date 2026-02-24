@@ -1,11 +1,12 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// NOTE: These environment variables must be set in your .env.local file
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+// NOTE: These environment variables must be set in your .env.local / Vercel env settings
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
 
 // Create a single supabase client for interacting with your database
+// Placeholder values are used as a fallback during SSR/build time only — they don't grant any access
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function loginWithEmail(email: string) {
