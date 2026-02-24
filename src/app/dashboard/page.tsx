@@ -1728,14 +1728,14 @@ function HomeContent() {
           <div
             ref={stickyHeaderRef}
             className={cn(
-              "sticky top-0 z-30 rounded-2xl border border-white/5 mb-6 transition-all duration-300",
-              isHeaderCompact ? "p-3 sm:p-6 safe-top" : "p-4 sm:p-6"
+              "sticky z-20 rounded-2xl border border-white/5 mb-6 transition-all duration-300",
+              isHeaderCompact ? "p-3 sm:p-6" : "p-4 sm:p-6"
             )}
             style={{
               background: 'rgba(15, 23, 42, 0.96)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              top: 'env(safe-area-inset-top, 0px)'
+              top: 'calc(env(safe-area-inset-top, 0px) + 60px)' // 60px = height of the top sticky nav
             }}
           >
             {/* Compact Header (Mobile when scrolled) */}
