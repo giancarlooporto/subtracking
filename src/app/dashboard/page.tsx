@@ -18,7 +18,7 @@ import {
   setActiveProfileId
 } from '../../lib/profileManager';
 
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import dynamic from 'next/dynamic';
 
@@ -119,36 +119,27 @@ function HomeContent() {
   const lastLocalAction = React.useRef<number>(0);
   const lastUploadedDataHash = React.useRef<string>('');
 
-  // 🎢 SCROLL-LINKED ANIMATIONS (Hero to Sticky Header)
-  // Uses rAF loop instead of useScroll to bypass iOS scroll event throttling
-  // This reads scrollY every display frame for true 60fps on real devices
-  const scrollProgress = useMotionValue(0);
+  // 🎢 SCROLL-LINKED ANIMATION (CSS Class Toggle)
+  // Uses IntersectionObserver (fires during iOS momentum scroll) to toggle a class
+  // All transitions run on GPU compositor via CSS — no JS per-frame computation
+  const [isScrolled, setIsScrolled] = useState(false);
+  const scrollSentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let rafId: number;
-    const update = () => {
-      const raw = typeof window !== 'undefined' ? window.scrollY : 0;
-      const progress = Math.min(Math.max(raw / 120, 0), 1);
-      scrollProgress.set(progress);
-      rafId = requestAnimationFrame(update);
-    };
-    rafId = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(rafId);
-  }, [scrollProgress]);
+    const sentinel = scrollSentinelRef.current;
+    if (!sentinel) return;
 
-  // Scaling: 1.15 (Hero - 15% bigger) down to 0.54 (Header)
-  const numberScale = useTransform(scrollProgress, [0, 1], [1.15, 0.54]);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // When sentinel scrolls out of view → we've scrolled past threshold
+        setIsScrolled(!entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
 
-  // Y-Position: Start centered in hero space -> Header center
-  const numberY = useTransform(scrollProgress, [0, 1], [120, 8]);
-
-  // Opacity for the "Label" (Total Monthly Spend) which fades out
-  const labelOpacity = useTransform(scrollProgress, [0, 0.5], [1, 0]);
-
-  // Header background / border logic
-  const headerBg = useTransform(scrollProgress, [0.8, 1], ["rgba(15, 23, 42, 0)", "rgba(15, 23, 42, 0.9)"]);
-  const headerBlur = useTransform(scrollProgress, [0.8, 1], ["blur(0px)", "blur(20px)"]);
-  const headerBorder = useTransform(scrollProgress, [0.9, 1], ["rgba(255, 255, 255, 0)", "rgba(255, 255, 255, 0.05)"]);
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
 
   // Pull-to-refresh state
   const [pullDistance, setPullDistance] = useState(0);
@@ -1356,16 +1347,19 @@ function HomeContent() {
 
 
 
+      {/* Scroll sentinel: when this div scrolls out of view, header collapses */}
+      <div ref={scrollSentinelRef} className="absolute top-[120px] left-0 h-[1px] w-full pointer-events-none" />
+
       <div className="max-w-7xl mx-auto p-4 sm:p-8 pt-8 space-y-8 relative z-10 safe-top">
 
-        {/* 🏗️ STICKY HEADER WRAPPER */}
-        <motion.div
-          style={{
-            backgroundColor: headerBg,
-            backdropFilter: headerBlur,
-            borderBottomColor: headerBorder
-          }}
-          className="fixed top-0 left-0 w-full z-[60] pb-1 safe-top transition-none border-b"
+        {/* 🏗️ STICKY HEADER WRAPPER — CSS Class Toggle (GPU transitions, smooth on iOS) */}
+        <div
+          className={cn(
+            "fixed top-0 left-0 w-full z-[60] pb-1 safe-top border-b transition-all duration-300 ease-out",
+            isScrolled
+              ? "bg-slate-900/90 backdrop-blur-xl border-white/5"
+              : "bg-transparent backdrop-blur-none border-transparent"
+          )}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-8 flex justify-between items-center relative min-h-[60px]">
             {/* Logo Area */}
@@ -1383,21 +1377,24 @@ function HomeContent() {
               >
                 <img src="/logo.png" alt="SubTracking Logo" className="w-10 h-10 rounded-xl shadow-2xl border border-white/5" />
               </button>
-              <motion.h1
-                style={{ opacity: labelOpacity }}
-                className="text-xl font-medium tracking-tight text-slate-200 hidden sm:block"
+              <h1
+                className={cn(
+                  "text-xl font-medium tracking-tight text-slate-200 hidden sm:block transition-opacity duration-300",
+                  isScrolled ? "opacity-0" : "opacity-100"
+                )}
               >
                 {siteConfig.heroTitle || 'SubTracking'}
-              </motion.h1>
+              </h1>
             </div>
 
-            {/* 💎 GRADUAL SCALING SPENDING NUMBER (Sticky Centerpiece) */}
-            <motion.div
-              style={{
-                scale: numberScale,
-                y: numberY,
-              }}
-              className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none"
+            {/* 💎 SPENDING NUMBER — CSS transitions for smooth iOS scroll */}
+            <div
+              className={cn(
+                "absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none transition-all duration-300 ease-out origin-center",
+                isScrolled
+                  ? "scale-[0.54] translate-y-[8px]"
+                  : "scale-[1.15] translate-y-[120px]"
+              )}
             >
               <div className="flex items-baseline gap-1">
                 <span className="text-7xl sm:text-9xl font-extralight text-white tracking-tighter">
@@ -1409,13 +1406,15 @@ function HomeContent() {
               </div>
 
               {/* Legend label that fades as we scroll */}
-              <motion.div
-                style={{ opacity: labelOpacity }}
-                className="mt-2 text-sm font-medium text-indigo-300/80 uppercase tracking-[0.2em] text-center whitespace-nowrap"
+              <div
+                className={cn(
+                  "mt-2 text-sm font-medium text-indigo-300/80 uppercase tracking-[0.2em] text-center whitespace-nowrap transition-opacity duration-200",
+                  isScrolled ? "opacity-0" : "opacity-100"
+                )}
               >
                 Total {viewMode === 'monthly' ? 'Monthly' : 'Annual'} Spend
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
 
             {/* Actions Area */}
             <div className="flex items-center gap-3 pointer-events-auto">
@@ -1430,7 +1429,7 @@ function HomeContent() {
               </button>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Hero Area Spacer (Gives room for the Big Number in its initial position) */}
         <div className="h-[210px] sm:h-[230px] pointer-events-none" />
