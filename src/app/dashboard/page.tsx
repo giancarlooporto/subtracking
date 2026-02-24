@@ -18,7 +18,7 @@ import {
   setActiveProfileId
 } from '../../lib/profileManager';
 
-import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 
 import dynamic from 'next/dynamic';
 
@@ -122,23 +122,23 @@ function HomeContent() {
   // 🎢 SCROLL-LINKED ANIMATIONS (Hero to Sticky Header)
   const { scrollY } = useScroll();
 
-  // Progress from 0 (top) to 1 (scrolled 120px)
+  // Progress from 0 (top) to 1 (scrolled 120px) — raw, no spring
+  // Avoids JS physics computation on every frame (causes jank on real iOS devices)
   const scrollProgress = useTransform(scrollY, [0, 120], [0, 1]);
-  const smoothProgress = useSpring(scrollProgress, { damping: 50, stiffness: 500 });
 
   // Scaling: 1.15 (Hero - 15% bigger) down to 0.54 (Header - 10% smaller than before)
-  const numberScale = useTransform(smoothProgress, [0, 1], [1.15, 0.54]);
+  const numberScale = useTransform(scrollProgress, [0, 1], [1.15, 0.54]);
 
   // Y-Position: Start centered in hero space (120px below header) -> Header center (8px offset down)
-  const numberY = useTransform(smoothProgress, [0, 1], [120, 8]);
+  const numberY = useTransform(scrollProgress, [0, 1], [120, 8]);
 
   // Opacity for the "Label" (Total Monthly Spend) which fades out
-  const labelOpacity = useTransform(smoothProgress, [0, 0.5], [1, 0]);
+  const labelOpacity = useTransform(scrollProgress, [0, 0.5], [1, 0]);
 
   // Header background / border logic
-  const headerBg = useTransform(smoothProgress, [0.8, 1], ["rgba(15, 23, 42, 0)", "rgba(15, 23, 42, 0.9)"]);
-  const headerBlur = useTransform(smoothProgress, [0.8, 1], ["blur(0px)", "blur(20px)"]);
-  const headerBorder = useTransform(smoothProgress, [0.9, 1], ["rgba(255, 255, 255, 0)", "rgba(255, 255, 255, 0.05)"]);
+  const headerBg = useTransform(scrollProgress, [0.8, 1], ["rgba(15, 23, 42, 0)", "rgba(15, 23, 42, 0.9)"]);
+  const headerBlur = useTransform(scrollProgress, [0.8, 1], ["blur(0px)", "blur(20px)"]);
+  const headerBorder = useTransform(scrollProgress, [0.9, 1], ["rgba(255, 255, 255, 0)", "rgba(255, 255, 255, 0.05)"]);
 
   // Pull-to-refresh state
   const [pullDistance, setPullDistance] = useState(0);
