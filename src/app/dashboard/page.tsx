@@ -18,7 +18,7 @@ import {
   setActiveProfileId
 } from '../../lib/profileManager';
 
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 
 import dynamic from 'next/dynamic';
 
@@ -120,16 +120,26 @@ function HomeContent() {
   const lastUploadedDataHash = React.useRef<string>('');
 
   // 🎢 SCROLL-LINKED ANIMATIONS (Hero to Sticky Header)
-  const { scrollY } = useScroll();
+  // Uses rAF loop instead of useScroll to bypass iOS scroll event throttling
+  // This reads scrollY every display frame for true 60fps on real devices
+  const scrollProgress = useMotionValue(0);
 
-  // Progress from 0 (top) to 1 (scrolled 120px) — raw, no spring
-  // Avoids JS physics computation on every frame (causes jank on real iOS devices)
-  const scrollProgress = useTransform(scrollY, [0, 120], [0, 1]);
+  useEffect(() => {
+    let rafId: number;
+    const update = () => {
+      const raw = typeof window !== 'undefined' ? window.scrollY : 0;
+      const progress = Math.min(Math.max(raw / 120, 0), 1);
+      scrollProgress.set(progress);
+      rafId = requestAnimationFrame(update);
+    };
+    rafId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(rafId);
+  }, [scrollProgress]);
 
-  // Scaling: 1.15 (Hero - 15% bigger) down to 0.54 (Header - 10% smaller than before)
+  // Scaling: 1.15 (Hero - 15% bigger) down to 0.54 (Header)
   const numberScale = useTransform(scrollProgress, [0, 1], [1.15, 0.54]);
 
-  // Y-Position: Start centered in hero space (120px below header) -> Header center (8px offset down)
+  // Y-Position: Start centered in hero space -> Header center
   const numberY = useTransform(scrollProgress, [0, 1], [120, 8]);
 
   // Opacity for the "Label" (Total Monthly Spend) which fades out
