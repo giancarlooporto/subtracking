@@ -1489,30 +1489,8 @@ function HomeContent() {
           currency={activeProfile?.currency || 'USD'}
         />
 
-        {!isPro && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            onClick={() => setShowLicenseModal(true)}
-            className="cursor-pointer bg-gradient-to-r from-emerald-600/10 to-indigo-600/10 border border-emerald-500/20 p-4 rounded-2xl flex items-center justify-between group hover:border-emerald-500/40 transition-all shadow-lg"
-          >
-            <div className="flex items-center gap-3">
-              <div className="bg-emerald-500/20 p-2 rounded-xl text-emerald-400 group-hover:scale-110 transition-transform">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div className="text-left">
-                <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                  70% Social Discount Available
-                  <span className="bg-emerald-500/20 text-emerald-400 text-[9px] px-1.5 py-0.5 rounded font-black uppercase">Limited Time</span>
-                </h4>
-                <p className="text-xs text-slate-400">Share SubTracking with friends to unlock $5.70 Lifetime Access (regular $19).</p>
-              </div>
-            </div>
-            <div className="bg-emerald-500 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20 hidden sm:block">
-              Claim Discount
-            </div>
-          </motion.div>
-        )}
+
+
 
         {/* Region Filter (Smart Visibility) */}
 
@@ -1728,17 +1706,6 @@ function HomeContent() {
             <GhostMeter
               subscriptions={financeViewMode === 'focus' ? filteredSubscriptions.filter(s => !s.isEssential) : filteredSubscriptions}
             />
-            {!isPro && (
-              <div className="absolute inset-0 top-12 backdrop-blur-[6px] bg-slate-900/20 z-20 flex items-center justify-center rounded-b-2xl">
-                <button
-                  onClick={() => setShowLicenseModal(true)}
-                  className="bg-slate-900 border border-purple-500/30 px-5 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 hover:scale-105 transition-transform"
-                >
-                  <Ghost className="w-4 h-4 text-purple-400 fill-purple-400" />
-                  <span className="text-white font-bold text-sm">Unlock Ghost Meter</span>
-                </button>
-              </div>
-            )}
           </div>
 
         </div>
@@ -2100,7 +2067,7 @@ function HomeContent() {
               <CalendarView
                 subscriptions={subscriptions}
                 isPro={isPro}
-                onUnlockPro={() => setShowLicenseModal(true)}
+                onUnlockPro={() => { }}
                 onEdit={(s) => { setEditingId(s.id); setShowAddModal(true); }}
                 onDelete={(id) => setDeleteId(id)}
                 onMarkPaid={markAsPaid}
@@ -2152,7 +2119,7 @@ function HomeContent() {
         onExportICS={() => generateBulkICSFile(subscriptions)}
         onImport={importData}
         isPro={isPro}
-        onActivatePro={() => setShowLicenseModal(true)}
+        onActivatePro={() => { }}
         onOpenGuide={() => setShowUserGuide(true)}
         onManageProfiles={() => setShowProfileManager(true)}
         profileCount={allProfiles.length}
@@ -2193,7 +2160,7 @@ function HomeContent() {
           setShowProfileSettings(true);
         }}
         isPro={isPro}
-        onUnlockPro={() => setShowLicenseModal(true)}
+        onUnlockPro={() => { }}
       />
 
       <ProfileSettingsModal
@@ -2361,7 +2328,7 @@ function HomeContent() {
 
       <Footer
         isPro={isPro}
-        onUnlockPro={() => setShowLicenseModal(true)}
+        onUnlockPro={() => { }}
         minimal={true}
       />
     </main >

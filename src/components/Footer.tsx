@@ -92,14 +92,6 @@ export function Footer({ isPro, onUnlockPro, minimal = false }: FooterProps) {
 
                     <div className="flex items-center gap-4">
                         <ShareButton variant="footer" />
-                        {!isPro && (
-                            <button
-                                onClick={onUnlockPro}
-                                className="px-4 py-2 rounded-lg bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all"
-                            >
-                                Get Pro Access
-                            </button>
-                        )}
                     </div>
                 </div>
 

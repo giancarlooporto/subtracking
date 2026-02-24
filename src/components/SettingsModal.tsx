@@ -1,5 +1,10 @@
+
 import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar, BookOpen, User, Users } from 'lucide-react';
-import { useRef, ChangeEvent } from 'react';
+import { useRef, ChangeEvent, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { LoginModal } from './LoginModal';
+import { signOut, downloadVault } from '../lib/supabaseClient';
+import { saveProfiles, setActiveProfileId, getProfiles } from '../lib/profileManager';
 import { cn } from '../lib/utils';
 
 interface SettingsModalProps {
@@ -19,6 +24,60 @@ interface SettingsModalProps {
 
 export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExportCSV, onExportICS, onImport, isPro, onActivatePro, onOpenGuide, onManageProfiles, profileCount }: SettingsModalProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { user, isLoading: isAuthLoading } = useAuth();
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [isRestoring, setIsRestoring] = useState(false);
+
+    const handleSignOut = async () => {
+        if (confirm('Are you sure you want to sign out? Your pro features will remain active on this device.')) {
+            await signOut();
+            window.location.reload();
+        }
+    };
+
+    const handleRestoreCloud = async () => {
+        if (!user) return;
+        if (!confirm('WARNING: This will OVERWRITE your local data with the cloud backup. Are you sure?')) return;
+
+        setIsRestoring(true);
+        try {
+            const { data, error } = await downloadVault(user.id);
+            if (error) throw error;
+            if (!data) throw new Error('No cloud backup found.');
+
+            // data is { profiles: [...], version: 1, ... }
+            if (data.profiles) {
+                // Save to local storage
+                saveProfiles(data.profiles);
+                // Set first profile as active just in case
+                if (data.profiles.length > 0) {
+                    setActiveProfileId(data.profiles[0].id);
+                }
+
+                // Track the cloud timestamp locally to prevent immediate re-sync
+                if (data.lastUpdated) {
+                    localStorage.setItem('subtracking-last-sync', data.lastUpdated);
+                }
+                alert('✅ Cloud Restore Successful! The app will now reload.');
+                window.location.reload();
+            } else {
+                throw new Error('Invalid vault format');
+            }
+        } catch (err: any) {
+            console.error('Full Restore Error:', err);
+            // safe error message extraction
+            let msg = err.message || err.error_description || (typeof err === 'object' ? JSON.stringify(err) : String(err));
+
+            // Handle specific Supabase "Not Found" error roughly
+            if (msg === '{}' || msg.includes('Object not found') || msg.includes('404')) {
+                msg = "No backup found in cloud. (Did you wait for auto-sync?)";
+            }
+
+            alert('❌ Restore Failed: ' + msg);
+        } finally {
+            setIsRestoring(false);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -41,26 +100,7 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                 </div>
 
                 <div className="space-y-6">
-                    {/* Pro Status Section */}
-                    {!isPro && (
-                        <div className="p-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-2xl space-y-3">
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Free Plan</span>
-                                <span className="text-[10px] font-bold bg-indigo-500 text-white px-2 py-0.5 rounded-full">Limited</span>
-                            </div>
-                            <p className="text-sm text-slate-300">Unlock Data Vault, Ghost Meter, and unlimited tracking.</p>
-                            <button
-                                onClick={() => {
-                                    onClose();
-                                    onActivatePro();
-                                }}
-                                className="w-full py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
-                            >
-                                <Key className="w-3 h-3" />
-                                Enter License Key
-                            </button>
-                        </div>
-                    )}
+
 
                     {/* Data Vault Section */}
                     <div className="space-y-3">
@@ -112,6 +152,72 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                                 ? "Full secure backup & restore active. Transfer your data anywhere."
                                 : "Export your data for free anytime. Upgrade to PRO to Import/Restore your vault."}
                         </p>
+                    </div>
+
+                    {/* CLOUD SYNC SECTION */}
+                    <div className="space-y-4 pt-4 border-t border-slate-800">
+                        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                            <Upload className="w-4 h-4" />
+                            Cloud Sync (Beta)
+                        </h3>
+
+                        <div className="bg-slate-800/30 rounded-xl p-4 border border-indigo-500/10">
+                            {!user ? (
+                                <div className="text-center space-y-4">
+                                    <p className="text-sm text-slate-400">
+                                        Sign in to sync your encrypted vault across devices.
+                                    </p>
+                                    <button
+                                        onClick={() => setShowLoginModal(true)}
+                                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl transition-colors shadow-lg shadow-indigo-500/20"
+                                    >
+                                        Sign In / Create Account
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
+                                                <User className="w-5 h-5 text-indigo-400" />
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-bold text-white">{user.email}</div>
+                                                <div className="text-xs text-emerald-400 flex items-center gap-1">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                    Online & Ready
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={handleSignOut}
+                                            className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                            title="Sign Out"
+                                        >
+                                            <Lock className="w-4 h-4" />
+                                        </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button
+                                            disabled
+                                            className="bg-slate-800/50 text-slate-500 border border-slate-700/50 p-3 rounded-xl text-xs font-bold cursor-not-allowed flex flex-col items-center gap-2"
+                                        >
+                                            <Upload className="w-4 h-4" />
+                                            <span>Auto-Sync On</span>
+                                        </button>
+                                        <button
+                                            onClick={handleRestoreCloud}
+                                            disabled={isRestoring}
+                                            className="bg-slate-800 hover:bg-indigo-600/20 border border-slate-700 hover:border-indigo-500/50 p-3 rounded-xl text-xs font-bold text-white transition-all flex flex-col items-center gap-2 disabled:opacity-50 disabled:cursor-wait"
+                                        >
+                                            <Download className={cn("w-4 h-4", isRestoring && "animate-bounce")} />
+                                            <span>{isRestoring ? 'Restoring...' : 'Restore Cloud'}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Reports Section */}
@@ -230,6 +336,8 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                     Done
                 </button>
             </div>
+            <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
         </div>
     );
 }
+

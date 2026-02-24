@@ -12,6 +12,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+  themeColor: '#0a0a0a',
+};
+
 export const metadata: Metadata = {
   // Optimized title with primary keyword (60 chars max for Google) 
   title: "SubTracking - Privacy-First Subscription Tracker App",
@@ -138,7 +147,7 @@ export const metadata: Metadata = {
   },
 };
 
-import { LaunchBanner } from "@/components/LaunchBanner";
+import { AuthProvider } from "@/context/AuthContext";
 
 export default function RootLayout({
   children,
@@ -198,8 +207,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <LaunchBanner />
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+html {
+  background: #020617;
+  /* Deepest dark for overscroll */
+  scroll-padding-top: 100px;
+  /* Space for the header/notch when scrolling to focused inputs */
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -20,10 +27,33 @@
 }
 
 body {
-  background: var(--background);
+  background: #020617;
+  /* Deepest dark for overscroll */
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
+  /* Support for mobile safe areas handled in components */
+  padding: 0;
+  margin: 0;
+  min-height: 100vh;
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 47px);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 34px);
+}
+
+.safe-mb {
+  margin-bottom: env(safe-area-inset-bottom, 34px);
+}
+
+.safe-fab {
+  bottom: calc(2rem + env(safe-area-inset-bottom));
+  right: calc(2rem + env(safe-area-inset-left));
+  /* Handle landscape just in case */
 }
 
 /* Aurora Background Animation */

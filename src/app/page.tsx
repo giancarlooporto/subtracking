@@ -14,12 +14,37 @@ import { ShareButton } from '../components/ShareButton';
 import { Footer } from '../components/Footer';
 
 export default function LandingPage() {
+    const router = useRouter();
     const [isVideoOpen, setIsVideoOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const router = useRouter();
+    const [pullDistance, setPullDistance] = useState(0);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const touchStartRef = React.useRef(0);
+    const PULL_THRESHOLD = 80;
 
     useEffect(() => {
-        // Smart Redirect: If user has data, go straight to app
+        // 1. Skip landing page if running as a Native App (iOS/Android)
+        // Check both Capacitor global and the URL scheme
+        const checkNative = () => {
+            const isNative = (window as any).Capacitor?.isNative ||
+                (typeof window !== 'undefined' && (
+                    window.location.origin.includes('capacitor://') ||
+                    window.location.origin.includes('http://localhost') // Capacitor local server
+                ));
+
+            // If we are native, we MUST go to dashboard. Landing page is for web only.
+            if (isNative) {
+                console.log('📱 Native App detected, forcing Dashboard redirect...');
+                router.replace('/dashboard');
+                return true;
+            }
+            return false;
+        };
+
+        if (checkNative()) return;
+        const timer = setTimeout(checkNative, 500); // More generous timeout for Capacitor init
+
+        // 2. Smart Redirect: If user has data, go straight to app
         const savedSubs = localStorage.getItem('subtracking-subs');
         if (savedSubs) {
             try {
@@ -27,13 +52,61 @@ export default function LandingPage() {
                 if (Array.isArray(subs) && subs.length > 0) {
                     router.push('/dashboard');
                 }
-            } catch (e) {
-                // Ignore errors
-            }
+            } catch (e) { }
         }
+        return () => clearTimeout(timer);
     }, [router]);
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+        // On landing page, "refresh" just reloads or checks sync
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        window.location.reload();
+    };
+
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-100 font-[family-name:var(--font-geist-sans)] selection:bg-indigo-500/30 overflow-x-hidden">
+        <div
+            className="min-h-screen bg-slate-950 text-slate-100 font-[family-name:var(--font-geist-sans)] selection:bg-indigo-500/30 overflow-x-hidden"
+            style={{ touchAction: 'pan-y' }}
+            onTouchStart={(e) => {
+                if (window.scrollY === 0) touchStartRef.current = e.touches[0].clientY;
+            }}
+            onTouchMove={(e) => {
+                if (touchStartRef.current > 0 && window.scrollY === 0) {
+                    const currentY = e.touches[0].clientY;
+                    const distance = Math.max(0, currentY - touchStartRef.current);
+                    const dampen = distance > PULL_THRESHOLD ? PULL_THRESHOLD + (distance - PULL_THRESHOLD) * 0.4 : distance;
+                    setPullDistance(dampen);
+                }
+            }}
+            onTouchEnd={() => {
+                if (pullDistance > PULL_THRESHOLD && !isRefreshing) {
+                    handleRefresh();
+                } else {
+                    setPullDistance(0);
+                }
+                touchStartRef.current = 0;
+            }}
+        >
+            {/* 🔄 Pull-to-Refresh Indicator */}
+            <motion.div
+                className="fixed top-0 left-0 w-full flex justify-center z-[100] pointer-events-none"
+                style={{
+                    y: Math.min(pullDistance - 40, PULL_THRESHOLD - 20),
+                    opacity: pullDistance / PULL_THRESHOLD
+                }}
+                animate={{
+                    y: isRefreshing ? 40 : Math.min(pullDistance - 40, PULL_THRESHOLD - 20),
+                    opacity: isRefreshing || pullDistance > 0 ? 1 : 0
+                }}
+            >
+                <div className="bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-full p-2 shadow-2xl flex items-center gap-2">
+                    <div className={cn(
+                        "w-8 h-8 rounded-full border-2 border-indigo-500/30 border-t-indigo-500",
+                        (isRefreshing || pullDistance >= PULL_THRESHOLD) && "animate-spin"
+                    )} />
+                </div>
+            </motion.div>
+
             <VideoModal
                 isOpen={isVideoOpen}
                 onClose={() => setIsVideoOpen(false)}
@@ -41,8 +114,8 @@ export default function LandingPage() {
             />
 
             {/* Navigation */}
-            <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-slate-950/80 backdrop-blur-xl">
-                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-slate-950/80 backdrop-blur-xl safe-top">
+                <div className="max-w-7xl mx-auto px-6 h-16 sm:h-20 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <img
                             src="/logo.png"
@@ -106,7 +179,7 @@ export default function LandingPage() {
             </nav>
 
             {/* HERO SECTION */}
-            <section className="relative pt-40 pb-20 px-6">
+            <section className="relative pt-28 sm:pt-40 pb-20 px-6">
                 <div className="max-w-7xl mx-auto text-center space-y-8 relative z-10">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}

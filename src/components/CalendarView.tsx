@@ -52,25 +52,7 @@ export function CalendarView({ subscriptions, isPro, onUnlockPro, onEdit, onDele
     return (
         <div className="space-y-6">
             <div className="glass-panel p-6 rounded-[32px] border border-white/5 relative group">
-                {!isPro && (
-                    <div className="absolute inset-0 z-50 backdrop-blur-md bg-slate-900/60 rounded-[32px] flex items-center justify-center p-8 text-center">
-                        <div className="space-y-4 max-w-xs">
-                            <div className="w-12 h-12 bg-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto">
-                                <Zap className="w-6 h-6 text-indigo-400 fill-indigo-400" />
-                            </div>
-                            <h3 className="text-xl font-bold text-white">Billing Command Center</h3>
-                            <p className="text-sm text-slate-400">
-                                Unlock the Calendar View to see exactly when every dollar leaves your account.
-                            </p>
-                            <button
-                                onClick={onUnlockPro}
-                                className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-600/20"
-                            >
-                                Unlock Pro Access
-                            </button>
-                        </div>
-                    </div>
-                )}
+
 
                 {/* Calendar Header */}
                 <div className="flex items-center justify-between mb-8 px-2">

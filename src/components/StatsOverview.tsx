@@ -40,44 +40,8 @@ export const StatsOverview = memo(({
             <div className="relative z-10 flex flex-col items-center space-y-6">
 
 
-                {/* The Big Number */}
-                <div className="relative group">
-                    <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-emerald-500/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
-                    <div className="relative">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={viewMode}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.2 }}
-                                className="flex items-baseline justify-center gap-2"
-                            >
-                                {hasVariable && (
-                                    <span className="text-4xl sm:text-6xl font-extralight text-slate-500 mr-1">~</span>
-                                )}
-                                <span className="text-7xl sm:text-9xl font-extralight text-white tracking-tighter">
-                                    {symbol}{Math.floor(displayAmount).toLocaleString()}
-                                </span>
-                                <span className="text-3xl sm:text-4xl font-light text-slate-500">
-                                    .{displayAmount.toFixed(2).split('.')[1]}
-                                </span>
-                            </motion.div>
-                        </AnimatePresence>
-                        <div className="mt-2 flex flex-col items-center gap-1">
-                            <div className="text-sm font-medium text-indigo-300/80 uppercase tracking-[0.2em]">
-                                Total {viewMode === 'monthly' ? 'Monthly' : 'Annual'} Spend
-                            </div>
-                            {hasVariable && (
-                                <div className="text-[10px] text-slate-500 font-medium uppercase tracking-wider flex items-center gap-2 bg-slate-900/50 px-2 py-1 rounded-full border border-slate-800/50">
-                                    <span>{symbol}{(displayAmount - displayVariable).toFixed(0)} Fixed</span>
-                                    <span className="w-1 h-1 rounded-full bg-slate-600"></span>
-                                    <span className="text-indigo-400 font-bold">~{symbol}{displayVariable.toFixed(0)} Variable</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
+                {/* Big Number Removed - Handled by dashboard/page.tsx sticky animation */}
+                <div className="h-0" /> {/* Spacer removed to close gap */}
 
                 {/* Controls */}
                 <div className="flex flex-wrap items-center justify-center gap-3 mt-8 max-w-full px-4">

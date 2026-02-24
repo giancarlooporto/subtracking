@@ -9,6 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@capacitor/android": "^8.0.2",
+    "@capacitor/cli": "^8.0.2",
+    "@capacitor/core": "^8.0.2",
+    "@capacitor/ios": "^8.0.2",
+    "@supabase/supabase-js": "^2.93.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.26",
     "jspdf": "^3.0.4",

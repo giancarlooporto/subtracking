@@ -47,12 +47,7 @@ export function ProfileManagerModal({
     };
 
     const handleCreateClick = () => {
-        if (!isPro && profiles.length >= 1) {
-            onClose();
-            onUnlockPro();
-        } else {
-            onCreateProfile();
-        }
+        onCreateProfile();
     };
 
     return (
@@ -195,22 +190,10 @@ export function ProfileManagerModal({
                         <div className="p-6 border-t border-slate-800 bg-slate-900/50">
                             <button
                                 onClick={handleCreateClick}
-                                className={`w-full px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2
-                                    ${!isPro && profiles.length >= 1
-                                        ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                                        : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}
+                                className="w-full px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
                             >
-                                {!isPro && profiles.length >= 1 ? (
-                                    <>
-                                        <Zap className="w-5 h-5 text-indigo-400 fill-indigo-400" />
-                                        <span>Unlock Unlimited Profiles (Pro)</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Plus className="w-5 h-5" />
-                                        Create New Profile
-                                    </>
-                                )}
+                                <Plus className="w-5 h-5" />
+                                Create New Profile
                             </button>
                         </div>
                     </motion.div>

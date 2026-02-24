@@ -12,9 +12,20 @@ export function InstallBanner() {
         const dismissed = localStorage.getItem('install-banner-dismissed');
         if (dismissed) return;
 
-        // Check if already installed (standalone mode)
+        // Check if running as native app (Capacitor) or already installed
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        if (isStandalone) return;
+
+        // Enhanced native app detection
+        const isNative = !!(
+            (window as any).Capacitor?.isNativePlatform?.() ||
+            (window as any).Capacitor?.isNative ||
+            (window as any).Capacitor
+        );
+
+        if (isStandalone || isNative) {
+            console.log('Running as native/installed app, hiding banner');
+            return;
+        }
 
         // Detect iOS Safari
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -38,7 +49,9 @@ export function InstallBanner() {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: -100, opacity: 0 }}
                     transition={{ type: 'spring', damping: 20 }}
-                    className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 shadow-lg"
+                    className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 pb-3 shadow-lg safe-top pointer-events-auto"
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
                 >
                     <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3 flex-1">
@@ -53,8 +66,13 @@ export function InstallBanner() {
                             </div>
                         </div>
                         <button
-                            onClick={handleDismiss}
-                            className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDismiss();
+                            }}
+                            onTouchStart={(e) => e.stopPropagation()}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            className="p-2 hover:bg-white/20 rounded-lg transition-colors pointer-events-auto"
                             aria-label="Dismiss"
                         >
                             <X className="w-5 h-5" />
