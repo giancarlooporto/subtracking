@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Zap, Cloud, GlobeLock, Check, Loader2 } from 'lucide-react';
+import { X, Zap, Cloud, GlobeLock, Check, Loader2, Key } from 'lucide-react';
 import { useRevenueCat } from '../hooks/useRevenueCat';
 import { useState } from 'react';
 
@@ -7,9 +7,10 @@ interface PaywallModalProps {
     isOpen: boolean;
     onClose: () => void;
     onPurchaseSuccess?: () => void;
+    onOpenLicense?: () => void;
 }
 
-export function PaywallModal({ isOpen, onClose, onPurchaseSuccess }: PaywallModalProps) {
+export function PaywallModal({ isOpen, onClose, onPurchaseSuccess, onOpenLicense }: PaywallModalProps) {
     const { packages, isConfigured, isLoading, purchasePackage, restorePurchases } = useRevenueCat();
     const [isProcessing, setIsProcessing] = useState(false);
     const [actionError, setActionError] = useState('');
@@ -153,6 +154,17 @@ export function PaywallModal({ isOpen, onClose, onPurchaseSuccess }: PaywallModa
                                                 </div>
                                             </button>
                                         ))}
+
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (onOpenLicense) onOpenLicense();
+                                            }}
+                                            className="w-full py-4 bg-slate-800/40 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/50 hover:border-indigo-500 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 mt-2 shadow-lg"
+                                        >
+                                            <Key className="w-4.5 h-4.5 text-indigo-400 shrink-0" />
+                                            Already purchased? Enter License Serial Key
+                                        </button>
 
                                         {actionError && (
                                             <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs font-bold text-center">

@@ -100,6 +100,7 @@ function HomeContent() {
 
   // Paywall & Billing State
   const [showPaywallModal, setShowPaywallModal] = useState(false);
+  const [showLicenseModal, setShowLicenseModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [activePaymentSub, setActivePaymentSub] = useState<Subscription | null>(null);
 
@@ -2371,6 +2372,21 @@ function HomeContent() {
         onPurchaseSuccess={() => {
           setIsPro(true);
           setShowPaywallModal(false);
+        }}
+        onOpenLicense={() => {
+          setShowPaywallModal(false);
+          setShowLicenseModal(true);
+        }}
+      />
+
+      <LicenseModal
+        isOpen={showLicenseModal}
+        onClose={() => setShowLicenseModal(false)}
+        onSuccess={() => {
+          setIsPro(true);
+          setShowLicenseModal(false);
+          setShowPaywallModal(false);
+          showToast('PRO Lifetime unlocked successfully! ⚡', 'success');
         }}
       />
 
