@@ -168,23 +168,10 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                                         Sign in to sync your encrypted vault across devices.
                                     </p>
                                     <button
-                                        onClick={() => {
-                                            if (!isPro) {
-                                                onActivatePro();
-                                            } else {
-                                                setShowLoginModal(true);
-                                            }
-                                        }}
-                                        className="w-full relative overflow-hidden bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl transition-colors shadow-lg shadow-indigo-500/20 group"
+                                        onClick={() => setShowLoginModal(true)}
+                                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl transition-colors shadow-lg shadow-indigo-500/20"
                                     >
-                                        {!isPro && (
-                                            <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 transition-opacity group-hover:opacity-0 backdrop-blur-[1px]">
-                                                <Lock className="w-4 h-4 text-slate-300" />
-                                            </div>
-                                        )}
-                                        <span className={!isPro ? "opacity-30 group-hover:opacity-100 flex items-center justify-center gap-2 transition-all w-full" : "flex items-center justify-center gap-2 w-full"}>
-                                            Sign In / Create Account
-                                        </span>
+                                        Sign In / Create Account
                                     </button>
                                 </div>
                             ) : (
@@ -195,11 +182,21 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                                                 <User className="w-5 h-5 text-indigo-400" />
                                             </div>
                                             <div>
-                                                <div className="text-sm font-bold text-white">{user.email}</div>
-                                                <div className="text-xs text-emerald-400 flex items-center gap-1">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                    Online & Ready
-                                                </div>
+                                                <div className="text-sm font-bold text-white max-w-[150px] truncate">{user.email}</div>
+                                                {!isPro ? (
+                                                    <button
+                                                        onClick={onActivatePro}
+                                                        className="text-xs text-amber-400 flex items-center gap-1 font-bold hover:underline"
+                                                    >
+                                                        <Zap className="w-3 h-3 fill-amber-400 shrink-0" />
+                                                        Upgrade to Sync
+                                                    </button>
+                                                ) : (
+                                                    <div className="text-xs text-emerald-400 flex items-center gap-1">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                                                        Online & Ready
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                         <button
@@ -210,20 +207,30 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                                             <Lock className="w-4 h-4" />
                                         </button>
                                     </div>
-
+ 
                                     <div className="grid grid-cols-2 gap-3">
                                         <button
                                             disabled
                                             className="bg-slate-800/50 text-slate-500 border border-slate-700/50 p-3 rounded-xl text-xs font-bold cursor-not-allowed flex flex-col items-center gap-2"
                                         >
                                             <Upload className="w-4 h-4" />
-                                            <span>Auto-Sync On</span>
+                                            <span>{!isPro ? 'Sync Disabled' : 'Auto-Sync On'}</span>
                                         </button>
                                         <button
-                                            onClick={handleRestoreCloud}
-                                            disabled={isRestoring}
-                                            className="bg-slate-800 hover:bg-indigo-600/20 border border-slate-700 hover:border-indigo-500/50 p-3 rounded-xl text-xs font-bold text-white transition-all flex flex-col items-center gap-2 disabled:opacity-50 disabled:cursor-wait"
+                                            onClick={() => isPro ? handleRestoreCloud() : onActivatePro()}
+                                            disabled={isPro ? isRestoring : false}
+                                            className={cn(
+                                                "border p-3 rounded-xl text-xs font-bold transition-all flex flex-col items-center gap-2 relative overflow-hidden",
+                                                isPro
+                                                    ? "bg-slate-800 hover:bg-indigo-600/20 border-slate-700 hover:border-indigo-500/50 text-white disabled:opacity-50 disabled:cursor-wait"
+                                                    : "bg-slate-800/40 border-slate-700/50 text-slate-400 hover:text-white"
+                                            )}
                                         >
+                                            {!isPro && (
+                                                <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10">
+                                                    <Lock className="w-3.5 h-3.5 text-slate-400" />
+                                                </div>
+                                            )}
                                             <Download className={cn("w-4 h-4", isRestoring && "animate-bounce")} />
                                             <span>{isRestoring ? 'Restoring...' : 'Restore Cloud'}</span>
                                         </button>

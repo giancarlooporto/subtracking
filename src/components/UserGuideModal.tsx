@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, BookOpen, Ghost, Calendar, Zap, Shield, HelpCircle, ChevronRight, Menu } from 'lucide-react';
+import { X, BookOpen, Ghost, Calendar, Zap, Shield, HelpCircle } from 'lucide-react';
 import { cn } from '../lib/utils'; // Assuming cn utility exists
 
 interface UserGuideModalProps {

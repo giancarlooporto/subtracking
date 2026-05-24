@@ -52,6 +52,7 @@ import { PaywallModal } from '@/components/PaywallModal';
 import { encryptData, decryptData, EncryptedVault } from '@/lib/crypto';
 import { useAuth } from '@/context/AuthContext';
 import { uploadVault, downloadVault } from '@/lib/supabaseClient';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
 
 function HomeContent() {
   const { user } = useAuth();
@@ -62,7 +63,22 @@ function HomeContent() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
   const [financeViewMode, setFinanceViewMode] = useState<'focus' | 'total'>('focus'); // 'focus' = Discretionary, 'total' = Everything
-  const [isPro, setIsPro] = useState(false); // Changed to false for subscription rollout.
+  const { isPro: isProNative } = useRevenueCat();
+  const [isProLocalStorage, setIsProLocalStorage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('subtracking-is-pro') === 'true';
+    }
+    return false;
+  });
+
+  const isPro = isProLocalStorage || isProNative;
+
+  const setIsPro = useCallback((val: boolean) => {
+    setIsProLocalStorage(val);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('subtracking-is-pro', val.toString());
+    }
+  }, []);
 
   // Modals & UI State
   const [showAddModal, setShowAddModal] = useState(false);
@@ -165,6 +181,16 @@ function HomeContent() {
   const performMagicSync = useCallback(async (isManual = false) => {
     if (!isLoaded) return;
 
+    if (!isPro) {
+      if (isManual) {
+        showToast('Cloud Sync requires PRO ☁️', 'warning');
+        // Reset pull-to-refresh UI
+        setIsRefreshing(false);
+        setPullDistance(0);
+      }
+      return;
+    }
+
     if (!user) {
       if (isManual) {
         showToast('Please sign in to sync with cloud ☁️', 'info');
@@ -256,7 +282,7 @@ function HomeContent() {
         }, 800);
       }
     }
-  }, [user, isLoaded, showToast]);
+  }, [user, isLoaded, showToast, isPro]);
 
   // Scroll-based header collapse for mobile
   useEffect(() => {
@@ -474,9 +500,9 @@ function HomeContent() {
     }
   }, [user, isLoaded, performMagicSync]);
 
-  // ☁️ CLOUD SYNC: Auto-upload to Supabase if logged in
+  // ☁️ CLOUD SYNC: Auto-upload to Supabase if logged in and Pro
   useEffect(() => {
-    if (user && isLoaded) {
+    if (user && isLoaded && isPro) {
       const timeoutId = setTimeout(async () => {
         // 🛡️ Check if sync is in progress
         if (isSyncingFromCloud.current) {
@@ -533,7 +559,7 @@ function HomeContent() {
       }, 3000); // 3s debounce allows persistence to finish first
       return () => clearTimeout(timeoutId);
     }
-  }, [subscriptions, userCategories, user, isLoaded, allProfiles, activeProfile]);
+  }, [subscriptions, userCategories, user, isLoaded, allProfiles, activeProfile, isPro]);
 
 
 
