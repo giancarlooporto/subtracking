@@ -42,13 +42,13 @@ const SettingsModal = dynamic(() => import('../../components/SettingsModal').the
 const SubTrackingWizard = dynamic(() => import('../../components/SubTrackingWizard').then(mod => mod.SubTrackingWizard), { ssr: false });
 const GhostMeter = dynamic(() => import('../../components/GhostMeter').then(mod => mod.GhostMeter), { ssr: false });
 const WelcomeModal = dynamic(() => import('../../components/WelcomeModal').then(mod => mod.WelcomeModal), { ssr: false });
-const LicenseModal = dynamic(() => import('../../components/LicenseModal').then(mod => mod.LicenseModal), { ssr: false });
 const CancellationReviewModal = dynamic(() => import('../../components/CancellationReviewModal').then(mod => mod.default), { ssr: false });
 const UserGuideModal = dynamic(() => import('../../components/UserGuideModal').then(mod => mod.UserGuideModal), { ssr: false });
 const ProfileSettingsModal = dynamic(() => import('../../components/ProfileSettingsModal').then(mod => mod.ProfileSettingsModal), { ssr: false });
 const ProfileManagerModal = dynamic(() => import('../../components/ProfileManagerModal').then(mod => mod.ProfileManagerModal), { ssr: false });
 import { PasswordModal } from '@/components/PasswordModal';
 import { PaywallModal } from '@/components/PaywallModal';
+import { LicenseModal } from '@/components/LicenseModal';
 import { encryptData, decryptData, EncryptedVault } from '@/lib/crypto';
 import { useAuth } from '@/context/AuthContext';
 import { uploadVault, downloadVault } from '@/lib/supabaseClient';
