@@ -20,7 +20,7 @@ const createEventBlock = (sub: Subscription, isTrial: boolean) => {
     if (!dateStr) return '';
 
     const [y, m, d] = dateStr.split('-').map(Number);
-    let eventDate = new Date(y, m - 1, d, 12, 0, 0); // Noon
+    const eventDate = new Date(y, m - 1, d, 12, 0, 0); // Noon
 
     // If it's a trial, schedule the event 1 DAY BEFORE the actual end date
     // This ensures the effective notification happens in time to cancel.

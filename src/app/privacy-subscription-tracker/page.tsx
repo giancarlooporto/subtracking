@@ -3,10 +3,9 @@ import Link from 'next/link';
 import { Shield, Lock, HardDrive, Eye, ArrowRight, Check, X } from 'lucide-react';
 import { ShareButton } from '../../components/ShareButton';
 import { Footer } from '../../components/Footer';
-
 export const metadata: Metadata = {
     title: 'Privacy-First Subscription Tracker | No Cloud, No Tracking',
-    description: 'Track your subscriptions without compromising privacy. All data stays on your device. No bank logins, no cloud storage, no tracking. $19 lifetime access.',
+    description: 'Track your subscriptions without compromising privacy. All data stays on your device. No bank logins, no forced cloud storage, no tracking. Free to use forever.',
     keywords: [
         'privacy subscription tracker',
         'privacy-first expense tracker',
@@ -65,7 +64,7 @@ export default function PrivacySubscriptionTrackerPage() {
                             <ArrowRight className="w-5 h-5" />
                         </Link>
                         <div className="text-sm text-slate-500">
-                            $19 one-time • No subscription • Yours forever
+                            $0 to start • Unlimited Local Subscriptions • No forced recurring fees
                         </div>
                     </div>
                 </div>
@@ -149,7 +148,7 @@ export default function PrivacySubscriptionTrackerPage() {
                                     { feature: 'Tracking Cookies', subtracking: false, others: true },
                                     { feature: 'Data Sold to 3rd Parties', subtracking: false, others: 'Often' },
                                     { feature: 'Works Offline', subtracking: true, others: false },
-                                    { feature: 'Pricing', subtracking: '$19 One-Time', others: '$6-12/month' },
+                                    { feature: 'Pricing', subtracking: '$0 or $14.99/yr', others: '$6-12/month' },
                                 ].map((row, i) => (
                                     <tr key={i}>
                                         <td className="p-4 font-medium">{row.feature}</td>

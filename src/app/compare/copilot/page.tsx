@@ -76,7 +76,7 @@ export default function CopilotComparisonPage() {
                             <Check className="w-6 h-6" />
                         </div>
                         <h3 className="text-xl font-bold">Simple Pricing</h3>
-                        <p className="text-slate-400 text-sm">Copilot costs $95/year or $13/month. SubTracking is free to start and just $19 for a lifetime license. Own your data, own your tool.</p>
+                        <p className="text-slate-400 text-sm">Copilot costs $95/year or $13/month. SubTracking is free to start locally, and just $14.99/yr for Cloud Sync. Own your data, own your tool.</p>
                     </div>
                 </div>
             </section>
@@ -102,7 +102,7 @@ export default function CopilotComparisonPage() {
                                     { feature: 'Bank Linking Required', copilot: true, subtracking: false },
                                     { feature: 'Web Browser Support', copilot: 'Limited', subtracking: 'Native / Full' },
                                     { feature: 'Privacy Model', copilot: 'Cloud-Based', subtracking: 'Local (On-Device)' },
-                                    { feature: 'Pricing', copilot: '$95/year', subtracking: '$19 Lifetime' },
+                                    { feature: 'Pricing', copilot: '$95/year', subtracking: '$0 or $14.99/yr' },
                                     { feature: 'Android Support', copilot: false, subtracking: true },
                                     { feature: 'Ghost Cost Projection', copilot: false, subtracking: true },
                                 ].map((row, i) => (

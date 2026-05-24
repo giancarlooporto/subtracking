@@ -1,0 +1,20 @@
+{
+	"appId": "com.subtracking.app",
+	"appName": "SubTracking",
+	"webDir": "out",
+	"plugins": {
+		"GoogleAuth": {
+			"scopes": [
+				"profile",
+				"email"
+			],
+			"serverClientId": "YOUR_WEB_CLIENT_ID",
+			"forceCodeForRefreshToken": true
+		}
+	},
+	"packageClassList": [
+		"SignInWithApple",
+		"GoogleAuth",
+		"PurchasesPlugin"
+	]
+}

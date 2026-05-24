@@ -210,7 +210,7 @@ export default function FindUnusedSubscriptionsPost() {
                         <ul>
                             <li>Stores data locally on your device (no cloud)</li>
                             <li>Never asks for bank login credentials</li>
-                            <li>Costs $19 one-time (no monthly subscription irony)</li>
+                            <li>Free local app, optional $14.99/yr for Cloud Sync</li>
                             <li>Shows you Ghost Cost projections</li>
                             <li>Sends renewal alerts so you never miss a cancellation window</li>
                         </ul>

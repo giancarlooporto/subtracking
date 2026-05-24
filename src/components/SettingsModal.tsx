@@ -168,10 +168,23 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                                         Sign in to sync your encrypted vault across devices.
                                     </p>
                                     <button
-                                        onClick={() => setShowLoginModal(true)}
-                                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl transition-colors shadow-lg shadow-indigo-500/20"
+                                        onClick={() => {
+                                            if (!isPro) {
+                                                onActivatePro();
+                                            } else {
+                                                setShowLoginModal(true);
+                                            }
+                                        }}
+                                        className="w-full relative overflow-hidden bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl transition-colors shadow-lg shadow-indigo-500/20 group"
                                     >
-                                        Sign In / Create Account
+                                        {!isPro && (
+                                            <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 transition-opacity group-hover:opacity-0 backdrop-blur-[1px]">
+                                                <Lock className="w-4 h-4 text-slate-300" />
+                                            </div>
+                                        )}
+                                        <span className={!isPro ? "opacity-30 group-hover:opacity-100 flex items-center justify-center gap-2 transition-all w-full" : "flex items-center justify-center gap-2 w-full"}>
+                                            Sign In / Create Account
+                                        </span>
                                     </button>
                                 </div>
                             ) : (

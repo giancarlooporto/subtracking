@@ -48,6 +48,7 @@ const UserGuideModal = dynamic(() => import('../../components/UserGuideModal').t
 const ProfileSettingsModal = dynamic(() => import('../../components/ProfileSettingsModal').then(mod => mod.ProfileSettingsModal), { ssr: false });
 const ProfileManagerModal = dynamic(() => import('../../components/ProfileManagerModal').then(mod => mod.ProfileManagerModal), { ssr: false });
 import { PasswordModal } from '@/components/PasswordModal';
+import { PaywallModal } from '@/components/PaywallModal';
 import { encryptData, decryptData, EncryptedVault } from '@/lib/crypto';
 import { useAuth } from '@/context/AuthContext';
 import { uploadVault, downloadVault } from '@/lib/supabaseClient';
@@ -61,7 +62,7 @@ function HomeContent() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
   const [financeViewMode, setFinanceViewMode] = useState<'focus' | 'total'>('focus'); // 'focus' = Discretionary, 'total' = Everything
-  const [isPro, setIsPro] = useState(true); // All users get Pro features (App Store compliance)
+  const [isPro, setIsPro] = useState(false); // Changed to false for subscription rollout.
 
   // Modals & UI State
   const [showAddModal, setShowAddModal] = useState(false);
@@ -81,7 +82,8 @@ function HomeContent() {
   const [showProfileSettings, setShowProfileSettings] = useState(false);
   const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
 
-  // Payment Modal State
+  // Paywall & Billing State
+  const [showPaywallModal, setShowPaywallModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [activePaymentSub, setActivePaymentSub] = useState<Subscription | null>(null);
 
@@ -822,8 +824,8 @@ function HomeContent() {
     lastLocalAction.current = Date.now();
     if (!activeProfile) return;
 
-    // Add custom category if needed (PRO ONLY FEATURE)
-    if (isPro && !userCategories.includes(data.category)) {
+    // Add custom category if needed (now free for all users)
+    if (!userCategories.includes(data.category)) {
       setUserCategories(prev => [...prev, data.category]);
     }
 
@@ -1983,7 +1985,6 @@ function HomeContent() {
                       >
                         <Calendar className="w-4 h-4" />
                         <span className="hidden sm:inline">Calendar</span>
-                        {!isPro && <Zap className="w-3 h-3 text-indigo-400 fill-indigo-400 ml-0.5" />}
                       </button>
                     </div>
                   </div>
@@ -2079,7 +2080,7 @@ function HomeContent() {
               <CalendarView
                 subscriptions={subscriptions}
                 isPro={isPro}
-                onUnlockPro={() => { }}
+                onUnlockPro={() => setShowPaywallModal(true)}
                 onEdit={(s) => { setEditingId(s.id); setShowAddModal(true); }}
                 onDelete={(id) => setDeleteId(id)}
                 onMarkPaid={markAsPaid}
@@ -2131,7 +2132,7 @@ function HomeContent() {
         onExportICS={() => generateBulkICSFile(subscriptions)}
         onImport={importData}
         isPro={isPro}
-        onActivatePro={() => { }}
+        onActivatePro={() => setShowPaywallModal(true)}
         onOpenGuide={() => setShowUserGuide(true)}
         onManageProfiles={() => setShowProfileManager(true)}
         profileCount={allProfiles.length}
@@ -2172,7 +2173,7 @@ function HomeContent() {
           setShowProfileSettings(true);
         }}
         isPro={isPro}
-        onUnlockPro={() => { }}
+        onUnlockPro={() => setShowPaywallModal(true)}
       />
 
       <ProfileSettingsModal
@@ -2338,9 +2339,18 @@ function HomeContent() {
 
       <ToastContainer />
 
+      <PaywallModal
+        isOpen={showPaywallModal}
+        onClose={() => setShowPaywallModal(false)}
+        onPurchaseSuccess={() => {
+          setIsPro(true);
+          setShowPaywallModal(false);
+        }}
+      />
+
       <Footer
         isPro={isPro}
-        onUnlockPro={() => { }}
+        onUnlockPro={() => setShowPaywallModal(true)}
         minimal={true}
       />
     </main >

@@ -89,7 +89,7 @@ export function LicenseModal({ isOpen, onClose, onSuccess }: LicenseModalProps) 
                                         className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-xl shadow-indigo-600/20"
                                     >
                                         <ShoppingBag className="w-5 h-5" />
-                                        Get PRO Lifetime ($19)
+                                        Get PRO Lifetime ($49.99)
                                     </a>
 
                                     <div className="relative">

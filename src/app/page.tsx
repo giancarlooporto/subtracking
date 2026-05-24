@@ -608,28 +608,28 @@ export default function LandingPage() {
             <section id="pricing" className="py-32 px-6 bg-slate-900/20">
                 <div className="max-w-7xl mx-auto space-y-20">
                     <div className="text-center space-y-4">
-                        <h2 className="text-3xl md:text-5xl font-black tracking-tight">Simple, transparent <br /><span className="text-indigo-500">pricing.</span></h2>
-                        <p className="text-slate-500 font-medium">One-time payment. Lifetime access.</p>
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight">Free to start. <br /><span className="text-indigo-500">Pay for the Cloud.</span></h2>
+                        <p className="text-slate-500 font-medium">Keep your data local for free, or upgrade for secure cloud sync and backups.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                         {/* Free Tier */}
                         <div className="glass-panel p-10 rounded-[40px] border border-white/5 flex flex-col hover:border-slate-700 transition-all">
                             <div className="space-y-2 flex-1">
-                                <h3 className="text-2xl font-bold">Standard</h3>
+                                <h3 className="text-2xl font-bold text-white">Local-First</h3>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-5xl font-black">$0</span>
+                                    <span className="text-5xl font-black text-white">$0</span>
                                     <span className="text-slate-500 font-medium">/forever</span>
                                 </div>
-                                <p className="text-slate-500 text-sm pt-4">For the curious financial tracker.</p>
+                                <p className="text-slate-500 text-sm pt-4">Everything you need to stop the leaks.</p>
 
                                 <ul className="space-y-4 pt-10">
                                     {[
-                                        "1 Active Profile",
                                         "Unlimited Subscriptions",
-                                        "Billing Pulse Timeline",
-                                        "Encrypted Data Export",
-                                        "Renewal Alerts"
+                                        "Ghost Meter Projections",
+                                        "Dashboard & Basic Analytics",
+                                        "Audit Wizard (Keep or Toss)",
+                                        "1 Local Profile"
                                     ].map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-slate-400 text-sm">
                                             <Check className="w-4 h-4 text-slate-600 shrink-0" />
@@ -639,7 +639,7 @@ export default function LandingPage() {
                                 </ul>
                             </div>
 
-                            <Link href="/dashboard" className="mt-10 w-full py-4 rounded-2xl border border-slate-800 font-bold text-center hover:bg-white/5 transition-colors">
+                            <Link href="/dashboard" className="mt-10 w-full py-4 rounded-2xl border border-slate-800 font-bold text-slate-300 text-center hover:bg-white/5 transition-colors">
                                 Get Started Free
                             </Link>
                         </div>
@@ -651,45 +651,24 @@ export default function LandingPage() {
                             </div>
 
                             <div className="space-y-2 flex-1">
-                                <h3 className="text-2xl font-bold flex items-center gap-2">
+                                <h3 className="text-2xl font-bold text-white flex items-center gap-2">
                                     PRO
                                     <Zap className="w-5 h-5 text-indigo-400 fill-indigo-400" />
                                 </h3>
 
-                                {/* Early Bird Discount Banner */}
-                                <div className="my-4 p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-2 border-amber-500/40 relative overflow-hidden group/discount">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-orange-500/10 animate-pulse" />
-                                    <div className="relative z-10 space-y-2">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest">🎉 First 100 Users</span>
-                                            <span className="text-xs font-black text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded-full">60% OFF</span>
-                                        </div>
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-3xl font-black text-white">$7.60</span>
-                                            <span className="text-lg font-bold text-slate-400 line-through">$19</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 pt-1">
-                                            <code className="text-xs font-mono font-bold bg-slate-900/60 text-amber-300 px-3 py-1.5 rounded-lg border border-amber-500/30">
-                                                TUVCUUX
-                                            </code>
-                                            <span className="text-[10px] text-amber-200/60 font-medium">← Use at checkout</span>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-5xl font-black text-slate-500/40 line-through">$19</span>
-                                    <span className="text-slate-500 font-medium tracking-tight">/one-time</span>
+                                    <span className="text-5xl font-black text-white">$14.99</span>
+                                    <span className="text-slate-500 font-medium tracking-tight">/year</span>
                                 </div>
-                                <p className="text-indigo-200/60 text-sm pt-2">For the optimization masters.</p>
+                                <p className="text-indigo-200/60 text-sm pt-2">Or $1.99/month, or $49.99 for lifetime.</p>
 
                                 <ul className="space-y-4 pt-10">
                                     {[
-                                        "Unlimited Multi-Profiles (Business/Family)",
-                                        "Ghost Meter Pro (10Y Projections)",
-                                        "Calendar Command Center",
-                                        "Trial Shield (Calendar Alerts)",
-                                        "Full Vault Backups & Restore",
+                                        "Magic Cloud Sync (Real-time)",
+                                        "Data Vault (CSV Import/Export)",
+                                        "Apple/Google Calendar Sync",
+                                        "Unlimited Profiles (Business/Family)",
+                                        "Priority Support"
                                     ].map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-slate-200 text-sm font-medium">
                                             <Zap className="w-4 h-4 text-indigo-400 shrink-0" />

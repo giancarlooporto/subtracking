@@ -90,7 +90,7 @@ export default function ManualVsAutomatedPage() {
                                         category: 'Pricing',
                                         features: [
                                             { name: 'Monthly Cost', auto: '$5-15/month', manual: false },
-                                            { name: 'One-Time Payment', auto: false, manual: '$19 lifetime' },
+                                            { name: 'Pricing', auto: false, manual: '$0 to start' },
                                             { name: 'Free Trial', auto: 'Often limited', manual: 'Forever (basic)' },
                                             { name: 'Bill Negotiation Fee', auto: '30-60% of savings', manual: false },
                                         ],
@@ -227,7 +227,7 @@ export default function ManualVsAutomatedPage() {
                         Try the privacy-first tracker
                     </h2>
                     <p className="text-indigo-100/80 text-lg max-w-xl mx-auto">
-                        Free to start. $19 for lifetime PRO access. No bank login required.
+                        Free to start. Cloud Sync for $14.99/yr. No bank login required.
                     </p>
                     <Link
                         href="/dashboard"

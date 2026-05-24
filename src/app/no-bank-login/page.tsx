@@ -8,7 +8,7 @@ import { Footer } from '../../components/Footer';
 
 export const metadata: Metadata = {
     title: 'Track Subscriptions Without Bank Login | No Plaid Required',
-    description: 'Manage subscriptions without connecting your bank account. No Plaid, no financial risk. Manual tracking keeps you in control. $19 lifetime access.',
+    description: 'Manage subscriptions without connecting your bank account. No Plaid, no financial risk. Manual tracking keeps you in control. Free local tracking, optional cloud sync.',
     keywords: [
         'subscription tracker no bank login',
         'subscription tracker without plaid',
@@ -67,7 +67,7 @@ export default function NoBankLoginPage() {
                             <ArrowRight className="w-5 h-5" />
                         </Link>
                         <div className="text-sm text-slate-500">
-                            Free to try • $19 for lifetime PRO
+                            Free to try • Cloud Sync for $14.99/yr
                         </div>
                     </div>
                 </div>
@@ -203,7 +203,7 @@ export default function NoBankLoginPage() {
                                     'Complete privacy',
                                     'No security risk',
                                     'No data collection',
-                                    '$19 one-time payment',
+                                    '$0 or $14.99/yr for Cloud Sync',
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-start gap-3 text-slate-300">
                                         <Check className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />

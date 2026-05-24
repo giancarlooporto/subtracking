@@ -118,7 +118,7 @@ export default function RocketMoneyComparisonPage() {
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <Check className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
-                                    <span className="text-indigo-400 font-bold">$19 one-time payment</span>
+                                    <span className="text-indigo-400 font-bold">Free to start, $14.99/yr for Cloud Sync</span>
                                 </li>
                             </ul>
                         </div>
@@ -164,13 +164,13 @@ export default function RocketMoneyComparisonPage() {
                     <div className="text-center space-y-8 max-w-2xl mx-auto">
                         <h2 className="text-3xl font-black">Stop Paying a Subscription to Track Subscriptions</h2>
                         <p className="text-slate-400 text-lg">
-                            The irony of Rocket Money is that it costs up to $15/month to help you find wasted subscriptions. SubTracking costs a simple, one-time fee of $19. It pays for itself the moment you find one unused service to cancel.
+                            The irony of Rocket Money is that it costs up to $15/month to help you find wasted subscriptions. SubTracking is free to use locally, and just $14.99/year to sync everywhere. It pays for itself the moment you find one unused service.
                         </p>
                         <Link
                             href="/dashboard"
                             className="inline-flex bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all shadow-xl shadow-indigo-600/20"
                         >
-                            Get SubTracking Lifetime Access
+                            Get SubTracking For Free
                         </Link>
                     </div>
 

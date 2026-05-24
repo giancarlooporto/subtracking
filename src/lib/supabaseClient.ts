@@ -37,6 +37,46 @@ export async function verifyOtp(email: string, token: string) {
     return { data, error };
 }
 
+export async function signInWithAppleToken(idToken: string, nonce: string, fullName?: string) {
+    const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'apple',
+        token: idToken,
+        nonce,
+    });
+
+    // Optionally update user's profile with full name if provided (Apple only provides this on first login)
+    if (data.user && fullName && !error) {
+        await supabase.from('users').update({ full_name: fullName }).eq('id', data.user.id);
+    }
+
+    return { data, error };
+}
+
+export async function signInWithGoogleToken(idToken: string) {
+    const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: idToken,
+    });
+
+    return { data, error };
+}
+
+export async function signInWithOAuth(provider: 'google' | 'apple') {
+    const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+    const redirectTo = isLocalhost
+        ? 'http://localhost:3000/dashboard'
+        : 'https://www.subtracking.app/dashboard';
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+            redirectTo
+        }
+    });
+
+    return { data, error };
+}
+
 export async function signOut() {
     const { error } = await supabase.auth.signOut();
     return { error };
@@ -46,7 +86,7 @@ export async function signOut() {
  * Uploads the encrypted JSON vault to the user's private storage bucket.
  * Bucket Structure: user-data / [user_id] / vault.json
  */
-export async function uploadVault(userId: string, encryptedData: any) {
+export async function uploadVault(userId: string, encryptedData: unknown) {
     const filePath = `${userId}/vault.json`;
 
     // Convert JSON to Blob
@@ -95,10 +135,10 @@ export async function downloadVault(userId: string) {
         const json = await response.json();
         return { data: json, error: null };
 
-    } catch (error) {
+    } catch (err) {
         // Fallback: Use standard SDK download
         // This handles auth headers automatically but might be cached by OS
-        console.log('Falling back to standard download method...');
+        console.log('Falling back to standard download method...', err);
 
         const { data, error: downloadError } = await supabase.storage
             .from('user-data')

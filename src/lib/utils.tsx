@@ -35,7 +35,7 @@ export const getNextOccurrence = (startDate: string, cycle: 'weekly' | 'biweekly
     today.setHours(12, 0, 0, 0); // Normalize to NOON
 
     const [year, month, day] = startDate.split('-').map(Number);
-    let nextDate = new Date(year, month - 1, day);
+    const nextDate = new Date(year, month - 1, day);
     nextDate.setHours(12, 0, 0, 0); // Normalize to NOON
 
     // Safety brake for infinite loops if date is invalid

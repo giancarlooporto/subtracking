@@ -18,12 +18,12 @@ const guides = [
                 <p className="text-slate-300">Welcome to your new financial command center. Here is how to get value in the first 60 seconds:</p>
                 <div className="space-y-3">
                     <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
-                        <h4 className="font-bold text-white mb-1">1. Add Your "Big 3"</h4>
-                        <p className="text-sm text-slate-400">Don't try to add everything at once. Start with your 3 biggest recurring costs (e.g., Rent, Car Payment, Internet). This immediately gives you a baseline "Burn Rate".</p>
+                        <h4 className="font-bold text-white mb-1">1. Add Your &quot;Big 3&quot;</h4>
+                        <p className="text-sm text-slate-400">Don&apos;t try to add everything at once. Start with your 3 biggest recurring costs (e.g., Rent, Car Payment, Internet). This immediately gives you a baseline &quot;Burn Rate&quot;.</p>
                     </div>
                     <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
                         <h4 className="font-bold text-white mb-1">2. Set the Category</h4>
-                        <p className="text-sm text-slate-400">Proper categorization powers the insights. Mark critical items like Rent using the "Essential" toggle to separate them from discretionary spending.</p>
+                        <p className="text-sm text-slate-400">Proper categorization powers the insights. Mark critical items like Rent using the &quot;Essential&quot; toggle to separate them from discretionary spending.</p>
                     </div>
                 </div>
             </div>
@@ -36,10 +36,10 @@ const guides = [
         color: 'text-indigo-400',
         content: (
             <div className="space-y-4">
-                <p className="text-slate-300">The Ghost Meter is your "reality check". It projects the long-term cost of your current habits.</p>
+                <p className="text-slate-300">The Ghost Meter is your &quot;reality check&quot;. It projects the long-term cost of your current habits.</p>
                 <div className="bg-indigo-500/10 p-4 rounded-xl border border-indigo-500/20">
                     <h4 className="font-bold text-indigo-300 mb-1">Why 10 Years?</h4>
-                    <p className="text-sm text-indigo-200/70">A $15 subscription seems cheap. But over 10 years, it's $1,800. If you invested that instead, it could be $3,000+. The Ghost Meter shows you this "Lost Wealth" to help you decide if a service is truly worth keeping.</p>
+                    <p className="text-sm text-indigo-200/70">A $15 subscription seems cheap. But over 10 years, it&apos;s $1,800. If you invested that instead, it could be $3,000+. The Ghost Meter shows you this &quot;Lost Wealth&quot; to help you decide if a service is truly worth keeping.</p>
                 </div>
                 <div className="space-y-2">
                     <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Key Metrics</h4>
@@ -58,15 +58,15 @@ const guides = [
         color: 'text-sky-400',
         content: (
             <div className="space-y-4">
-                <p className="text-slate-300">Never get hit with a surprise renewal again. We use a powerful "Calendar Bridge" system.</p>
-
+                <p className="text-slate-300">Never get hit with a surprise renewal again. We use a powerful &quot;Calendar Bridge&quot; system.</p>
+ 
                 <div className="grid grid-cols-1 gap-3">
                     <div className="bg-sky-500/10 p-4 rounded-xl border border-sky-500/20">
                         <h4 className="font-bold text-sky-300 mb-1">Trial Shield</h4>
-                        <p className="text-sm text-sky-200/70">When you add a free trial, click "Sync to Calendar". We generate a special event scheduled for <b>1 Day Before</b> the trial expires titled "🚨 Trial Ends TOMORROW". This guarantees you see it in time to cancel.</p>
+                        <p className="text-sm text-sky-200/70">When you add a free trial, click &quot;Sync to Calendar&quot;. We generate a special event scheduled for <b>1 Day Before</b> the trial expires titled &quot;🚨 Trial Ends TOMORROW&quot;. This guarantees you see it in time to cancel.</p>
                     </div>
                 </div>
-
+ 
                 <div className="bg-slate-800 p-4 rounded-xl">
                     <h4 className="font-bold text-white mb-2">How to Sync</h4>
                     <ol className="list-decimal list-inside text-sm text-slate-400 space-y-1">
@@ -86,22 +86,22 @@ const guides = [
         color: 'text-emerald-400',
         content: (
             <div className="space-y-4">
-                <p className="text-slate-300">The "Keep or Toss" Wizard is the fastest way to declutter. It isolates your discretionary spending for a rapid-fire audit.</p>
+                <p className="text-slate-300">The &quot;Keep or Toss&quot; Wizard is the fastest way to declutter. It isolates your discretionary spending for a rapid-fire audit.</p>
                 <div className="bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20">
                     <div className="flex items-center gap-2 mb-2">
                         <Shield className="w-4 h-4 text-emerald-400" />
                         <h4 className="font-bold text-emerald-300">Smart Filtering</h4>
                     </div>
-                    <p className="text-sm text-emerald-200/70">The Wizard automatically excludes "Essential" items (like Rent) and "Utility Bills". It only shows you things you can actually cancel, so you don't waste time reviewing your electric bill.</p>
+                    <p className="text-sm text-emerald-200/70">The Wizard automatically excludes &quot;Essential&quot; items (like Rent) and &quot;Utility Bills&quot;. It only shows you things you can actually cancel, so you don&apos;t waste time reviewing your electric bill.</p>
                 </div>
-                <p className="text-sm text-slate-400 italic">Pro Tip: Try running the Wizard once a month to catch "Subscription Creep".</p>
+                <p className="text-sm text-slate-400 italic">Pro Tip: Try running the Wizard once a month to catch &quot;Subscription Creep&quot;.</p>
             </div>
         )
     },
     {
         id: 'vault',
         title: 'Data Vault',
-        icon: BookOpen, // Using placeholder, could use Database icon or similar
+        icon: BookOpen,
         color: 'text-pink-400',
         content: (
             <div className="space-y-4">

@@ -89,7 +89,7 @@ export default function MonarchComparisonPage() {
                                         <div className="text-xs text-slate-500 mt-1">Long-term value</div>
                                     </td>
                                     <td className="p-8 text-red-400 font-bold">~$1,000+</td>
-                                    <td className="p-8 text-emerald-400 font-bold">$19 Lifetime</td>
+                                    <td className="p-8 text-emerald-400 font-bold">$0 or $14.99/year</td>
                                 </tr>
                                 <tr>
                                     <td className="p-8">
