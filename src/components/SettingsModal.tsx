@@ -129,7 +129,7 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                                 )}
                             >
                                 {!isPro && (
-                                    <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 transition-opacity group-hover:opacity-0">
+                                    <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 transition-opacity group-hover:opacity-0 pointer-events-none">
                                         <Lock className="w-4 h-4 text-slate-400" />
                                     </div>
                                 )}
@@ -227,7 +227,7 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                                             )}
                                         >
                                             {!isPro && (
-                                                <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10">
+                                                <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 pointer-events-none">
                                                     <Lock className="w-3.5 h-3.5 text-slate-400" />
                                                 </div>
                                             )}
@@ -257,7 +257,7 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                             )}
                         >
                             {!isPro && (
-                                <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 font-bold">
+                                <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 font-bold pointer-events-none">
                                     <div className="flex items-center gap-2 bg-slate-900 border border-indigo-500/30 px-3 py-1 rounded-full shadow-lg">
                                         <Zap className="w-3 h-3 text-indigo-400 fill-indigo-400" />
                                         <span className="text-[10px] font-bold text-white tracking-widest uppercase">PRO</span>
@@ -284,7 +284,7 @@ export function SettingsModal({ isOpen, onClose, onFactoryReset, onExport, onExp
                             )}
                         >
                             {!isPro && (
-                                <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 font-bold">
+                                <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 font-bold pointer-events-none">
                                     <div className="flex items-center gap-2 bg-slate-900 border border-indigo-500/30 px-3 py-1 rounded-full shadow-lg">
                                         <Zap className="w-3 h-3 text-indigo-400 fill-indigo-400" />
                                         <span className="text-[10px] font-bold text-white tracking-widest uppercase">PRO</span>
