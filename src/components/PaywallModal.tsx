@@ -63,14 +63,14 @@ export function PaywallModal({ isOpen, onClose, onPurchaseSuccess, onOpenLicense
     return (
         <AnimatePresence>
             {isOpen && (
-                <>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl z-[100]"
+                        className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl cursor-pointer"
                     />
 
                     {/* Modal */}
@@ -78,7 +78,7 @@ export function PaywallModal({ isOpen, onClose, onPurchaseSuccess, onOpenLicense
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="fixed top-[5%] sm:top-1/2 left-1/2 -translate-x-1/2 -translate-y-[5%] sm:-translate-y-1/2 w-[90%] sm:w-[500px] z-[101] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl shadow-indigo-500/10 overflow-hidden max-h-[90vh] flex flex-col"
+                        className="relative w-full max-w-[500px] bg-slate-900 border border-slate-800 rounded-[32px] shadow-2xl shadow-indigo-500/10 overflow-hidden max-h-[85vh] flex flex-col z-10 animate-in zoom-in-95 duration-300"
                     >
                         <div className="flex justify-between items-center p-6 border-b border-slate-800 sm:p-8 bg-slate-900/50 backdrop-blur-md">
                             <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
@@ -187,7 +187,7 @@ export function PaywallModal({ isOpen, onClose, onPurchaseSuccess, onOpenLicense
                             </div>
                         </div>
                     </motion.div>
-                </>
+                </div>
             )}
         </AnimatePresence>
     );
