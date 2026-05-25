@@ -21,16 +21,9 @@ export function PaywallModal({ isOpen, onClose, onPurchaseSuccess, onOpenLicense
         setActionError('');
 
         if (!isConfigured) {
-            // Web Production Gating: Prevent free mock-unlocks on the live website!
-            if (pkg.packageType === 'LIFETIME') {
-                // Open Gumroad secure checkout page in a new tab
-                window.open(GUMROAD_CONFIG.productUrl, '_blank');
-                setIsProcessing(false);
-            } else {
-                // Subscriptions are app-only. Inform the user and guide them to Lifetime or Mobile apps.
-                setActionError('Monthly & Annual subscriptions are exclusive to our iOS & Android mobile apps. On the web, you can purchase Lifetime PRO Access below!');
-                setIsProcessing(false);
-            }
+            // Web Production Billing: Redirect all package clicks (Monthly, Yearly, Lifetime) directly to Gumroad!
+            window.open(GUMROAD_CONFIG.productUrl, '_blank');
+            setIsProcessing(false);
             return;
         }
 
