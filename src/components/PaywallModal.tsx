@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Zap, Cloud, GlobeLock, Check, Loader2, Key } from 'lucide-react';
 import { useRevenueCat } from '../hooks/useRevenueCat';
 import { useState } from 'react';
+import { GUMROAD_CONFIG } from '../lib/gumroad';
 
 interface PaywallModalProps {
     isOpen: boolean;
@@ -20,11 +21,16 @@ export function PaywallModal({ isOpen, onClose, onPurchaseSuccess, onOpenLicense
         setActionError('');
 
         if (!isConfigured) {
-            // Web Mock Demo
-            setTimeout(() => {
-                if (onPurchaseSuccess) onPurchaseSuccess();
+            // Web Production Gating: Prevent free mock-unlocks on the live website!
+            if (pkg.packageType === 'LIFETIME') {
+                // Open Gumroad secure checkout page in a new tab
+                window.open(GUMROAD_CONFIG.productUrl, '_blank');
                 setIsProcessing(false);
-            }, 1000);
+            } else {
+                // Subscriptions are app-only. Inform the user and guide them to Lifetime or Mobile apps.
+                setActionError('Monthly & Annual subscriptions are exclusive to our iOS & Android mobile apps. On the web, you can purchase Lifetime PRO Access below!');
+                setIsProcessing(false);
+            }
             return;
         }
 
@@ -42,11 +48,9 @@ export function PaywallModal({ isOpen, onClose, onPurchaseSuccess, onOpenLicense
         setActionError('');
 
         if (!isConfigured) {
-            // Web Mock Demo
-            setTimeout(() => {
-                setActionError('Mock Restore: No active subscription found.');
-                setIsProcessing(false);
-            }, 1000);
+            // Web production restore check
+            setActionError('Restore is handled via serial keys on the web version. Click "Enter License Serial Key" to restore your purchase.');
+            setIsProcessing(false);
             return;
         }
 
