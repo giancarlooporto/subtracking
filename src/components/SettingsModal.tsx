@@ -171,17 +171,9 @@ export function SettingsModal({
                                         <span className="text-xs font-bold text-white">Export Vault</span>
                                     </button>
                                     <button
-                                        onClick={() => isPro ? fileInputRef.current?.click() : onActivatePro()}
-                                        className={cn(
-                                            "flex flex-col items-center justify-center p-4 bg-slate-900/40 border border-slate-900 rounded-2xl transition-all group relative overflow-hidden cursor-pointer",
-                                            isPro ? "hover:bg-slate-900" : "opacity-60 hover:opacity-100 hover:bg-slate-900/60"
-                                        )}
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="flex flex-col items-center justify-center p-4 bg-slate-900/40 border border-slate-900 rounded-2xl transition-all group hover:bg-slate-900 cursor-pointer"
                                     >
-                                        {!isPro && (
-                                            <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 transition-opacity group-hover:opacity-0 pointer-events-none">
-                                                <Lock className="w-4 h-4 text-slate-400" />
-                                            </div>
-                                        )}
                                         <Upload className="w-5 h-5 text-indigo-400 mb-2 group-hover:scale-110 transition-transform" />
                                         <span className="text-xs font-bold text-white">Import Vault</span>
                                     </button>
@@ -197,9 +189,7 @@ export function SettingsModal({
                                     />
                                 </div>
                                 <p className="text-[10px] text-slate-500 text-center leading-relaxed">
-                                    {isPro
-                                        ? "Full secure backup & restore active. Transfer your data anywhere."
-                                        : "Export your data for free anytime. Upgrade to PRO to Import/Restore your vault."}
+                                    Export or import your vault files for free at any time. Keep your data locally.
                                 </p>
                             </div>
 
