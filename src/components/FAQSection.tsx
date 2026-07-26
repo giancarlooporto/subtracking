@@ -61,10 +61,6 @@ const faqs = [
         category: "📱 Technical & Installation",
         questions: [
             {
-                q: "Is there an iOS or Android app?",
-                a: "Yes! SubTracking is available on the Apple App Store as a native iOS app. For Android and desktop users, SubTracking is a powerful Progressive Web App (PWA) that you can install directly from your browser to your home screen."
-            },
-            {
                 q: "What is the \"Billing Pulse\" timeline?",
                 a: "The Pulse is a high-level visualization of your current month. It shows exactly where \"Today\" sits in relation to your upcoming renewals, helping you visualize the cash-flow \"heartbeat\" of your finances at a glance."
             }
