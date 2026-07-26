@@ -46,6 +46,7 @@ const CancellationReviewModal = dynamic(() => import('../../components/Cancellat
 const UserGuideModal = dynamic(() => import('../../components/UserGuideModal').then(mod => mod.UserGuideModal), { ssr: false });
 const ProfileSettingsModal = dynamic(() => import('../../components/ProfileSettingsModal').then(mod => mod.ProfileSettingsModal), { ssr: false });
 const ProfileManagerModal = dynamic(() => import('../../components/ProfileManagerModal').then(mod => mod.ProfileManagerModal), { ssr: false });
+const LoginModal = dynamic(() => import('../../components/LoginModal').then(mod => mod.LoginModal), { ssr: false });
 import { PasswordModal } from '@/components/PasswordModal';
 import { PaywallModal } from '@/components/PaywallModal';
 import { LicenseModal } from '@/components/LicenseModal';
@@ -90,6 +91,7 @@ function HomeContent() {
   const [pendingCancellations, setPendingCancellations] = useState<Subscription[]>([]);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showUserGuide, setShowUserGuide] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Profile State
   const [activeProfile, setActiveProfile] = useState<Profile | null>(null);
@@ -2161,6 +2163,12 @@ function HomeContent() {
         onManageProfiles={() => setShowProfileManager(true)}
         profileCount={allProfiles.length}
         activeProfileName={activeProfile?.name || 'Main Profile'}
+        onOpenLogin={() => setShowLoginModal(true)}
+      />
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
       />
 
       <SubTrackingWizard

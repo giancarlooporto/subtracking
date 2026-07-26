@@ -21,6 +21,7 @@ interface SettingsModalProps {
     onManageProfiles: () => void;
     profileCount: number;
     activeProfileName: string;
+    onOpenLogin: () => void;
 }
 
 export function SettingsModal({
@@ -36,11 +37,11 @@ export function SettingsModal({
     onOpenGuide,
     onManageProfiles,
     profileCount,
-    activeProfileName
+    activeProfileName,
+    onOpenLogin
 }: SettingsModalProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { user, isLoading: isAuthLoading } = useAuth();
-    const [showLoginModal, setShowLoginModal] = useState(false);
     const [isRestoring, setIsRestoring] = useState(false);
 
     const handleSignOut = async () => {
@@ -207,7 +208,10 @@ export function SettingsModal({
                                                 Sign in to sync your encrypted vault across devices.
                                             </p>
                                             <button
-                                                onClick={() => setShowLoginModal(true)}
+                                                onClick={() => {
+                                                    onClose();
+                                                    onOpenLogin();
+                                                }}
                                                 className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl transition-colors shadow-lg shadow-indigo-500/20 cursor-pointer text-xs"
                                             >
                                                 Sign In / Create Account
@@ -401,7 +405,6 @@ export function SettingsModal({
                     </motion.div>
                 </div>
             )}
-            <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
         </AnimatePresence>
     );
 }
