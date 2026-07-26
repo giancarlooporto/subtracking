@@ -28,7 +28,7 @@ const faqs = [
         questions: [
             {
                 q: "Is SubTracking PRO another subscription I have to manage?",
-                a: "We hate 'Ghost Costs' as much as you do. The core app is completely free, forever. We only charge for the PRO tier (Cloud Sync, Data Vault, etc) because it costs us money to securely run cloud servers. You can choose a cheap monthly/yearly plan, or if you hate subscriptions, we offer a Lifetime License so you can own it forever."
+                a: "We hate 'Ghost Costs' as much as you do. The core app is completely free, forever. We only charge for the PRO tier (Cloud Sync, Cloud Restore, etc) because it costs us money to securely run cloud servers. You can choose a cheap monthly/yearly plan, or if you hate subscriptions, we offer a Lifetime License so you can own it forever."
             },
             {
                 q: "Why should I upgrade to PRO when I could use a spreadsheet?",
