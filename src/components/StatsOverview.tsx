@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Settings, Sparkles, ArrowRightLeft } from 'lucide-react';
+import { Sparkles, ArrowRightLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { siteConfig } from '../../siteConfig';
 import { getCurrencySymbol } from '../types';
@@ -11,7 +11,6 @@ interface StatsOverviewProps {
     onViewModeChange: (mode: 'monthly' | 'yearly') => void;
     financeViewMode: 'focus' | 'total';
     onFinanceViewModeChange: (mode: 'focus' | 'total') => void;
-    onOpenSettings: () => void;
     onStartAudit: () => void;
     currency?: string;
 }
@@ -23,7 +22,6 @@ export const StatsOverview = memo(({
     onViewModeChange,
     financeViewMode,
     onFinanceViewModeChange,
-    onOpenSettings,
     onStartAudit,
     currency = 'USD'
 }: StatsOverviewProps) => {
@@ -79,13 +77,6 @@ export const StatsOverview = memo(({
                             title="Start SubTracking Wizard!"
                         >
                             <Sparkles className="w-5 h-5" />
-                        </button>
-                        <button
-                            onClick={onOpenSettings}
-                            className="p-2.5 sm:p-3 bg-slate-800/50 hover:bg-slate-700 text-slate-400 border border-slate-700/50 rounded-full transition-all"
-                            title="Settings"
-                        >
-                            <Settings className="w-5 h-5" />
                         </button>
                     </div>
                 </div>
