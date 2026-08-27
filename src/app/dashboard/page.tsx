@@ -61,8 +61,35 @@ function HomeContent() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [userCategories, setUserCategories] = useState<string[]>(DEFAULT_CATEGORIES);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
-  const [financeViewMode, setFinanceViewMode] = useState<'focus' | 'total'>('focus'); // 'focus' = Discretionary, 'total' = Everything
+  const [viewMode, setViewModeState] = useState<'monthly' | 'yearly'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('subtracking-view-mode');
+      if (saved === 'monthly' || saved === 'yearly') return saved;
+    }
+    return 'monthly';
+  });
+
+  const setViewMode = useCallback((mode: 'monthly' | 'yearly') => {
+    setViewModeState(mode);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('subtracking-view-mode', mode);
+    }
+  }, []);
+
+  const [financeViewMode, setFinanceViewModeState] = useState<'focus' | 'total'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('subtracking-finance-view-mode');
+      if (saved === 'focus' || saved === 'total') return saved;
+    }
+    return 'focus';
+  });
+
+  const setFinanceViewMode = useCallback((mode: 'focus' | 'total') => {
+    setFinanceViewModeState(mode);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('subtracking-finance-view-mode', mode);
+    }
+  }, []);
   const [isPro, setIsProState] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('subtracking-is-pro') === 'true';
