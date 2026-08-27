@@ -3,6 +3,6 @@ export const GUMROAD_CONFIG = {
     annualUrl: "https://gianco.gumroad.com/l/jidxy?yearly=true",
     monthlyUrl: "https://gianco.gumroad.com/l/jidxy?monthly=true",
     productPermalink: "jidxy",
-    productId: "", // Gumroad accepts product_permalink
+    productId: "iOcjzKVACKDAPjR4HszTSg==",
     apiUrl: "https://api.gumroad.com/v2/licenses/verify"
 };
