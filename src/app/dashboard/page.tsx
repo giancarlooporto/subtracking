@@ -1424,11 +1424,19 @@ function HomeContent() {
             {/* 📱 SMALL MOBILE & DESKTOP TITLE (Fades in on scroll) */}
             <motion.div
               style={{ opacity: mobileHeaderOpacity }}
-              className="flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex-col items-center justify-center pointer-events-none"
+              className="flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex-col items-center justify-center pointer-events-auto"
             >
-              <div className="text-lg font-bold text-white tracking-tight">
-                {getCurrencySymbol(activeProfile?.currency || 'USD')}{(viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12).toFixed(2).toLocaleString()}
-              </div>
+              <button
+                onClick={() => setShowProfileManager(true)}
+                className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-800/80 hover:bg-slate-700 border border-white/10 text-[11px] font-bold text-slate-300 hover:text-white transition-all cursor-pointer shadow-md group active:scale-95"
+              >
+                <User className="w-3 h-3 text-indigo-400" />
+                <span className="max-w-[100px] truncate">{activeProfile?.name || 'Main Profile'}</span>
+                <span className="text-white font-black ml-1">
+                  {getCurrencySymbol(activeProfile?.currency || 'USD')}{(viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12).toFixed(0)}
+                </span>
+                <ChevronDown className="w-2.5 h-2.5 text-slate-500 group-hover:text-slate-300" />
+              </button>
             </motion.div>
 
             {/* Actions Area */}
