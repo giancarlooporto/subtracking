@@ -10,8 +10,9 @@ interface PaywallModalProps {
 }
 
 export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalProps) {
-    const handlePurchase = () => {
-        window.open(GUMROAD_CONFIG.productUrl, '_blank');
+    const handlePurchase = (plan: 'annual' | 'monthly') => {
+        const url = plan === 'annual' ? GUMROAD_CONFIG.annualUrl : GUMROAD_CONFIG.monthlyUrl;
+        window.open(url, '_blank');
     };
 
     return (
@@ -60,7 +61,7 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                             <div className="pt-2 space-y-3">
                                 {/* Annual Option */}
                                 <button
-                                    onClick={handlePurchase}
+                                    onClick={() => handlePurchase('annual')}
                                     className="w-full text-left bg-slate-950/50 hover:bg-slate-800 border-2 border-indigo-500/60 hover:border-indigo-500 rounded-2xl p-4.5 transition-all group relative overflow-hidden shadow-lg shadow-indigo-500/10 cursor-pointer"
                                 >
                                     <div className="absolute top-0 right-0 bg-indigo-500 text-white text-[9px] font-black px-2.5 py-0.5 rounded-bl-lg uppercase tracking-wider">
@@ -83,7 +84,7 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
 
                                 {/* Monthly Option */}
                                 <button
-                                    onClick={handlePurchase}
+                                    onClick={() => handlePurchase('monthly')}
                                     className="w-full text-left bg-slate-950/30 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 rounded-2xl p-4.5 transition-all group cursor-pointer"
                                 >
                                     <div className="flex justify-between items-center">
