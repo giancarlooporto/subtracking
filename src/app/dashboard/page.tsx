@@ -350,7 +350,10 @@ function HomeContent() {
       setShowWelcome(true);
     }
 
-    // (No upgrade intent redirect needed — all features are available)
+    // Check for upgrade intent URL parameter
+    if (searchParams.get('upgrade') === 'true') {
+      setShowPaywallModal(true);
+    }
 
     // Load cancelled savings (not profile-specific)
     const savedSavings = localStorage.getItem('subtracking-savings') || localStorage.getItem('digital-declutter-savings');
