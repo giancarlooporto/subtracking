@@ -57,25 +57,46 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                                 </p>
                             </div>
 
-                            <div className="pt-4 space-y-4">
+                            <div className="pt-2 space-y-3">
+                                {/* Annual Option */}
                                 <button
                                     onClick={handlePurchase}
-                                    className="w-full text-left bg-slate-950/50 hover:bg-slate-800 border-2 border-indigo-500/60 hover:border-indigo-500 rounded-2xl p-5 transition-all group relative overflow-hidden shadow-lg shadow-indigo-500/10 cursor-pointer"
+                                    className="w-full text-left bg-slate-950/50 hover:bg-slate-800 border-2 border-indigo-500/60 hover:border-indigo-500 rounded-2xl p-4.5 transition-all group relative overflow-hidden shadow-lg shadow-indigo-500/10 cursor-pointer"
                                 >
-                                    <div className="absolute top-0 right-0 bg-indigo-500 text-white text-[9px] font-black px-2 py-0.5 rounded-bl-lg uppercase tracking-wider">
-                                        Best Value
+                                    <div className="absolute top-0 right-0 bg-indigo-500 text-white text-[9px] font-black px-2.5 py-0.5 rounded-bl-lg uppercase tracking-wider">
+                                        Save 25% • Best Value
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <div>
-                                            <h4 className="font-bold text-white text-lg flex items-center gap-2">
+                                            <h4 className="font-bold text-white text-base flex items-center gap-2">
                                                 <ShoppingBag className="w-4 h-4 text-indigo-400" />
                                                 Annual Cloud Pass
                                             </h4>
-                                            <p className="text-sm text-slate-400 mt-1">$8.99/year (just ~$0.75/month) • Real-time cloud sync</p>
+                                            <p className="text-xs text-slate-400 mt-0.5">$8.99/year (just ~$0.75/month) • Real-time cloud sync</p>
                                         </div>
                                         <div className="text-right">
-                                            <span className="text-xl font-black text-indigo-400">$8.99</span>
-                                            <span className="text-xs text-slate-500 block">/year</span>
+                                            <span className="text-lg font-black text-indigo-400">$8.99</span>
+                                            <span className="text-[10px] text-slate-500 block">/year</span>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                {/* Monthly Option */}
+                                <button
+                                    onClick={handlePurchase}
+                                    className="w-full text-left bg-slate-950/30 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 rounded-2xl p-4.5 transition-all group cursor-pointer"
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <h4 className="font-bold text-white text-base flex items-center gap-2">
+                                                <ShoppingBag className="w-4 h-4 text-slate-400" />
+                                                Monthly Cloud Pass
+                                            </h4>
+                                            <p className="text-xs text-slate-400 mt-0.5">$0.99/month • Cancel anytime</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="text-lg font-black text-white">$0.99</span>
+                                            <span className="text-[10px] text-slate-500 block">/month</span>
                                         </div>
                                     </div>
                                 </button>
