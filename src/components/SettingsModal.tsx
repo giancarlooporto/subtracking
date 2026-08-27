@@ -290,23 +290,11 @@ export function SettingsModal({
                                         <FileDown className="w-4 h-4" />
                                         <h3 className="text-xs font-bold uppercase tracking-widest">Reports</h3>
                                     </div>
-                                    {!isPro && <Lock className="w-3 h-3 text-slate-600" />}
                                 </div>
                                 <button
-                                    onClick={isPro ? onExportCSV : onActivatePro}
-                                    className={cn(
-                                        "w-full flex items-center justify-between p-4 bg-slate-900/40 border border-slate-900 rounded-2xl transition-all group relative overflow-hidden mb-2 cursor-pointer",
-                                        isPro ? "hover:bg-slate-900" : "opacity-60 hover:opacity-100"
-                                    )}
+                                    onClick={onExportCSV}
+                                    className="w-full flex items-center justify-between p-4 bg-slate-900/40 border border-slate-900 rounded-2xl transition-all group relative overflow-hidden mb-2 cursor-pointer hover:bg-slate-900"
                                 >
-                                    {!isPro && (
-                                        <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 font-bold pointer-events-none">
-                                            <div className="flex items-center gap-2 bg-slate-950 border border-indigo-500/30 px-3 py-1 rounded-full shadow-lg">
-                                                <Zap className="w-3 h-3 text-indigo-400 fill-indigo-400" />
-                                                <span className="text-[10px] font-bold text-white tracking-widest uppercase">PRO</span>
-                                            </div>
-                                        </div>
-                                    )}
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/10">
                                             <FileDown className="w-5 h-5" />
@@ -316,34 +304,23 @@ export function SettingsModal({
                                             <span className="text-[10px] text-slate-500 font-medium">For Excel, Sheets, Numbers</span>
                                         </div>
                                     </div>
-                                    <Zap className={cn("w-4 h-4", isPro ? "text-emerald-500" : "text-slate-600")} />
+                                    <Download className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition-colors" />
                                 </button>
 
                                 <button
-                                    onClick={isPro ? onExportICS : onActivatePro}
-                                    className={cn(
-                                        "w-full flex items-center justify-between p-4 bg-slate-900/40 border border-slate-900 rounded-2xl transition-all group relative overflow-hidden cursor-pointer",
-                                        isPro ? "hover:bg-slate-900" : "opacity-60 hover:opacity-100"
-                                    )}
+                                    onClick={onExportICS}
+                                    className="w-full flex items-center justify-between p-4 bg-slate-900/40 border border-slate-900 rounded-2xl transition-all group relative overflow-hidden cursor-pointer hover:bg-slate-900"
                                 >
-                                    {!isPro && (
-                                        <div className="absolute inset-0 bg-slate-950/50 flex items-center justify-center z-10 font-bold pointer-events-none">
-                                            <div className="flex items-center gap-2 bg-slate-950 border border-indigo-500/30 px-3 py-1 rounded-full shadow-lg">
-                                                <Zap className="w-3 h-3 text-indigo-400 fill-indigo-400" />
-                                                <span className="text-[10px] font-bold text-white tracking-widest uppercase">PRO</span>
-                                            </div>
-                                        </div>
-                                    )}
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/10">
                                             <Calendar className="w-5 h-5" />
                                         </div>
                                         <div className="text-left">
                                             <span className="text-sm font-bold text-white block">All Bills (Calendar)</span>
-                                            <span className="text-[10px] text-slate-500 font-medium">Sync everything to your app</span>
+                                            <span className="text-[10px] text-slate-500 font-medium">Sync everything to your calendar app</span>
                                         </div>
                                     </div>
-                                    <Zap className={cn("w-4 h-4", isPro ? "text-indigo-500" : "text-slate-600")} />
+                                    <Download className="w-4 h-4 text-slate-500 group-hover:text-indigo-400 transition-colors" />
                                 </button>
                             </div>
 

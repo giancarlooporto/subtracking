@@ -37,46 +37,6 @@ export async function verifyOtp(email: string, token: string) {
     return { data, error };
 }
 
-export async function signInWithAppleToken(idToken: string, nonce: string, fullName?: string) {
-    const { data, error } = await supabase.auth.signInWithIdToken({
-        provider: 'apple',
-        token: idToken,
-        nonce,
-    });
-
-    // Optionally update user's profile with full name if provided (Apple only provides this on first login)
-    if (data.user && fullName && !error) {
-        await supabase.from('users').update({ full_name: fullName }).eq('id', data.user.id);
-    }
-
-    return { data, error };
-}
-
-export async function signInWithGoogleToken(idToken: string) {
-    const { data, error } = await supabase.auth.signInWithIdToken({
-        provider: 'google',
-        token: idToken,
-    });
-
-    return { data, error };
-}
-
-export async function signInWithOAuth(provider: 'google' | 'apple') {
-    const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-    const redirectTo = isLocalhost
-        ? 'http://localhost:3000/dashboard'
-        : 'https://www.subtracking.app/dashboard';
-
-    const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-            redirectTo
-        }
-    });
-
-    return { data, error };
-}
-
 export async function signOut() {
     const { error } = await supabase.auth.signOut();
     return { error };

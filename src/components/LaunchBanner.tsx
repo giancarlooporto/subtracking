@@ -32,7 +32,7 @@ export function LaunchBanner() {
                         className="flex-1 flex items-center justify-center gap-2 text-sm font-bold hover:opacity-90 transition-opacity cursor-pointer group/banner"
                     >
                         <Sparkles className="w-4 h-4" />
-                        <span>🚀 LAUNCH SPECIAL: Share SubTracking to unlock 70% OFF PRO Lifetime Access!</span>
+                        <span>✨ 100% Free & Private Subscription Tracker. Optional Cloud Sync for under $1/mo!</span>
                         <div className="hidden sm:block">
                             <ArrowRight className="w-4 h-4 inline ml-1 animate-pulse group-hover/banner:translate-x-1 transition-transform" />
                         </div>

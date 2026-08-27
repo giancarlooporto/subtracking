@@ -53,7 +53,6 @@ import { LicenseModal } from '@/components/LicenseModal';
 import { encryptData, decryptData, EncryptedVault } from '@/lib/crypto';
 import { useAuth } from '@/context/AuthContext';
 import { uploadVault, downloadVault } from '@/lib/supabaseClient';
-import { useRevenueCat } from '@/hooks/useRevenueCat';
 
 function HomeContent() {
   const { user } = useAuth();
@@ -64,18 +63,15 @@ function HomeContent() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
   const [financeViewMode, setFinanceViewMode] = useState<'focus' | 'total'>('focus'); // 'focus' = Discretionary, 'total' = Everything
-  const { isPro: isProNative } = useRevenueCat();
-  const [isProLocalStorage, setIsProLocalStorage] = useState(() => {
+  const [isPro, setIsProState] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('subtracking-is-pro') === 'true';
     }
     return false;
   });
 
-  const isPro = isProLocalStorage || isProNative;
-
   const setIsPro = useCallback((val: boolean) => {
-    setIsProLocalStorage(val);
+    setIsProState(val);
     if (typeof window !== 'undefined') {
       localStorage.setItem('subtracking-is-pro', val.toString());
     }
@@ -2392,7 +2388,7 @@ function HomeContent() {
           setIsPro(true);
           setShowLicenseModal(false);
           setShowPaywallModal(false);
-          showToast('PRO Lifetime unlocked successfully! ⚡', 'success');
+          showToast('Cloud Sync unlocked successfully! ☁️', 'success');
         }}
       />
 

@@ -616,23 +616,24 @@ export default function LandingPage() {
                         {/* Free Tier */}
                         <div className="glass-panel p-10 rounded-[40px] border border-white/5 flex flex-col hover:border-slate-700 transition-all">
                             <div className="space-y-2 flex-1">
-                                <h3 className="text-2xl font-bold text-white">Local-First</h3>
+                                <h3 className="text-2xl font-bold text-white">Local-First (Core App)</h3>
                                 <div className="flex items-baseline gap-1">
                                     <span className="text-5xl font-black text-white">$0</span>
                                     <span className="text-slate-500 font-medium">/forever</span>
                                 </div>
-                                <p className="text-slate-500 text-sm pt-4">Everything you need to stop the leaks.</p>
+                                <p className="text-slate-500 text-sm pt-4">100% private, offline-first subscription auditing with zero limits.</p>
 
                                 <ul className="space-y-4 pt-10">
                                     {[
                                         "Unlimited Subscriptions",
-                                        "Ghost Meter Projections",
-                                        "Dashboard & Basic Analytics",
-                                        "Audit Wizard (Keep or Toss)",
-                                        "1 Local Profile"
+                                        "Unlimited Profiles (Personal / Business)",
+                                        "Trial Shield Alerts & Split Billing",
+                                        "Ghost Meter Projections & Audit Wizard",
+                                        "Reports Export (CSV & Calendar .ICS)",
+                                        "Manual Data Vault Backup & Restore"
                                     ].map((item, i) => (
-                                        <li key={i} className="flex items-center gap-3 text-slate-400 text-sm">
-                                            <Check className="w-4 h-4 text-slate-600 shrink-0" />
+                                        <li key={i} className="flex items-center gap-3 text-slate-300 text-sm">
+                                            <Check className="w-4 h-4 text-emerald-400 shrink-0" />
                                             {item}
                                         </li>
                                     ))}
@@ -644,31 +645,31 @@ export default function LandingPage() {
                             </Link>
                         </div>
 
-                        {/* Pro Tier */}
+                        {/* Cloud Sync Tier */}
                         <div className="glass-panel p-10 rounded-[40px] border-2 border-indigo-500/30 bg-indigo-500/[0.02] flex flex-col relative overflow-hidden group">
                             <div className="absolute top-4 right-4 bg-indigo-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-indigo-500/20">
-                                Best Value
+                                Cloud Add-on
                             </div>
 
                             <div className="space-y-2 flex-1">
                                 <h3 className="text-2xl font-bold text-white flex items-center gap-2">
-                                    PRO
+                                    Cloud Sync
                                     <Zap className="w-5 h-5 text-indigo-400 fill-indigo-400" />
                                 </h3>
 
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-5xl font-black text-white">$14.99</span>
+                                    <span className="text-5xl font-black text-white">$8.99</span>
                                     <span className="text-slate-500 font-medium tracking-tight">/year</span>
                                 </div>
-                                <p className="text-indigo-200/60 text-sm pt-2">Or $1.99/month, or $49.99 for lifetime.</p>
+                                <p className="text-indigo-200/60 text-sm pt-2">Less than $1/month (~$0.75/mo) or $0.99 billed monthly.</p>
 
                                 <ul className="space-y-4 pt-10">
                                     {[
-                                        "Magic Cloud Sync (Real-time)",
-                                        "Data Vault (CSV Import/Export)",
-                                        "Apple/Google Calendar Sync",
-                                        "Unlimited Profiles (Business/Family)",
-                                        "Priority Support"
+                                        "Encrypted Multi-Device Sync",
+                                        "Real-time Cloud Backups",
+                                        "Instant Cross-Browser Restore",
+                                        "Phone to Desktop Live Synchronization",
+                                        "Private Server Hosting"
                                     ].map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-slate-200 text-sm font-medium">
                                             <Zap className="w-4 h-4 text-indigo-400 shrink-0" />
@@ -679,7 +680,7 @@ export default function LandingPage() {
                             </div>
 
                             <Link href="/dashboard?upgrade=true" className="mt-10 w-full py-4 rounded-2xl bg-indigo-600 text-white font-black text-center hover:bg-indigo-500 shadow-xl shadow-indigo-600/20 group-hover:scale-105 transition-all active:scale-95">
-                                Go Pro Now
+                                Enable Cloud Sync
                             </Link>
                         </div>
                     </div>

@@ -12,18 +12,11 @@ export function InstallBanner() {
         const dismissed = localStorage.getItem('install-banner-dismissed');
         if (dismissed) return;
 
-        // Check if running as native app (Capacitor) or already installed
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        // Check if running in standalone PWA mode
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+            (window.navigator as any).standalone === true;
 
-        // Enhanced native app detection
-        const isNative = !!(
-            (window as any).Capacitor?.isNativePlatform?.() ||
-            (window as any).Capacitor?.isNative ||
-            (window as any).Capacitor
-        );
-
-        if (isStandalone || isNative) {
-            console.log('Running as native/installed app, hiding banner');
+        if (isStandalone) {
             return;
         }
 

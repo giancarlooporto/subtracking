@@ -209,7 +209,7 @@ export default function ManualVsAutomatedPage() {
                             </p>
                             <ul className="list-disc list-inside space-y-2 ml-4">
                                 <li>Complete privacy—no bank login ever</li>
-                                <li>One-time payment (own it forever)</li>
+                                <li>100% Free Core App (unlimited tracking)</li>
                                 <li>Local storage only (works offline)</li>
                             </ul>
                             <p className="pt-4 font-bold">
@@ -227,7 +227,7 @@ export default function ManualVsAutomatedPage() {
                         Try the privacy-first tracker
                     </h2>
                     <p className="text-indigo-100/80 text-lg max-w-xl mx-auto">
-                        Free to start. Cloud Sync for $14.99/yr. No bank login required.
+                        100% Free to use. Optional Cloud Sync for $8.99/yr. No bank login required.
                     </p>
                     <Link
                         href="/dashboard"

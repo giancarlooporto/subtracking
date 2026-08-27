@@ -24,19 +24,19 @@ const faqs = [
         ]
     },
     {
-        category: "💰 Pricing & PRO Features",
+        category: "💰 Pricing & Cloud Sync",
         questions: [
             {
-                q: "Is SubTracking PRO another subscription I have to manage?",
-                a: "We hate 'Ghost Costs' as much as you do. The core app is completely free, forever. We only charge for the PRO tier (Cloud Sync, Cloud Restore, etc) because it costs us money to securely run cloud servers. You can choose a cheap monthly/yearly plan, or if you hate subscriptions, we offer a Lifetime License so you can own it forever."
+                q: "Is SubTracking really free?",
+                a: "Yes, 100%. The core SubTracking app is completely free, private, and unlimited forever. You get unlimited subscriptions, custom categories, trial alerts, split bills, multi-profiles, and local Data Vault exports without paying a cent."
             },
             {
-                q: "Why should I upgrade to PRO when I could use a spreadsheet?",
-                a: "A spreadsheet is just a list; SubTracking is a system. Spreadsheets don't calculate your 10-year \"Ghost Cost\" automatically. They don't have a psychological \"Audit Wizard\" to force tough decisions. SubTracking Free is automated financial defense. PRO simply adds the convenience of cloud sync, calendar alerts, and data exports."
+                q: "Why do you charge for Cloud Sync?",
+                a: "Running private, encrypted cloud database servers costs money. If you want the convenience of automatic, real-time synchronization between your phone and laptop, you can subscribe to Cloud Sync for just $8.99/year (less than $1/month) or $0.99/month. Otherwise, you can use the free local Vault backup to transfer data manually at zero cost."
             },
             {
-                q: "Does my PRO license work on all my devices?",
-                a: "Yes. Once you upgrade to PRO, your account automatically unlocks Cloud Sync, meaning your data effortlessly bridges between your iPhone, iPad, and laptop."
+                q: "Does Cloud Sync work on all my devices?",
+                a: "Yes. Once you activate Cloud Sync, your account securely bridges your encrypted subscription data between your phone, tablet, and desktop browsers seamlessly in real time."
             }
         ]
     },

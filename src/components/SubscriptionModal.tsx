@@ -404,13 +404,7 @@ export function SubscriptionModal({
                                         ))}
                                         <button
                                             type="button"
-                                            onClick={() => {
-                                                if (isPro) {
-                                                    setIsAddingCustom(true);
-                                                } else {
-                                                    setShowProPrompt(true);
-                                                }
-                                            }}
+                                            onClick={() => setIsAddingCustom(true)}
                                             className={cn(
                                                 "px-3 py-2 rounded-lg text-xs font-bold border transition-all text-left flex items-center justify-between gap-1",
                                                 isAddingCustom
@@ -421,24 +415,10 @@ export function SubscriptionModal({
                                             <span className="flex items-center gap-1">
                                                 <Plus className="w-3 h-3" /> Custom...
                                             </span>
-                                            {!isPro && <Zap className="w-3 h-3 text-indigo-400 fill-indigo-400" />}
                                         </button>
                                     </div>
 
-                                    {showProPrompt && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: -10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 flex items-center justify-between gap-3 mt-2"
-                                        >
-                                            <p className="text-[10px] font-bold text-indigo-300 leading-tight">
-                                                Custom categories are a PRO feature. Unlock to personalize your spending.
-                                            </p>
-                                            <Zap className="w-4 h-4 text-indigo-400 shrink-0 animate-pulse" />
-                                        </motion.div>
-                                    )}
-
-                                    {isAddingCustom && isPro && (
+                                    {isAddingCustom && (
                                         <motion.input
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: 'auto' }}
@@ -447,7 +427,12 @@ export function SubscriptionModal({
                                             onChange={(e) => setCustomCategory(e.target.value)}
                                             placeholder="Enter new category name..."
                                             className="w-full bg-slate-800 border-2 border-indigo-500/50 rounded-xl px-4 py-2 text-sm text-white focus:outline-none mt-2"
-                                            autoFocus
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Escape') {
+                                                    setIsAddingCustom(false);
+                                                    setCustomCategory('');
+                                                }
+                                            }}
                                         />
                                     )}
                                 </div>
@@ -487,52 +472,29 @@ export function SubscriptionModal({
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                             <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400">
-                                                <ShieldAlert className="w-4 h-4" />
+                                                <Sparkles className="w-4 h-4" />
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold text-white flex items-center gap-1.5">
                                                     Trial Shield
-                                                    <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded-full uppercase tracking-wider">New</span>
                                                 </p>
-                                                <p className="text-[11px] text-slate-500">Track free trials & intro offers</p>
+                                                <p className="text-[11px] text-slate-500">Track free trials and set alerts</p>
                                             </div>
                                         </div>
                                         <button
                                             type="button"
-                                            onClick={() => {
-                                                if (isPro) {
-                                                    setIsTrial(!isTrial);
-                                                } else {
-                                                    setShowProPrompt(true);
-                                                }
-                                            }}
+                                            onClick={() => setIsTrial(!isTrial)}
                                             className={cn(
                                                 "w-10 h-6 rounded-full relative transition-colors duration-200",
-                                                isTrial ? "bg-indigo-600" : "bg-slate-800",
-                                                !isPro && "opacity-80"
+                                                isTrial ? "bg-indigo-600" : "bg-slate-800"
                                             )}
                                         >
                                             <div className={cn(
                                                 "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 shadow-sm flex items-center justify-center",
                                                 isTrial ? "left-5" : "left-1"
-                                            )}>
-                                                {!isPro && !isTrial && <Zap className="w-2.5 h-2.5 text-indigo-500 fill-indigo-500" />}
-                                            </div>
+                                            )} />
                                         </button>
                                     </div>
-
-                                    {!isPro && showProPrompt && !isAddingCustom && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: -10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl mt-2"
-                                        >
-                                            <p className="text-[11px] text-indigo-300 font-medium">
-                                                <Zap className="w-3 h-3 inline mr-1 fill-indigo-400" />
-                                                Trial Shield is a Pro feature. Track free trials and get alerts before you're charged.
-                                            </p>
-                                        </motion.div>
-                                    )}
 
                                     {isTrial && (
                                         <motion.div
@@ -638,40 +600,18 @@ export function SubscriptionModal({
                                         </div>
                                         <button
                                             type="button"
-                                            onClick={() => {
-                                                if (isPro) {
-                                                    setIsSplit(!isSplit);
-                                                } else {
-                                                    setShowProPrompt(true);
-                                                }
-                                            }}
+                                            onClick={() => setIsSplit(!isSplit)}
                                             className={cn(
                                                 "w-10 h-6 rounded-full relative transition-colors duration-200",
-                                                isSplit ? "bg-emerald-600" : "bg-slate-800",
-                                                !isPro && "opacity-80"
+                                                isSplit ? "bg-emerald-600" : "bg-slate-800"
                                             )}
                                         >
                                             <div className={cn(
                                                 "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 shadow-sm flex items-center justify-center",
                                                 isSplit ? "left-5" : "left-1"
-                                            )}>
-                                                {!isPro && !isSplit && <Zap className="w-2.5 h-2.5 text-emerald-500 fill-emerald-500" />}
-                                            </div>
+                                            )} />
                                         </button>
                                     </div>
-
-                                    {!isPro && showProPrompt && !isAddingCustom && !isTrial && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: -10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mt-2"
-                                        >
-                                            <p className="text-[11px] text-emerald-300 font-medium">
-                                                <Zap className="w-3 h-3 inline mr-1 fill-emerald-400" />
-                                                Split Billing is a Pro feature. Track shared subscriptions and see your actual cost.
-                                            </p>
-                                        </motion.div>
-                                    )}
 
                                     {isSplit && (
                                         <motion.div
