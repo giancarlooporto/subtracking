@@ -34,14 +34,35 @@ export function LicenseModal({ isOpen, onClose, onSuccess }: LicenseModalProps) 
                 return;
             }
 
-            const response = await fetch('/api/verify-license', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ license_key: cleanKey }),
-            });
+            // 1. First try server-side verification route
+            let data: any = null;
+            try {
+                const response = await fetch('/api/verify-license', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ license_key: cleanKey }),
+                });
+                data = await response.json();
+            } catch (fetchErr) {
+                console.warn('API route unreachable, falling back to direct Gumroad verification');
+            }
 
-            const data = await response.json();
-            if (data.success && !data.purchase.refunded && !data.purchase.chargebacked) {
+            // 2. If API route not available (e.g. static export), verify directly with Gumroad
+            if (!data || !data.success) {
+                const formData = new URLSearchParams();
+                formData.append('product_id', GUMROAD_CONFIG.productId);
+                formData.append('license_key', cleanKey);
+                formData.append('increment_uses_count', 'true');
+
+                const directRes = await fetch(GUMROAD_CONFIG.apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+                data = await directRes.json();
+            }
+
+            if (data.success && !data.purchase?.refunded && !data.purchase?.chargebacked) {
                 onSuccess();
             } else {
                 throw new Error(data.message || "Invalid or revoked license key.");
