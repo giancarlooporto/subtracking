@@ -136,7 +136,21 @@ function HomeContent() {
   const [passwordError, setPasswordError] = useState(false);
 
   // Filtering & Sorting
-  const [sortBy, setSortBy] = useState('price-desc');
+  const [sortBy, setSortByState] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('subtracking-sort-by');
+      if (saved) return saved;
+    }
+    return 'price-desc';
+  });
+
+  const setSortBy = useCallback((sort: string) => {
+    setSortByState(sort);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('subtracking-sort-by', sort);
+    }
+  }, []);
+
   const [filterCategory, setFilterCategory] = useState<string[]>(['All']);
 
   const [isSortOpen, setIsSortOpen] = useState(false);
