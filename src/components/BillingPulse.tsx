@@ -28,11 +28,7 @@ const PulseDot = memo(({
     const symbol = '$';
     return (
         <div
-            className="relative group/day flex flex-col items-center"
-            style={{
-                width: '3%',
-                height: '100%'
-            }}
+            className="relative group/day flex flex-col items-center w-full h-full"
         >
             {/* The Dot */}
             <motion.div
@@ -218,20 +214,6 @@ export function BillingPulse({ subscriptions }: BillingPulseProps) {
                     style={{ top: `${baselineY}%` }}
                 />
 
-                {/* Today Indicator (Line) - positioned with time-of-day progress */}
-                <div
-                    className="absolute w-0.5 bg-indigo-500/40 z-0 rounded-full"
-                    style={{
-                        left: `calc(${(todayWithProgress / 30) * 97}% + 1.5%)`,
-                        top: '10%',
-                        height: '70%'
-                    }}
-                >
-                    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[9px] font-bold text-indigo-400 uppercase whitespace-nowrap">
-                        Today
-                    </div>
-                </div>
-
                 {/* Days with Pulse Effect */}
                 <div className="relative flex justify-between items-center h-full z-10">
                     {days.map((day) => {
@@ -255,18 +237,36 @@ export function BillingPulse({ subscriptions }: BillingPulseProps) {
                         if (day >= 22) tooltipPositionClass = "right-0 origin-bottom-right";
 
                         return (
-                            <PulseDot
-                                key={day}
-                                day={day}
-                                today={today}
-                                hasSubs={hasSubs}
-                                pulseOffset={pulseOffset}
-                                dotColor={dotColor}
-                                subs={subs}
-                                totalOnDay={totalOnDay}
-                                tooltipPositionClass={tooltipPositionClass}
-                                baselineY={baselineY}
-                            />
+                            <div key={day} className="relative flex flex-col items-center" style={{ width: `${100 / 31}%`, height: '100%' }}>
+                                {/* Today Indicator Vertical Line anchored exactly on Day ${today} */}
+                                {isToday && (
+                                    <div
+                                        className="absolute w-0.5 bg-indigo-500/40 z-0 rounded-full pointer-events-none"
+                                        style={{
+                                            left: '50%',
+                                            transform: 'translateX(-50%)',
+                                            top: '10%',
+                                            height: '70%'
+                                        }}
+                                    >
+                                        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[9px] font-bold text-indigo-400 uppercase whitespace-nowrap">
+                                            Today
+                                        </div>
+                                    </div>
+                                )}
+
+                                <PulseDot
+                                    day={day}
+                                    today={today}
+                                    hasSubs={hasSubs}
+                                    pulseOffset={pulseOffset}
+                                    dotColor={dotColor}
+                                    subs={subs}
+                                    totalOnDay={totalOnDay}
+                                    tooltipPositionClass={tooltipPositionClass}
+                                    baselineY={baselineY}
+                                />
+                            </div>
                         );
                     })}
                 </div>
