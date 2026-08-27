@@ -69,95 +69,16 @@ export function LicenseModal({ isOpen, onClose, onSuccess }: LicenseModalProps) 
                             <div className="space-y-1">
                                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
                                     <Key className="w-5 h-5 text-indigo-400" />
-                                    Unlock SubTracking PRO
+                                    Activate Cloud Sync
                                 </h2>
-                                <p className="text-sm text-slate-400">Enter your license key to unlock lifetime features.</p>
+                                <p className="text-sm text-slate-400">Enter your Cloud Sync subscription key from Gumroad.</p>
                             </div>
-                            <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors">
+                            <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors cursor-pointer">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
 
-                        {/* Primary Purchase Action */}
-                        <div className="space-y-4">
-                            {!hasShared ? (
-                                <div className="space-y-4">
-                                    <a
-                                        href={GUMROAD_CONFIG.productUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-xl shadow-indigo-600/20"
-                                    >
-                                        <ShoppingBag className="w-5 h-5" />
-                                        Get PRO Lifetime ($49.99)
-                                    </a>
-
-                                    <div className="relative">
-                                        <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                            <div className="w-full border-t border-slate-800"></div>
-                                        </div>
-                                        <div className="relative flex justify-center text-[10px] uppercase">
-                                            <span className="bg-slate-900 px-4 text-slate-500 font-black tracking-widest">Wait! Want a discount?</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Optional Share Incentive */}
-                                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 text-center space-y-4">
-                                        <div className="space-y-1">
-                                            <h3 className="text-emerald-400 font-black text-lg flex items-center justify-center gap-2">
-                                                <Sparkles className="w-5 h-5" />
-                                                Share for 70% OFF
-                                            </h3>
-                                            <p className="text-slate-400 text-xs">
-                                                Help us grow by sharing SubTracking and unlock a special launch price of just <span className="text-emerald-400 font-bold">$5.70</span>.
-                                            </p>
-                                        </div>
-                                        <div className="flex justify-center">
-                                            <ShareButton
-                                                variant="discount"
-                                                onShare={() => setHasShared(true)}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-6 space-y-4"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className="bg-emerald-500/20 p-2 rounded-lg">
-                                            <CheckCircle className="w-5 h-5 text-emerald-400" />
-                                        </div>
-                                        <div>
-                                            <p className="text-emerald-400 font-black text-sm uppercase tracking-wider">70% Discount Unlocked!</p>
-                                            <p className="text-xs text-slate-400">Thanks for supporting our privacy-first mission.</p>
-                                        </div>
-                                    </div>
-                                    <a
-                                        href={GUMROAD_CONFIG.discountUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20"
-                                    >
-                                        <ShoppingBag className="w-5 h-5" />
-                                        Get PRO for $5.70
-                                    </a>
-                                </motion.div>
-                            )}
-                        </div>
-
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                <div className="w-full border-t border-slate-800"></div>
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-slate-900 px-2 text-slate-500 font-bold">Already have a key?</span>
-                            </div>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">License Key</label>
                                 <input
@@ -166,6 +87,7 @@ export function LicenseModal({ isOpen, onClose, onSuccess }: LicenseModalProps) 
                                     onChange={(e) => setKey(e.target.value)}
                                     placeholder="XXXX-XXXX-XXXX-XXXX"
                                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all font-mono"
+                                    autoFocus
                                 />
                             </div>
 
@@ -179,7 +101,7 @@ export function LicenseModal({ isOpen, onClose, onSuccess }: LicenseModalProps) 
                             <button
                                 type="submit"
                                 disabled={isLoading || !key}
-                                className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-600/20"
                             >
                                 {isLoading ? (
                                     <>
@@ -188,11 +110,22 @@ export function LicenseModal({ isOpen, onClose, onSuccess }: LicenseModalProps) 
                                     </>
                                 ) : (
                                     <>
-                                        Activate License
+                                        Activate Cloud Sync
                                         <CheckCircle className="w-4 h-4" />
                                     </>
                                 )}
                             </button>
+
+                            <div className="pt-2 text-center">
+                                <a
+                                    href={GUMROAD_CONFIG.productUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-indigo-400 hover:underline font-medium"
+                                >
+                                    Need a Cloud Sync subscription? Get one on Gumroad ($8.99/yr or $0.99/mo) →
+                                </a>
+                            </div>
                         </form>
                     </div>
                 </motion.div>
