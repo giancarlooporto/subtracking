@@ -218,23 +218,11 @@ export default function LandingPage() {
                     >
                         <Link
                             href="/dashboard"
-                            className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white px-10 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 group transition-all shadow-2xl shadow-indigo-600/20"
+                            className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white px-10 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 group transition-all shadow-2xl shadow-indigo-600/20 cursor-pointer"
                         >
-                            Start Auditing Now
+                            Start Auditing Free
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </Link>
-
-                        {/* Early Bird Discount Nudge */}
-                        <div className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 backdrop-blur-sm">
-                            <div className="flex items-center justify-center gap-2 flex-wrap">
-                                <span className="text-amber-400 font-black text-sm">🔥 First 100 Users:</span>
-                                <span className="text-white font-bold text-sm">60% OFF with code</span>
-                                <code className="text-xs font-mono font-black bg-amber-500/20 text-amber-300 px-2.5 py-1 rounded border border-amber-500/40">
-                                    TUVCUUX
-                                </code>
-                            </div>
-                        </div>
-
                     </motion.div>
                 </div>
 
@@ -552,8 +540,8 @@ export default function LandingPage() {
                                     <Globe className="w-4 h-4 text-emerald-400" />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-white mb-1">No Cloud Sync</h4>
-                                    <p className="text-sm text-slate-500">Your data never touches the cloud or our servers.</p>
+                                    <h4 className="font-bold text-white mb-1">Local-First Vault</h4>
+                                    <p className="text-sm text-slate-500">Your data lives locally in your browser. Optional cloud sync is end-to-end encrypted.</p>
                                 </div>
                             </div>
                             <div className="flex gap-4">
@@ -562,7 +550,7 @@ export default function LandingPage() {
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-white mb-1">Vault Backups</h4>
-                                    <p className="text-sm text-slate-500">Export your fully encrypted vault (JSON) and restore anywhere.</p>
+                                    <p className="text-sm text-slate-500">Export your fully encrypted vault (JSON) and restore anywhere for free.</p>
                                 </div>
                             </div>
                         </div>

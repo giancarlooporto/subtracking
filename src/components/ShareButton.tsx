@@ -65,17 +65,17 @@ export function ShareButton({ variant = 'default', onShare }: ShareButtonProps) 
     return (
         <button
             onClick={handleShare}
-            className={`${variants[variant]} font-bold transition-all flex items-center gap-2 group relative`}
+            className={`${variants[variant]} font-bold transition-all flex items-center gap-2 group relative cursor-pointer`}
         >
             {copied ? (
                 <>
-                    <Check className="w-4 h-4 text-white" />
-                    <span>70% OFF UNLOCKED!</span>
+                    <Check className="w-4 h-4 text-emerald-400" />
+                    <span>Link Copied!</span>
                 </>
             ) : (
                 <>
                     <Share2 className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                    <span>{variant === 'discount' ? 'Share to Unlock 70% Off' : 'Share SubTracking'}</span>
+                    <span>Share SubTracking</span>
                 </>
             )}
         </button>
