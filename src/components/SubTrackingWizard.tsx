@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, Trash2, RotateCcw, PartyPopper } from 'lucide-react';
+import { X, Check, Trash2, RotateCcw, PartyPopper, Sparkles } from 'lucide-react';
 import { Subscription } from '../types';
 import { cn, getCategoryColorHex, getCategoryIcon } from '../lib/utils';
 import { siteConfig } from '../../siteConfig';
@@ -18,18 +18,59 @@ export function SubTrackingWizard({ isOpen, onClose, subscriptions, onFinish }: 
     const [direction, setDirection] = useState<'left' | 'right' | null>(null);
     const [isCompleted, setIsCompleted] = useState(false);
 
+    // Reset wizard whenever it is opened
+    useEffect(() => {
+        if (isOpen) {
+            setCurrentIndex(0);
+            setToDeleteIds([]);
+            setDirection(null);
+            setIsCompleted(false);
+        }
+    }, [isOpen]);
+
     if (!isOpen) return null;
 
-    const currentSub = subscriptions[currentIndex];
+    // Guard if user has no subscriptions to audit
+    if (!subscriptions || subscriptions.length === 0) {
+        return (
+            <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
+                <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-md w-full text-center space-y-6 shadow-2xl relative">
+                    <button
+                        onClick={onClose}
+                        className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+                    <div className="bg-indigo-500/20 p-6 rounded-full inline-block mb-2">
+                        <Sparkles className="w-10 h-10 text-indigo-400" />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-black text-white">No Discretionary Subscriptions</h2>
+                        <p className="text-slate-400 mt-2 text-sm leading-relaxed">
+                            You don't have any non-essential subscriptions to audit yet. Add streaming, gaming, or software subscriptions first!
+                        </p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all"
+                    >
+                        Got It
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    const currentSub = subscriptions[currentIndex] || subscriptions[0];
 
     const handleSwipe = (dir: 'left' | 'right') => {
         setDirection(dir);
 
         // Allow animation to play
         setTimeout(() => {
-            if (dir === 'left') {
+            if (dir === 'left' && currentSub) {
                 // Toss / Cancel
-                setToDeleteIds([...toDeleteIds, currentSub.id]);
+                setToDeleteIds(prev => [...prev, currentSub.id]);
             }
 
             if (currentIndex < subscriptions.length - 1) {
