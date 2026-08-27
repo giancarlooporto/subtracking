@@ -61,35 +61,51 @@ function HomeContent() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [userCategories, setUserCategories] = useState<string[]>(DEFAULT_CATEGORIES);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [viewMode, setViewModeState] = useState<'monthly' | 'yearly'>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('subtracking-view-mode');
-      if (saved === 'monthly' || saved === 'yearly') return saved;
-    }
-    return 'monthly';
-  });
+  const [activeProfile, setActiveProfile] = useState<Profile | null>(null);
+  const [allProfiles, setAllProfiles] = useState<Profile[]>([]);
+
+  // Per-profile view settings helpers
+  const getProfileKey = useCallback((setting: string, profileId?: string) => {
+    const id = profileId || activeProfile?.id || (typeof window !== 'undefined' ? localStorage.getItem('subtracking_active_profile') : '') || 'default';
+    return `subtracking-${setting}-${id}`;
+  }, [activeProfile?.id]);
+
+  const [viewMode, setViewModeState] = useState<'monthly' | 'yearly'>('monthly');
 
   const setViewMode = useCallback((mode: 'monthly' | 'yearly') => {
     setViewModeState(mode);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('subtracking-view-mode', mode);
+      localStorage.setItem(getProfileKey('view-mode'), mode);
     }
-  }, []);
+  }, [getProfileKey]);
 
-  const [financeViewMode, setFinanceViewModeState] = useState<'focus' | 'total'>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('subtracking-finance-view-mode');
-      if (saved === 'focus' || saved === 'total') return saved;
-    }
-    return 'focus';
-  });
+  const [financeViewMode, setFinanceViewModeState] = useState<'focus' | 'total'>('focus'); // 'focus' = Discretionary, 'total' = Everything
 
   const setFinanceViewMode = useCallback((mode: 'focus' | 'total') => {
     setFinanceViewModeState(mode);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('subtracking-finance-view-mode', mode);
+      localStorage.setItem(getProfileKey('finance-view-mode'), mode);
     }
-  }, []);
+  }, [getProfileKey]);
+
+  // Sync profile view modes when activeProfile changes
+  useEffect(() => {
+    if (activeProfile?.id && typeof window !== 'undefined') {
+      const savedViewMode = localStorage.getItem(`subtracking-view-mode-${activeProfile.id}`);
+      if (savedViewMode === 'monthly' || savedViewMode === 'yearly') {
+        setViewModeState(savedViewMode);
+      } else {
+        setViewModeState('monthly');
+      }
+
+      const savedFinanceMode = localStorage.getItem(`subtracking-finance-view-mode-${activeProfile.id}`);
+      if (savedFinanceMode === 'focus' || savedFinanceMode === 'total') {
+        setFinanceViewModeState(savedFinanceMode);
+      } else {
+        setFinanceViewModeState('focus');
+      }
+    }
+  }, [activeProfile?.id]);
   const [isPro, setIsProState] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('subtracking-is-pro') === 'true';
@@ -116,9 +132,7 @@ function HomeContent() {
   const [showUserGuide, setShowUserGuide] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  // Profile State
-  const [activeProfile, setActiveProfile] = useState<Profile | null>(null);
-  const [allProfiles, setAllProfiles] = useState<Profile[]>([]);
+  // Profile Management Modal State
   const [showProfileManager, setShowProfileManager] = useState(false);
   const [showProfileSettings, setShowProfileSettings] = useState(false);
   const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
@@ -167,7 +181,20 @@ function HomeContent() {
     }
     return [];
   });
-  const [dashboardView, setDashboardView] = useState<'list' | 'calendar'>('list');
+  const [dashboardView, setDashboardViewState] = useState<'list' | 'calendar'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('subtracking-dashboard-view');
+      if (saved === 'list' || saved === 'calendar') return saved;
+    }
+    return 'list';
+  });
+
+  const setDashboardView = useCallback((view: 'list' | 'calendar') => {
+    setDashboardViewState(view);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('subtracking-dashboard-view', view);
+    }
+  }, []);
   const [isHeaderCompact, setIsHeaderCompact] = useState(false);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const stickyHeaderRef = React.useRef<HTMLDivElement>(null);
