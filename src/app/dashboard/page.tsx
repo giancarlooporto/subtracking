@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, Suspense, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type, Ghost, ChevronDown, ChevronUp, Sparkles, RefreshCw, ArrowRight, Menu } from 'lucide-react';
+import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type, Ghost, ChevronDown, ChevronUp, Sparkles, RefreshCw, ArrowRight, Menu, User } from 'lucide-react';
 import { Subscription, DEFAULT_CATEGORIES, Profile, getCurrencySymbol } from '../../types';
 import { getDaysRemaining, getNextOccurrence, getCategoryColorHex, getCategoryIcon, calculateMonthlyPrice, cn, formatLocalDate } from '../../lib/utils';
 import {
@@ -1448,6 +1448,16 @@ function HomeContent() {
         <div className="relative h-[210px] sm:h-[230px] w-full flex items-center justify-center pointer-events-none">
           {/* 📱 STATIC NUMBER (Scrolls natively off-screen for all devices) */}
           <div className="flex flex-col items-center justify-center mt-12">
+            {/* 👤 Clickable Active Profile Pill */}
+            <button
+              onClick={() => setShowProfileManager(true)}
+              className="pointer-events-auto mb-3 px-3.5 py-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-white/10 hover:border-indigo-500/30 text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center gap-1.5 shadow-lg cursor-pointer active:scale-95 group"
+            >
+              <User className="w-3.5 h-3.5 text-indigo-400" />
+              <span>{activeProfile?.name || 'Main Profile'}</span>
+              <ChevronDown className="w-3 h-3 text-slate-500 group-hover:text-slate-300 transition-transform" />
+            </button>
+
             <div className="flex items-baseline gap-1">
               <span className="text-7xl sm:text-9xl font-extralight text-white tracking-tighter">
                 {getCurrencySymbol(activeProfile?.currency || 'USD')}{Math.floor(viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12).toLocaleString()}
@@ -1455,9 +1465,6 @@ function HomeContent() {
               <span className="text-3xl sm:text-4xl font-light text-slate-500">
                 .{(viewMode === 'monthly' ? monthlyTotal : monthlyTotal * 12).toFixed(2).split('.')[1]}
               </span>
-            </div>
-            <div className="mt-2 text-xs sm:text-sm font-medium text-indigo-300/80 uppercase tracking-[0.2em] text-center whitespace-nowrap">
-              Total {viewMode === 'monthly' ? 'Monthly' : 'Annual'} Spend
             </div>
           </div>
         </div>
