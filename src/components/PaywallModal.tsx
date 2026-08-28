@@ -79,7 +79,7 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                                 <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border border-emerald-500/20 rounded-2xl p-4 text-center space-y-3">
                                     <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold text-xs">
                                         <Sparkles className="w-4 h-4 animate-pulse" />
-                                        <span>Share SubTracking & Get 30% OFF</span>
+                                        <span>Share SubTracking & Get 30% OFF Annual Pass</span>
                                     </div>
                                     <p className="text-[11px] text-slate-400">
                                         Help support independent privacy tools by sharing on X or social media!
@@ -95,7 +95,7 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                                 <div className="bg-emerald-500/15 border border-emerald-500/30 rounded-2xl p-3 flex items-center justify-between">
                                     <div className="flex items-center gap-2 text-emerald-300 font-bold text-xs">
                                         <Check className="w-4 h-4 text-emerald-400" />
-                                        <span>30% Discount Unlocked (Code: SHARE30)</span>
+                                        <span>30% OFF Annual Pass Unlocked (Code: SHARE30)</span>
                                     </div>
                                     <span className="text-[10px] bg-emerald-500 text-slate-950 font-black px-2 py-0.5 rounded-full uppercase">
                                         Applied
@@ -119,7 +119,7 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                                                 Annual Cloud Pass
                                             </h4>
                                             <p className="text-xs text-slate-400 mt-0.5">
-                                                {hasShared ? '$6.29/year (~$0.52/month) • Real-time sync' : '$8.99/year (~$0.75/month) • Real-time sync'}
+                                                {hasShared ? '$6.29/year (just ~$0.52/month) • Real-time sync' : '$8.99/year (~$0.75/month) • Real-time sync'}
                                             </p>
                                         </div>
                                         <div className="text-right">
@@ -147,19 +147,10 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                                                 <ShoppingBag className="w-4 h-4 text-slate-400" />
                                                 Monthly Cloud Pass
                                             </h4>
-                                            <p className="text-xs text-slate-400 mt-0.5">
-                                                {hasShared ? '$0.69/month • 30% off subscription' : '$0.99/month • Cancel anytime'}
-                                            </p>
+                                            <p className="text-xs text-slate-400 mt-0.5">$0.99/month • Cancel anytime</p>
                                         </div>
                                         <div className="text-right">
-                                            {hasShared ? (
-                                                <>
-                                                    <span className="text-xs text-slate-500 line-through mr-1.5">$0.99</span>
-                                                    <span className="text-lg font-black text-emerald-400">$0.69</span>
-                                                </>
-                                            ) : (
-                                                <span className="text-lg font-black text-white">$0.99</span>
-                                            )}
+                                            <span className="text-lg font-black text-white">$0.99</span>
                                             <span className="text-[10px] text-slate-500 block">/month</span>
                                         </div>
                                     </div>
