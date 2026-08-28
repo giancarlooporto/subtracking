@@ -4,7 +4,7 @@ import { Share2, Check } from 'lucide-react';
 import { useState } from 'react';
 
 interface ShareButtonProps {
-    variant?: 'default' | 'footer' | 'cta' | 'discount';
+    variant?: 'default' | 'footer' | 'cta' | 'discount' | 'drawer';
     onShare?: () => void;
 }
 
@@ -60,6 +60,7 @@ export function ShareButton({ variant = 'default', onShare }: ShareButtonProps) 
         footer: 'bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 hover:text-white px-5 py-2.5 rounded-lg text-sm',
         cta: 'bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/20 text-indigo-300 hover:text-indigo-200 px-8 py-4 rounded-2xl',
         discount: 'bg-emerald-500 text-white hover:bg-emerald-400 px-8 py-4 rounded-2xl shadow-xl shadow-emerald-500/20 scale-105 hover:scale-110 active:scale-95',
+        drawer: 'w-full flex items-center justify-between p-4 bg-slate-900/40 border border-slate-900 rounded-xl hover:bg-slate-900 text-slate-300 hover:text-white transition-all group cursor-pointer',
     };
 
     return (

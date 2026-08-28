@@ -1,4 +1,4 @@
-import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar, BookOpen, User, Users, Heart } from 'lucide-react';
+import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar, BookOpen, User, Users, Heart, Share2 } from 'lucide-react';
 import { useRef, ChangeEvent, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LoginModal } from './LoginModal';
@@ -7,6 +7,7 @@ import { saveProfiles, setActiveProfileId, getProfiles } from '../lib/profileMan
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GUMROAD_CONFIG } from '../lib/gumroad';
+import { ShareButton } from './ShareButton';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -328,6 +329,8 @@ export function SettingsModal({
                             {/* Preferences Section */}
                             <div className="flex flex-col space-y-2 pt-4 border-t border-slate-900">
                                 <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Preferences & Support</h3>
+
+                                <ShareButton variant="drawer" />
 
                                 <a
                                     href={GUMROAD_CONFIG.tipUrl}
