@@ -133,7 +133,7 @@ export default function ExcelComparison() {
                             A "Free" Excel template isn't free. It costs you the time it takes to maintain it, and more importantly, it costs you the money you forget to save because those $15/month charges aren't being projected over 10 years.
                         </p>
                         <p>
-                            SubTracking is a **one-time purchase**. No subscription to track your subscriptions. Just a tool that works forever.
+                            SubTracking is **100% free to use**. No expensive subscription just to audit your recurring expenses. A clean tool that works forever.
                         </p>
 
                         <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-12 my-20 text-center text-white shadow-2xl shadow-indigo-500/20">

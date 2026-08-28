@@ -372,7 +372,7 @@ export default function LandingPage() {
                         </div>
                         <div className="p-6 rounded-3xl bg-white/5 border border-white/5 text-center space-y-2 group hover:border-indigo-500/30 transition-all">
                             <div className="text-indigo-400 font-black text-xs tracking-widest uppercase">The Cost</div>
-                            <p className="text-xs text-slate-500 leading-relaxed font-bold">Simple one-time payment. No recurring fees to track your fees. Simple.</p>
+                            <p className="text-xs text-slate-500 leading-relaxed font-bold">100% Free core app forever. Optional sub-$1/mo pass for encrypted multi-device sync.</p>
                         </div>
                         <div className="p-6 rounded-3xl bg-white/5 border border-white/5 text-center space-y-2 group hover:border-indigo-500/30 transition-all">
                             <div className="text-indigo-400 font-black text-xs tracking-widest uppercase">The Data</div>

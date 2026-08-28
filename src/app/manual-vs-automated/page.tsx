@@ -175,7 +175,7 @@ export default function ManualVsAutomatedPage() {
                                 {[
                                     'Privacy is your #1 priority',
                                     'You prefer NOT sharing bank credentials',
-                                    'You want a one-time payment (no subscriptions)',
+                                    'You want a 100% free core tool without expensive subscriptions',
                                     'You value local data storage',
                                     'You prefer simple, manual control',
                                 ].map((item, i) => (
