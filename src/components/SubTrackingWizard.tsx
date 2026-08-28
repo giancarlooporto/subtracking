@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, Trash2, RotateCcw, PartyPopper, Sparkles } from 'lucide-react';
+import { X, Check, Trash2, RotateCcw, PartyPopper, Sparkles, Heart } from 'lucide-react';
 import { Subscription } from '../types';
 import { cn, getCategoryColorHex, getCategoryIcon } from '../lib/utils';
 import { siteConfig } from '../../siteConfig';
+import { GUMROAD_CONFIG } from '../lib/gumroad';
 
 interface SubTrackingWizardProps {
     isOpen: boolean;
@@ -180,11 +181,23 @@ export function SubTrackingWizard({ isOpen, onClose, subscriptions, onFinish }: 
                                 onFinish(toDeleteIds);
                                 onClose();
                             }}
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition-all"
+                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition-all cursor-pointer"
                             style={{ backgroundColor: siteConfig.primaryColor }}
                         >
                             {toDeleteIds.length > 0 ? 'Process Cancellations' : 'Great Job!'}
                         </button>
+
+                        <div className="pt-2">
+                            <a
+                                href={GUMROAD_CONFIG.tipUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-amber-300 font-medium transition-colors"
+                            >
+                                <Heart className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                                <span>Saved money? Buy the dev a coffee ☕</span>
+                            </a>
+                        </div>
                     </div>
                 )}
             </div>

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { siteConfig } from '../../siteConfig';
 import { Zap } from 'lucide-react';
 import { ShareButton } from './ShareButton';
+import { GUMROAD_CONFIG } from '../lib/gumroad';
 
 interface FooterProps {
     isPro?: boolean;
@@ -22,6 +23,14 @@ export function Footer({ isPro, onUnlockPro, minimal = false }: FooterProps) {
                         </p>
                     </div>
                     <div className="flex items-center gap-6">
+                        <a
+                            href={GUMROAD_CONFIG.tipUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1.5 transition-colors bg-amber-400/10 hover:bg-amber-400/20 px-3 py-1.5 rounded-full border border-amber-400/20"
+                        >
+                            ☕ Buy me a coffee
+                        </a>
                         <Link href="/privacy" className="text-xs text-slate-500 hover:text-indigo-400 transition-colors">Privacy</Link>
                         <Link href="/terms" className="text-xs text-slate-500 hover:text-indigo-400 transition-colors">Terms</Link>
                         <a href="mailto:support@subtracking.app" className="text-xs text-slate-500 hover:text-indigo-400 transition-colors">Support</a>
@@ -41,9 +50,18 @@ export function Footer({ isPro, onUnlockPro, minimal = false }: FooterProps) {
                             <img src="/logo.png" alt="SubTracking" className="w-7 h-7 rounded-lg" />
                             <span className="font-black text-lg tracking-tight">SubTracking</span>
                         </Link>
-                        <p className="text-xs text-slate-500 leading-relaxed max-w-[200px]">
+                        <p className="text-xs text-slate-500 leading-relaxed max-w-[200px] mb-4">
                             Stop bank harvesting and take back your financial privacy. 100% local, 100% yours.
                         </p>
+                        <a
+                            href={GUMROAD_CONFIG.tipUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-xs font-bold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 px-3.5 py-2 rounded-xl transition-all shadow-sm group"
+                        >
+                            <span className="group-hover:scale-110 transition-transform">☕</span>
+                            <span>Buy me a coffee</span>
+                        </a>
                     </div>
 
                     {/* Product */}
@@ -91,6 +109,14 @@ export function Footer({ isPro, onUnlockPro, minimal = false }: FooterProps) {
                     </div>
 
                     <div className="flex items-center gap-4">
+                        <a
+                            href={GUMROAD_CONFIG.tipUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors hidden sm:flex items-center gap-1.5"
+                        >
+                            ☕ Support Dev
+                        </a>
                         <ShareButton variant="footer" />
                     </div>
                 </div>

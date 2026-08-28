@@ -1,4 +1,4 @@
-import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar, BookOpen, User, Users } from 'lucide-react';
+import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar, BookOpen, User, Users, Heart } from 'lucide-react';
 import { useRef, ChangeEvent, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LoginModal } from './LoginModal';
@@ -6,6 +6,7 @@ import { signOut, downloadVault } from '../lib/supabaseClient';
 import { saveProfiles, setActiveProfileId, getProfiles } from '../lib/profileManager';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GUMROAD_CONFIG } from '../lib/gumroad';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -326,7 +327,25 @@ export function SettingsModal({
 
                             {/* Preferences Section */}
                             <div className="flex flex-col space-y-2 pt-4 border-t border-slate-900">
-                                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Preferences</h3>
+                                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Preferences & Support</h3>
+
+                                <a
+                                    href={GUMROAD_CONFIG.tipUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-between w-full p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl hover:bg-amber-500/20 transition-all group cursor-pointer"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                            <Heart className="w-5 h-5 fill-amber-400 text-amber-400 group-hover:scale-110 transition-transform" />
+                                        </div>
+                                        <div className="text-left">
+                                            <span className="text-sm font-bold text-white block">Support SubTracking ☕</span>
+                                            <span className="text-[10px] text-amber-300/80 font-medium">Keep SubTracking private & free for everyone</span>
+                                        </div>
+                                    </div>
+                                    <span className="text-xs font-bold text-amber-400 group-hover:translate-x-0.5 transition-transform">→</span>
+                                </a>
 
                                 <button
                                     onClick={() => {
