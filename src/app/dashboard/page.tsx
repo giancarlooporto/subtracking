@@ -845,9 +845,27 @@ function HomeContent() {
 
       if (sub.billingCycle === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
       else if (sub.billingCycle === 'biweekly') nextDate.setDate(nextDate.getDate() + 14);
-      else if (sub.billingCycle === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
-      else if (sub.billingCycle === 'quarterly') nextDate.setMonth(nextDate.getMonth() + 3);
-      else if (sub.billingCycle === 'yearly') nextDate.setFullYear(nextDate.getFullYear() + 1);
+      else if (sub.billingCycle === 'monthly') {
+        const d = nextDate.getDate();
+        nextDate.setMonth(nextDate.getMonth() + 1);
+        if (nextDate.getDate() !== d) {
+          nextDate.setDate(0); // Clamps to last day of target month (e.g. Jan 31 -> Feb 28)
+        }
+      }
+      else if (sub.billingCycle === 'quarterly') {
+        const d = nextDate.getDate();
+        nextDate.setMonth(nextDate.getMonth() + 3);
+        if (nextDate.getDate() !== d) {
+          nextDate.setDate(0);
+        }
+      }
+      else if (sub.billingCycle === 'yearly') {
+        const d = nextDate.getDate();
+        nextDate.setFullYear(nextDate.getFullYear() + 1);
+        if (nextDate.getDate() !== d) {
+          nextDate.setDate(0);
+        }
+      }
 
       // Create new payment record if amount is provided
       const newPaymentHistory = amount ? [
