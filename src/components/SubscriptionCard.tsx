@@ -176,13 +176,29 @@ export const SubscriptionCard = memo(({ subscription, viewMode = 'monthly', onEd
                             <div className="text-xl font-black text-white tracking-tight flex items-baseline justify-end gap-0.5">
                                 {subscription.isVariable && <span className="text-lg text-slate-500 font-medium mr-0.5" title="Estimated">~</span>}
                                 <span className="text-base text-slate-500 font-medium">$</span>
-                                {displayPrice.toFixed(2)}
+                                {actualPrice.toFixed(2)}
                             </div>
                             <div className="text-indigo-400 text-[10px] font-bold uppercase tracking-widest leading-none mt-1 opacity-80">
                                 {subscription.isTrial && subscription.isOneTimePayment && !isTrialExpired
                                     ? 'total'
-                                    : viewMode === 'monthly' ? '/ mo' : '/ yr'}
+                                    : subscription.billingCycle === 'biweekly'
+                                        ? '/ 2 wks'
+                                        : subscription.billingCycle === 'weekly'
+                                            ? '/ wk'
+                                            : subscription.billingCycle === 'quarterly'
+                                                ? '/ 3 mos'
+                                                : subscription.billingCycle === 'yearly'
+                                                    ? '/ yr'
+                                                    : '/ mo'}
                             </div>
+
+                            {/* If not pure monthly, show normalized monthly rate */}
+                            {subscription.billingCycle !== 'monthly' && (!subscription.isTrial || isTrialExpired) && (
+                                <div className="text-[9px] text-slate-400 font-medium mt-1">
+                                    (${monthlyPrice.toFixed(2)}/mo)
+                                </div>
+                            )}
+
                             {subscription.isTrial && subscription.regularPrice !== undefined && !isTrialExpired && (
                                 <div className="text-[9px] text-slate-500 mt-1.5 font-bold uppercase tracking-tighter bg-slate-800/50 px-1.5 py-0.5 rounded border border-slate-700/50">
                                     ➔ ${subscription.regularPrice.toFixed(2)} soon
