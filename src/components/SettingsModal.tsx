@@ -1,4 +1,4 @@
-import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar, BookOpen, User, Users, Heart, Share2 } from 'lucide-react';
+import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar, BookOpen, User, Users, Heart, Share2, Smartphone } from 'lucide-react';
 import { useRef, ChangeEvent, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LoginModal } from './LoginModal';
@@ -8,6 +8,7 @@ import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GUMROAD_CONFIG } from '../lib/gumroad';
 import { ShareButton } from './ShareButton';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -24,6 +25,7 @@ interface SettingsModalProps {
     profileCount: number;
     activeProfileName: string;
     onOpenLogin: () => void;
+    onOpenInstallGuide?: () => void;
 }
 
 export function SettingsModal({
@@ -40,8 +42,10 @@ export function SettingsModal({
     onManageProfiles,
     profileCount,
     activeProfileName,
-    onOpenLogin
+    onOpenLogin,
+    onOpenInstallGuide
 }: SettingsModalProps) {
+    const { isStandalone } = usePWAInstall();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { user, isLoading: isAuthLoading } = useAuth();
     const [isRestoring, setIsRestoring] = useState(false);
@@ -349,6 +353,27 @@ export function SettingsModal({
                                     </div>
                                     <span className="text-xs font-bold text-amber-400 group-hover:translate-x-0.5 transition-transform">→</span>
                                 </a>
+
+                                {!isStandalone && onOpenInstallGuide && (
+                                    <button
+                                        onClick={() => {
+                                            onClose();
+                                            onOpenInstallGuide();
+                                        }}
+                                        className="flex items-center justify-between w-full p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl hover:bg-indigo-500/20 transition-all group cursor-pointer"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                                                <Smartphone className="w-5 h-5" />
+                                            </div>
+                                            <div className="text-left">
+                                                <span className="text-sm font-bold text-white block">Install App (Standalone Mode)</span>
+                                                <span className="text-[10px] text-indigo-300/80 font-medium">Add to iPhone Home Screen or Mac Dock</span>
+                                            </div>
+                                        </div>
+                                        <span className="text-xs font-bold text-indigo-400 group-hover:translate-x-0.5 transition-transform">→</span>
+                                    </button>
+                                )}
 
                                 <button
                                     onClick={() => {

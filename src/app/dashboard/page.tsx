@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, Suspense, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type, Ghost, ChevronDown, ChevronUp, Sparkles, RefreshCw, ArrowRight, Menu, User } from 'lucide-react';
+import { Plus, Trash2, CreditCard, Wallet, AlertCircle, Calendar, X, Tag, Check, Undo2, Zap, Settings, PieChart, ArrowUpDown, DollarSign, Type, Ghost, ChevronDown, ChevronUp, Sparkles, RefreshCw, ArrowRight, Menu, User, Smartphone } from 'lucide-react';
 import { Subscription, DEFAULT_CATEGORIES, Profile, getCurrencySymbol } from '../../types';
 import { getDaysRemaining, getNextOccurrence, getCategoryColorHex, getCategoryIcon, calculateMonthlyPrice, cn, formatLocalDate } from '../../lib/utils';
 import {
@@ -54,8 +54,10 @@ import { LicenseModal } from '@/components/LicenseModal';
 import { encryptData, decryptData, EncryptedVault } from '@/lib/crypto';
 import { useAuth } from '@/context/AuthContext';
 import { uploadVault, downloadVault } from '@/lib/supabaseClient';
+import { usePWAInstall } from '@/hooks/usePWAInstall';
 
 function HomeContent() {
+  const { isStandalone } = usePWAInstall();
   const { user } = useAuth();
   const { showToast } = useToast();
   const searchParams = useSearchParams();
@@ -1539,10 +1541,21 @@ function HomeContent() {
             </motion.div>
 
             {/* Actions Area */}
-            <div className="flex items-center gap-3 pointer-events-auto">
+            <div className="flex items-center gap-2 pointer-events-auto">
+              {!isStandalone && (
+                <button
+                  onClick={() => setShowInstallGuide(true)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 hover:border-indigo-400 text-xs font-bold text-indigo-300 hover:text-white transition-all shadow-md cursor-pointer active:scale-95"
+                  title="Install SubTracking App"
+                >
+                  <Smartphone className="w-3.5 h-3.5 text-indigo-400" />
+                  <span className="hidden xs:inline sm:inline">Install App</span>
+                </button>
+              )}
+
               <button
                 onClick={() => setShowSettingsModal(true)}
-                className="flex items-center justify-center bg-slate-900/60 hover:bg-slate-800/80 backdrop-blur-md rounded-full border border-white/5 transition-all group shadow-lg hover:border-indigo-500/30 hover:scale-105 active:scale-95 duration-200 w-10 h-10 text-slate-400 hover:text-slate-200"
+                className="flex items-center justify-center bg-slate-900/60 hover:bg-slate-800/80 backdrop-blur-md rounded-full border border-white/5 transition-all group shadow-lg hover:border-indigo-500/30 hover:scale-105 active:scale-95 duration-200 w-10 h-10 text-slate-400 hover:text-slate-200 cursor-pointer"
                 title="Menu"
               >
                 <Menu className="w-5 h-5" />
@@ -2274,6 +2287,7 @@ function HomeContent() {
         profileCount={allProfiles.length}
         activeProfileName={activeProfile?.name || 'Main Profile'}
         onOpenLogin={() => setShowLoginModal(true)}
+        onOpenInstallGuide={() => setShowInstallGuide(true)}
       />
 
       <LoginModal
