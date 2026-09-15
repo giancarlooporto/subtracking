@@ -61,6 +61,14 @@ const faqs = [
         category: "📱 Technical & Installation",
         questions: [
             {
+                q: "Why isn't SubTracking in the App Store? How do I install it on my iPhone or iPad?",
+                a: "SubTracking is intentionally built as a privacy-first Progressive Web App (PWA) so you never have to hand over your Apple ID or deal with bloated 200MB downloads. To install it on your iPhone or iPad: open SubTracking in Safari, tap the Share button ([↑]) at the bottom of the screen, scroll down, and tap \"Add to Home Screen\". It will appear on your home screen with its own icon, launch in full-screen with zero browser bars, and work 100% offline."
+            },
+            {
+                q: "Can I run SubTracking like a native app on my Mac or PC?",
+                a: "Yes! On macOS (Sonoma or Sequoia), open SubTracking in Safari and click File in the top menu bar ➔ \"Add to Dock...\". It will live right in your Mac Dock and open in its own clean desktop window. On Chrome, Edge, or Windows, simply click the \"Install\" icon on the right side of the address bar."
+            },
+            {
                 q: "What is the \"Billing Pulse\" timeline?",
                 a: "The Pulse is a high-level visualization of your current month. It shows exactly where \"Today\" sits in relation to your upcoming renewals, helping you visualize the cash-flow \"heartbeat\" of your finances at a glance."
             }

@@ -47,6 +47,7 @@ const UserGuideModal = dynamic(() => import('../../components/UserGuideModal').t
 const ProfileSettingsModal = dynamic(() => import('../../components/ProfileSettingsModal').then(mod => mod.ProfileSettingsModal), { ssr: false });
 const ProfileManagerModal = dynamic(() => import('../../components/ProfileManagerModal').then(mod => mod.ProfileManagerModal), { ssr: false });
 const LoginModal = dynamic(() => import('../../components/LoginModal').then(mod => mod.LoginModal), { ssr: false });
+const InstallGuideModal = dynamic(() => import('../../components/InstallGuideModal').then(mod => mod.InstallGuideModal), { ssr: false });
 import { PasswordModal } from '@/components/PasswordModal';
 import { PaywallModal } from '@/components/PaywallModal';
 import { LicenseModal } from '@/components/LicenseModal';
@@ -131,6 +132,7 @@ function HomeContent() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showUserGuide, setShowUserGuide] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
 
   // Profile Management Modal State
   const [showProfileManager, setShowProfileManager] = useState(false);
@@ -1458,7 +1460,8 @@ function HomeContent() {
           )}
         </div>
       </motion.div>
-      <InstallBanner />
+      <InstallBanner onOpenGuide={() => setShowInstallGuide(true)} />
+      <InstallGuideModal isOpen={showInstallGuide} onClose={() => setShowInstallGuide(false)} />
 
       {/* 📱 Mobile Status Bar Shield: Prevents content from peeking behind status bar icons */}
       <div

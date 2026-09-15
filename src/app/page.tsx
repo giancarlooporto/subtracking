@@ -12,9 +12,14 @@ import { FAQSection } from '../components/FAQSection';
 import { ImageCarousel } from '../components/ImageCarousel';
 import { ShareButton } from '../components/ShareButton';
 import { Footer } from '../components/Footer';
+import { InstallGuideModal } from '../components/InstallGuideModal';
+import { InstallBanner } from '../components/InstallBanner';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 export default function LandingPage() {
     const router = useRouter();
+    const { isStandalone } = usePWAInstall();
+    const [isInstallGuideOpen, setIsInstallGuideOpen] = useState(false);
     const [isVideoOpen, setIsVideoOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [pullDistance, setPullDistance] = useState(0);
@@ -23,26 +28,22 @@ export default function LandingPage() {
     const PULL_THRESHOLD = 80;
 
     useEffect(() => {
-        // 1. Skip landing page if running as a Native App (iOS/Android)
-        // Check both Capacitor global and the URL scheme
-        const checkNative = () => {
-            const isNative = (window as any).Capacitor?.isNative ||
-                (typeof window !== 'undefined' && (
-                    window.location.origin.includes('capacitor://') ||
-                    window.location.origin.includes('http://localhost') // Capacitor local server
-                ));
+        // 1. Skip landing page if running as an installed Standalone App (Home Screen or Mac Dock)
+        const checkStandalone = () => {
+            const isStandaloneApp = (typeof window !== 'undefined' && (
+                window.matchMedia('(display-mode: standalone)').matches ||
+                (window.navigator as any).standalone === true
+            ));
 
-            // If we are native, we MUST go to dashboard. Landing page is for web only.
-            if (isNative) {
-                console.log('📱 Native App detected, forcing Dashboard redirect...');
+            if (isStandaloneApp) {
+                console.log('📱 Standalone App detected, redirecting to Dashboard...');
                 router.replace('/dashboard');
                 return true;
             }
             return false;
         };
 
-        if (checkNative()) return;
-        const timer = setTimeout(checkNative, 500); // More generous timeout for Capacitor init
+        if (checkStandalone()) return;
 
         // 2. Smart Redirect: If user has data, go straight to app
         const savedSubs = localStorage.getItem('subtracking-subs');
@@ -54,7 +55,6 @@ export default function LandingPage() {
                 }
             } catch (e) { }
         }
-        return () => clearTimeout(timer);
     }, [router]);
     const handleRefresh = async () => {
         setIsRefreshing(true);
@@ -135,6 +135,16 @@ export default function LandingPage() {
                     </div>
 
                     <div className="flex items-center gap-4">
+                        {!isStandalone && (
+                            <button
+                                onClick={() => setIsInstallGuideOpen(true)}
+                                className="hidden sm:flex items-center gap-2 bg-slate-900/80 hover:bg-slate-800 text-indigo-300 hover:text-white border border-indigo-500/30 hover:border-indigo-400 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-sm"
+                            >
+                                <Smartphone className="w-3.5 h-3.5 text-indigo-400" />
+                                <span>Install App</span>
+                            </button>
+                        )}
+
                         <Link
                             href="/dashboard"
                             className="hidden sm:block bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:scale-105 transition-transform active:scale-95 shadow-xl shadow-white/5"
@@ -165,6 +175,18 @@ export default function LandingPage() {
                                 <a href="#privacy" onClick={() => setIsMenuOpen(false)} className="text-lg font-bold text-slate-300 hover:text-white">Privacy</a>
                                 <a href="#pricing" onClick={() => setIsMenuOpen(false)} className="text-lg font-bold text-slate-300 hover:text-white">Pricing</a>
                                 <a href="#faq" onClick={() => setIsMenuOpen(false)} className="text-lg font-bold text-slate-300 hover:text-white">FAQ</a>
+                                {!isStandalone && (
+                                    <button
+                                        onClick={() => {
+                                            setIsMenuOpen(false);
+                                            setIsInstallGuideOpen(true);
+                                        }}
+                                        className="w-full bg-slate-900 border border-indigo-500/40 text-indigo-300 py-3.5 rounded-2xl font-bold text-center flex items-center justify-center gap-2 text-sm"
+                                    >
+                                        <Smartphone className="w-4 h-4 text-indigo-400" />
+                                        Install on iPhone / Mac
+                                    </button>
+                                )}
                                 <Link
                                     href="/dashboard"
                                     onClick={() => setIsMenuOpen(false)}
@@ -223,6 +245,17 @@ export default function LandingPage() {
                             Start Auditing Free
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </Link>
+
+                        {!isStandalone && (
+                            <button
+                                type="button"
+                                onClick={() => setIsInstallGuideOpen(true)}
+                                className="w-full sm:w-auto bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 hover:border-indigo-500/50 px-8 py-5 rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all shadow-xl backdrop-blur-md cursor-pointer"
+                            >
+                                <Smartphone className="w-5 h-5 text-indigo-400" />
+                                <span>Install on Phone / Mac</span>
+                            </button>
+                        )}
                     </motion.div>
                 </div>
 
@@ -703,6 +736,13 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
+
+            <InstallBanner onOpenGuide={() => setIsInstallGuideOpen(true)} />
+
+            <InstallGuideModal
+                isOpen={isInstallGuideOpen}
+                onClose={() => setIsInstallGuideOpen(false)}
+            />
 
             <Footer />
 
