@@ -284,3 +284,5 @@ export function InstallGuideModal({ isOpen, onClose }: InstallGuideModalProps) {
         </AnimatePresence>
     );
 }
+
+export default InstallGuideModal;

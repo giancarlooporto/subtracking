@@ -47,7 +47,7 @@ const UserGuideModal = dynamic(() => import('../../components/UserGuideModal').t
 const ProfileSettingsModal = dynamic(() => import('../../components/ProfileSettingsModal').then(mod => mod.ProfileSettingsModal), { ssr: false });
 const ProfileManagerModal = dynamic(() => import('../../components/ProfileManagerModal').then(mod => mod.ProfileManagerModal), { ssr: false });
 const LoginModal = dynamic(() => import('../../components/LoginModal').then(mod => mod.LoginModal), { ssr: false });
-const InstallGuideModal = dynamic(() => import('../../components/InstallGuideModal').then(mod => mod.InstallGuideModal), { ssr: false });
+const InstallGuideModal = dynamic(() => import('../../components/InstallGuideModal'), { ssr: false });
 import { PasswordModal } from '@/components/PasswordModal';
 import { PaywallModal } from '@/components/PaywallModal';
 import { LicenseModal } from '@/components/LicenseModal';
@@ -1391,7 +1391,14 @@ function HomeContent() {
     }
   };
 
-  if (!isLoaded) return null;
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white space-y-4">
+        <div className="w-10 h-10 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin" />
+        <p className="text-sm font-medium text-slate-400">Loading SubTracking...</p>
+      </div>
+    );
+  }
 
   return (
     <main

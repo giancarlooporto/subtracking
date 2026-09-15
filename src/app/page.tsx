@@ -147,7 +147,7 @@ export default function LandingPage() {
 
                         <Link
                             href="/dashboard"
-                            className="hidden sm:block bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:scale-105 transition-transform active:scale-95 shadow-xl shadow-white/5"
+                            className="bg-white text-black px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl font-bold text-xs sm:text-sm hover:scale-105 transition-transform active:scale-95 shadow-xl shadow-white/5"
                         >
                             Launch App
                         </Link>
