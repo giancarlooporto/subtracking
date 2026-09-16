@@ -904,7 +904,7 @@ function HomeContent() {
       markAsPaid(activePaymentSub.id, amount, date);
       setShowPaymentModal(false);
       setActivePaymentSub(null);
-      showToast(`Payment of $${amount.toFixed(2)} recorded!`, 'success');
+      showToast(`Payment of ${getCurrencySymbol(activeProfile?.currency || 'USD')}${amount.toFixed(2)} recorded!`, 'success');
     }
   };
 
@@ -1395,7 +1395,7 @@ function HomeContent() {
 
     if (totalSavings > 0) {
       setCancelledSavings(prev => prev + totalSavings);
-      showToast(`${selectedIds.length} subscription${selectedIds.length !== 1 ? 's' : ''} cancelled! Saving $${totalSavings.toFixed(2)}/month`, 'success');
+      showToast(`${selectedIds.length} subscription${selectedIds.length !== 1 ? 's' : ''} cancelled! Saving ${getCurrencySymbol(activeProfile?.currency || 'USD')}${totalSavings.toFixed(2)}/month`, 'success');
     }
   };
 
@@ -1669,11 +1669,12 @@ function HomeContent() {
           onConfirm={handlePaymentConfirm}
           subscriptionName={activePaymentSub?.name || ''}
           estimatedAmount={activePaymentSub?.price}
+          currency={activeProfile?.currency || 'USD'}
         />
 
         {/* HOUSEHOLD PULSE (Timeline) */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 relative group">
-          <BillingPulse subscriptions={filteredSubscriptions} />
+          <BillingPulse subscriptions={filteredSubscriptions} currency={activeProfile?.currency || 'USD'} />
         </div>
 
         {/* ACTION DECK (3-Column Grid) */}
@@ -1689,7 +1690,7 @@ function HomeContent() {
               <div className="flex items-center gap-3">
                 {upcomingUnpaidTotal > 0 && (
                   <span className="text-emerald-400 font-bold text-xs animate-in fade-in zoom-in duration-300">
-                    ${upcomingUnpaidTotal.toFixed(0)}
+                    {getCurrencySymbol(activeProfile?.currency || 'USD')}{upcomingUnpaidTotal.toFixed(0)}
                   </span>
                 )}
                 <span className="bg-indigo-500/10 text-indigo-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-500/20">
@@ -1741,7 +1742,7 @@ function HomeContent() {
                       </div>
                       <div className="flex items-center gap-3">
                         <span className={cn("font-bold text-sm", isPaid ? "text-slate-600 line-through" : "text-slate-300")}>
-                          ${((sub.isTrial && sub.trialEndDate && sub.renewalDate >= sub.trialEndDate)
+                          {getCurrencySymbol(activeProfile?.currency || 'USD')}{((sub.isTrial && sub.trialEndDate && sub.renewalDate >= sub.trialEndDate)
                             ? (sub.regularPrice || sub.price)
                             : sub.price).toFixed(0)}
                         </span>
@@ -1833,7 +1834,7 @@ function HomeContent() {
                           fill={slice.color}
                           className="opacity-90 hover:opacity-100 transition-all duration-300 hover:scale-105 cursor-pointer stroke-slate-900 stroke-[0.5]"
                         >
-                          <title>{slice.name}: ${slice.value.toFixed(2)} ({slice.percent.toFixed(1)}%)</title>
+                          <title>{slice.name}: {getCurrencySymbol(activeProfile?.currency || 'USD')}{slice.value.toFixed(2)} ({slice.percent.toFixed(1)}%)</title>
                         </path>
                       ))}
                     </svg>
@@ -1842,7 +1843,7 @@ function HomeContent() {
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                       <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Total</span>
                       <span className="text-xl font-bold text-white">
-                        ${categorySpending.reduce((s, c) => s + c.value, 0).toFixed(0)}
+                        {getCurrencySymbol(activeProfile?.currency || 'USD')}{categorySpending.reduce((s, c) => s + c.value, 0).toFixed(0)}
                       </span>
                       <span className="text-[9px] text-slate-600">
                         {viewMode === 'monthly' ? '/mo' : '/yr'}
@@ -1855,7 +1856,7 @@ function HomeContent() {
                       <div key={cat.name} className="flex items-center text-[10px] text-slate-400 bg-slate-800/30 px-2 py-1.5 rounded-lg border border-slate-700/30">
                         <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ backgroundColor: getCategoryColorHex(cat.name) }}></span>
                         <span className="truncate flex-1">{cat.name}</span>
-                        <span className="font-mono ml-1 text-slate-300">${cat.value.toFixed(0)}</span>
+                        <span className="font-mono ml-1 text-slate-300">{getCurrencySymbol(activeProfile?.currency || 'USD')}{cat.value.toFixed(0)}</span>
                       </div>
                     ))}
                   </div>
@@ -1873,6 +1874,7 @@ function HomeContent() {
           <div className="relative group">
             <GhostMeter
               subscriptions={financeViewMode === 'focus' ? filteredSubscriptions.filter(s => !s.isEssential) : filteredSubscriptions}
+              currency={activeProfile?.currency || 'USD'}
             />
           </div>
 
@@ -1907,7 +1909,7 @@ function HomeContent() {
                       {sortedSubscriptions.length}
                     </span>
                     <span className="text-emerald-400 font-bold text-sm truncate">
-                      ${filteredListTotal.toFixed(2)}/mo
+                      {getCurrencySymbol(activeProfile?.currency || 'USD')}{filteredListTotal.toFixed(2)}/mo
                     </span>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -2041,7 +2043,7 @@ function HomeContent() {
                   <div className="flex items-center gap-2 ml-8 sm:ml-11">
                     <span className="text-sm font-medium text-slate-400">Total:</span>
                     <span className="text-lg sm:text-xl font-bold text-emerald-400">
-                      ${filteredListTotal.toFixed(2)}<span className="text-xs text-emerald-500/70 font-normal ml-0.5">/mo</span>
+                      {getCurrencySymbol(activeProfile?.currency || 'USD')}{filteredListTotal.toFixed(2)}<span className="text-xs text-emerald-500/70 font-normal ml-0.5">/mo</span>
                     </span>
                   </div>
                   <p className="hidden sm:block text-slate-500 text-sm ml-11 font-medium">Manage and optimize your digital life</p>
@@ -2208,6 +2210,7 @@ function HomeContent() {
                     )}>
                       <SubscriptionCard
                         subscription={sub}
+                        currency={activeProfile?.currency || 'USD'}
                         viewMode={viewMode}
                         onEdit={(s) => { setEditingId(s.id); setShowAddModal(true); }}
                         onDelete={(id) => setDeleteId(id)}
@@ -2233,6 +2236,7 @@ function HomeContent() {
             ) : (
               <CalendarView
                 subscriptions={subscriptions}
+                currency={activeProfile?.currency || 'USD'}
                 isPro={isPro}
                 onUnlockPro={() => setShowPaywallModal(true)}
                 onEdit={(s) => { setEditingId(s.id); setShowAddModal(true); }}
@@ -2260,6 +2264,7 @@ function HomeContent() {
         onSave={handleSaveSubscription}
         initialData={editingId ? subscriptions.find(s => s.id === editingId) : null}
         userCategories={userCategories}
+        currency={activeProfile?.currency || 'USD'}
         isPro={isPro}
         onDeleteCategory={(cat) => {
           // Instant Delete: No confirmation pop-up
@@ -2304,6 +2309,7 @@ function HomeContent() {
         isOpen={showWizard}
         onClose={() => setShowWizard(false)}
         subscriptions={subscriptions.filter(s => !s.isEssential && s.category !== 'Utility Bills')}
+        currency={activeProfile?.currency || 'USD'}
         onFinish={handleAuditFinish}
       />
 

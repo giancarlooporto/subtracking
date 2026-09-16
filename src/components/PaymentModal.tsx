@@ -5,6 +5,8 @@ import { cn } from '../lib/utils';
 import ReactDatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
+import { getCurrencySymbol } from '../types';
+
 interface PaymentModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -12,11 +14,13 @@ interface PaymentModalProps {
     subscriptionName: string;
     currentDate?: Date;
     estimatedAmount?: number;
+    currency?: string;
 }
 
-export const PaymentModal = ({ isOpen, onClose, onConfirm, subscriptionName, currentDate = new Date(), estimatedAmount }: PaymentModalProps) => {
+export const PaymentModal = ({ isOpen, onClose, onConfirm, subscriptionName, currentDate = new Date(), estimatedAmount, currency = 'USD' }: PaymentModalProps) => {
     const [amount, setAmount] = useState<string>('');
     const [date, setDate] = useState<Date>(currentDate);
+    const currencySymbol = getCurrencySymbol(currency);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -71,7 +75,7 @@ export const PaymentModal = ({ isOpen, onClose, onConfirm, subscriptionName, cur
                                     </label>
                                     <div className="relative">
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <span className="text-slate-400 font-bold">$</span>
+                                            <span className="text-slate-400 font-bold">{currencySymbol}</span>
                                         </div>
                                         <input
                                             type="number"

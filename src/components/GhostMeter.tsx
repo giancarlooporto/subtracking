@@ -1,15 +1,16 @@
 import React, { useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Ghost, TrendingUp, AlertCircle, Info } from 'lucide-react';
-import { Subscription } from '../types';
+import { Subscription, getCurrencySymbol } from '../types';
 import { cn, calculateMonthlyPrice } from '../lib/utils';
 
 interface GhostMeterProps {
     subscriptions: Subscription[];
+    currency?: string;
 }
 
-export const GhostMeter = memo(({ subscriptions }: GhostMeterProps) => {
-    const symbol = '$';
+export const GhostMeter = memo(({ subscriptions, currency = 'USD' }: GhostMeterProps) => {
+    const symbol = getCurrencySymbol(currency);
     const metrics = useMemo(() => {
         const monthlyTotal = subscriptions.reduce((sum, sub) => {
             const rawPrice = sub.regularPrice || sub.price;

@@ -1,6 +1,6 @@
 import React, { useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
-import { Subscription } from '../types';
+import { Subscription, getCurrencySymbol } from '../types';
 import { getNextOccurrence, getCategoryColorHex } from '../lib/utils';
 import { Activity } from 'lucide-react';
 
@@ -13,7 +13,8 @@ const PulseDot = memo(({
     subs,
     totalOnDay,
     tooltipPositionClass,
-    baselineY
+    baselineY,
+    currency = 'USD'
 }: {
     day: number,
     today: number,
@@ -23,9 +24,10 @@ const PulseDot = memo(({
     subs: Subscription[],
     totalOnDay: number,
     tooltipPositionClass: string,
-    baselineY: number
+    baselineY: number,
+    currency?: string
 }) => {
-    const symbol = '$';
+    const symbol = getCurrencySymbol(currency);
     return (
         <div
             className="relative group/day flex flex-col items-center w-full h-full"
@@ -105,10 +107,11 @@ PulseDot.displayName = 'PulseDot';
 
 interface BillingPulseProps {
     subscriptions: Subscription[];
+    currency?: string;
 }
 
-export function BillingPulse({ subscriptions }: BillingPulseProps) {
-    const symbol = '$';
+export function BillingPulse({ subscriptions, currency = 'USD' }: BillingPulseProps) {
+    const symbol = getCurrencySymbol(currency);
     const now = new Date();
     const today = now.getDate();
     const currentYear = now.getFullYear();
@@ -265,6 +268,7 @@ export function BillingPulse({ subscriptions }: BillingPulseProps) {
                                     totalOnDay={totalOnDay}
                                     tooltipPositionClass={tooltipPositionClass}
                                     baselineY={baselineY}
+                                    currency={currency}
                                 />
                             </div>
                         );

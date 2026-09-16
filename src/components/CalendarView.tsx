@@ -12,9 +12,10 @@ interface CalendarViewProps {
     onEdit: (sub: Subscription) => void;
     onDelete: (id: string, e: React.MouseEvent) => void;
     onMarkPaid: (id: string) => void;
+    currency?: string;
 }
 
-export function CalendarView({ subscriptions, isPro, onUnlockPro, onEdit, onDelete, onMarkPaid }: CalendarViewProps) {
+export function CalendarView({ subscriptions, isPro, onUnlockPro, onEdit, onDelete, onMarkPaid, currency = 'USD' }: CalendarViewProps) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
     const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
@@ -151,6 +152,7 @@ export function CalendarView({ subscriptions, isPro, onUnlockPro, onEdit, onDele
                                     <SubscriptionCard
                                         key={sub.id}
                                         subscription={sub}
+                                        currency={currency}
                                         onEdit={onEdit}
                                         onDelete={onDelete}
                                         onMarkPaid={onMarkPaid}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, Trash2, RotateCcw, PartyPopper, Sparkles, Heart } from 'lucide-react';
-import { Subscription } from '../types';
+import { Subscription, getCurrencySymbol } from '../types';
 import { cn, getCategoryColorHex, getCategoryIcon } from '../lib/utils';
 import { siteConfig } from '../../siteConfig';
 import { GUMROAD_CONFIG } from '../lib/gumroad';
@@ -11,9 +11,11 @@ interface SubTrackingWizardProps {
     onClose: () => void;
     subscriptions: Subscription[];
     onFinish: (idsToDelete: string[]) => void;
+    currency?: string;
 }
 
-export function SubTrackingWizard({ isOpen, onClose, subscriptions, onFinish }: SubTrackingWizardProps) {
+export function SubTrackingWizard({ isOpen, onClose, subscriptions, onFinish, currency = 'USD' }: SubTrackingWizardProps) {
+    const currencySymbol = getCurrencySymbol(currency);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [toDeleteIds, setToDeleteIds] = useState<string[]>([]);
     const [direction, setDirection] = useState<'left' | 'right' | null>(null);
@@ -134,7 +136,7 @@ export function SubTrackingWizard({ isOpen, onClose, subscriptions, onFinish }: 
 
                                 <div className="space-y-2">
                                     <h3 className="text-3xl font-bold text-white">{currentSub.name}</h3>
-                                    <p className="text-slate-400 text-lg">${currentSub.price.toFixed(2)} / {currentSub.billingCycle}</p>
+                                    <p className="text-slate-400 text-lg">{currencySymbol}{currentSub.price.toFixed(2)} / {currentSub.billingCycle}</p>
                                 </div>
 
                                 <div className="pt-8 w-full grid grid-cols-2 gap-4">
@@ -172,7 +174,7 @@ export function SubTrackingWizard({ isOpen, onClose, subscriptions, onFinish }: 
                         {toDeleteIds.length > 0 && (
                             <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl">
                                 <p className="text-sm text-emerald-400 font-bold uppercase tracking-widest mb-1">Potential Savings</p>
-                                <p className="text-3xl font-black text-white">${calculatePotentialSavings().toFixed(2)}<span className="text-sm text-slate-400 font-medium">/mo</span></p>
+                                <p className="text-3xl font-black text-white">{currencySymbol}{calculatePotentialSavings().toFixed(2)}<span className="text-sm text-slate-400 font-medium">/mo</span></p>
                             </div>
                         )}
 

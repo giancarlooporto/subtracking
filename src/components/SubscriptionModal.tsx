@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Calendar, DollarSign, Tag, RotateCcw, ShieldAlert, Sparkles, Bell, Zap, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Subscription, DEFAULT_CATEGORIES } from '../types';
+import { Subscription, DEFAULT_CATEGORIES, getCurrencySymbol } from '../types';
 import { cn, formatLocalDate } from '../lib/utils';
 import { siteConfig } from '../../siteConfig';
 import DatePicker from 'react-datepicker';
@@ -18,6 +18,7 @@ interface SubscriptionModalProps {
     userCategories?: string[];
     isPro?: boolean;
     onDeleteCategory?: (category: string) => void;
+    currency?: string;
 }
 
 export function SubscriptionModal({
@@ -27,8 +28,10 @@ export function SubscriptionModal({
     initialData,
     userCategories = DEFAULT_CATEGORIES,
     isPro = false,
-    onDeleteCategory
+    onDeleteCategory,
+    currency = 'USD'
 }: SubscriptionModalProps) {
+    const currencySymbol = getCurrencySymbol(currency);
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
 
@@ -290,7 +293,9 @@ export function SubscriptionModal({
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Regular Price</label>
                                         <div className="relative">
-                                            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-500 font-mono">
+                                                {currencySymbol}
+                                            </span>
                                             <input
                                                 type="number"
                                                 step="0.01"
@@ -507,7 +512,9 @@ export function SubscriptionModal({
                                                     Intro / Trial Price
                                                 </label>
                                                 <div className="relative">
-                                                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-500 font-mono">
+                                                        {currencySymbol}
+                                                    </span>
                                                     <input
                                                         type="number"
                                                         step="0.01"
@@ -651,24 +658,24 @@ export function SubscriptionModal({
                                                 </p>
                                             </div>
 
-                                            {price && parseFloat(price) > 0 && (
-                                                <div className="bg-gradient-to-br from-emerald-500/5 to-teal-500/5 border border-emerald-500/10 rounded-xl p-3">
-                                                    <div className="flex items-center justify-between">
-                                                        <div>
-                                                            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Full Price</p>
-                                                            <p className="text-lg font-black text-slate-400">${parseFloat(price).toFixed(2)}</p>
-                                                        </div>
-                                                        <div className="text-slate-600 text-2xl">→</div>
-                                                        <div className="text-right">
-                                                            <p className="text-[10px] text-emerald-400 uppercase tracking-wider font-bold">Your Share</p>
-                                                            <p className="text-2xl font-black text-emerald-400">
-                                                                ${(parseFloat(price) / splitWith).toFixed(2)}
-                                                            </p>
-                                                            <p className="text-[9px] text-slate-500 mt-0.5">Split {splitWith} ways</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
+                                             {price && parseFloat(price) > 0 && (
+                                                 <div className="bg-gradient-to-br from-emerald-500/5 to-teal-500/5 border border-emerald-500/10 rounded-xl p-3">
+                                                     <div className="flex items-center justify-between">
+                                                         <div>
+                                                             <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Full Price</p>
+                                                             <p className="text-lg font-black text-slate-400">{currencySymbol}{parseFloat(price).toFixed(2)}</p>
+                                                         </div>
+                                                         <div className="text-slate-600 text-2xl">→</div>
+                                                         <div className="text-right">
+                                                             <p className="text-[10px] text-emerald-400 uppercase tracking-wider font-bold">Your Share</p>
+                                                             <p className="text-2xl font-black text-emerald-400">
+                                                                 {currencySymbol}{(parseFloat(price) / splitWith).toFixed(2)}
+                                                             </p>
+                                                             <p className="text-[9px] text-slate-500 mt-0.5">Split {splitWith} ways</p>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             )}
                                         </motion.div>
                                     )}
                                 </div>
