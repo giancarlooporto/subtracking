@@ -92,6 +92,8 @@ export function Footer({ isPro, onUnlockPro, minimal = false }: FooterProps) {
                             <li><Link href="/compare/rocket-money" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">vs Rocket Money</Link></li>
                             <li><Link href="/compare/copilot" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">vs Copilot</Link></li>
                             <li><Link href="/compare/monarch-money" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">vs Monarch Money</Link></li>
+                            <li><Link href="/compare/bobby-app" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">vs Bobby App</Link></li>
+                            <li><Link href="/compare/mint-replacements" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">vs Mint Replacements</Link></li>
                         </ul>
                     </div>
                 </div>
