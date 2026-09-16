@@ -187,26 +187,13 @@ export default function LandingPage() {
                         transition={{ duration: 0.5, delay: 0.3 }}
                         className="flex flex-col items-center gap-4 pt-4"
                     >
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
-                            <Link
+                        <Link
                             href="/dashboard"
                             className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white px-10 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 group transition-all shadow-2xl shadow-indigo-600/20 cursor-pointer"
                         >
                             Start Auditing Free
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </Link>
-
-                        {!isStandalone && (
-                            <button
-                                type="button"
-                                onClick={() => setIsInstallGuideOpen(true)}
-                                className="w-full sm:w-auto bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 hover:border-indigo-500/50 px-8 py-5 rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all shadow-xl backdrop-blur-md cursor-pointer"
-                            >
-                                <Smartphone className="w-5 h-5 text-indigo-400" />
-                                <span>Install on Phone / Mac</span>
-                            </button>
-                        )}
-                        </div>
                         <p className="text-xs text-slate-500 font-medium mt-2">
                             Free to use • No account or credit card required • Offline & 100% private
                         </p>
