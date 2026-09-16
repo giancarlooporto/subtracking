@@ -342,15 +342,15 @@ export default function LandingPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12 border-t border-white/5">
                         <div className="p-6 rounded-3xl bg-white/5 border border-white/5 text-center space-y-2 group hover:border-indigo-500/30 transition-all">
                             <div className="text-indigo-400 font-black text-xs tracking-widest uppercase">The Promise</div>
-                            <p className="text-xs text-slate-500 leading-relaxed font-bold">Privacy is the feature. We will never build a "bank sync" that harvests your data.</p>
+                            <p className="text-xs text-slate-400 leading-relaxed font-medium">Privacy is the feature. We don't sell data, show ads, or harvest your credentials.</p>
                         </div>
                         <div className="p-6 rounded-3xl bg-white/5 border border-white/5 text-center space-y-2 group hover:border-indigo-500/30 transition-all">
-                            <div className="text-indigo-400 font-black text-xs tracking-widest uppercase">The Cost</div>
-                            <p className="text-xs text-slate-500 leading-relaxed font-bold">100% Free core app forever. Optional sub-$1/mo pass for encrypted multi-device sync.</p>
+                            <div className="text-indigo-400 font-black text-xs tracking-widest uppercase">Why It's Free</div>
+                            <p className="text-xs text-slate-400 leading-relaxed font-medium">Local-first design means near-$0 server costs. Funded by optional Pro Cloud Sync & voluntary coffee tips.</p>
                         </div>
                         <div className="p-6 rounded-3xl bg-white/5 border border-white/5 text-center space-y-2 group hover:border-indigo-500/30 transition-all">
                             <div className="text-indigo-400 font-black text-xs tracking-widest uppercase">The Data</div>
-                            <p className="text-xs text-slate-500 leading-relaxed font-bold">Stored in your browser. We literally cannot see your subscriptions.</p>
+                            <p className="text-xs text-slate-400 leading-relaxed font-medium">Stored directly in your browser. We literally cannot sell what we cannot see.</p>
                         </div>
                     </div>
                 </div>

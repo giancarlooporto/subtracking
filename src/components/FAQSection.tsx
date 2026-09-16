@@ -10,6 +10,10 @@ const faqs = [
         category: "🔒 Privacy & Security",
         questions: [
             {
+                q: "If it's free, am I the product? How does SubTracking make money?",
+                a: "No, you are not the product—and you never will be. Traditional apps (like Rocket Money) cost millions to run because they maintain expensive central servers that harvest and store your bank transactions 24/7, which they monetize through targeted ads and high-interest loan offers. SubTracking is engineered with a 'Local-First' architecture: your data stays directly on your device, meaning our server hosting cost per user is virtually $0. We fund development through our optional Pro Cloud Pass ($0.99/mo or $8.99/yr) for users who want multi-device sync, and voluntary 'Buy Me a Coffee' tips from users who save hundreds on audits."
+            },
+            {
                 q: "Where is my data actually stored?",
                 a: "SubTracking is a \"Local-First\" app. If you use the Free tier, your data is stored directly in your device's private storage. It never touches our servers. If you upgrade to PRO for Cloud Sync, your data is securely encrypted and synced via our private servers, but we never sell your data or run ads."
             },
