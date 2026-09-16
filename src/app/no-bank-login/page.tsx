@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { ShareButton } from '../../components/ShareButton';
 import { Footer } from '../../components/Footer';
+import { pricing } from '../../lib/pricing';
 
 export const metadata: Metadata = {
     title: 'Track Subscriptions Without Bank Login | No Plaid Required',
@@ -67,7 +68,7 @@ export default function NoBankLoginPage() {
                             <ArrowRight className="w-5 h-5" />
                         </Link>
                         <div className="text-sm text-slate-500">
-                            Free to try • Cloud Sync for $14.99/yr
+                            Free (1 local profile and core tracking) • Pro for {pricing.annualPrice} (Multiple Profiles + End-to-End Encrypted Cloud Sync)
                         </div>
                     </div>
                 </div>
@@ -203,7 +204,7 @@ export default function NoBankLoginPage() {
                                     'Complete privacy',
                                     'No security risk',
                                     'No data collection',
-                                    '$0 or $14.99/yr for Cloud Sync',
+                                    `Free (1 local profile and core tracking) / Pro for ${pricing.annualPrice} (Multiple Profiles + End-to-End Encrypted Cloud Sync)`,
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-start gap-3 text-slate-300">
                                         <Check className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />

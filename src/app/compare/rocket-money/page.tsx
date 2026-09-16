@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Shield, Lock, ArrowRight, Check, X, CreditCard, EyeOff, Sparkles } from 'lucide-react';
 import { Footer } from "../../../components/Footer";
 import { ShareButton } from '../../../components/ShareButton';
+import { pricing } from '../../../lib/pricing';
 
 export const metadata: Metadata = {
     title: 'The Best Rocket Money Alternative (No Bank Login) | SubTracking',
@@ -118,7 +119,7 @@ export default function RocketMoneyComparisonPage() {
                                 </li>
                                 <li className="flex items-start gap-3">
                                     <Check className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
-                                    <span className="text-indigo-400 font-bold">Free to start, $14.99/yr for Cloud Sync</span>
+                                    <span className="text-indigo-400 font-bold">Free (1 local profile and core tracking), Pro for {pricing.annualPrice} (Multiple Profiles + End-to-End Encrypted Cloud Sync)</span>
                                 </li>
                             </ul>
                         </div>
@@ -164,7 +165,7 @@ export default function RocketMoneyComparisonPage() {
                     <div className="text-center space-y-8 max-w-2xl mx-auto">
                         <h2 className="text-3xl font-black">Stop Paying a Subscription to Track Subscriptions</h2>
                         <p className="text-slate-400 text-lg">
-                            The irony of Rocket Money is that it costs up to $15/month to help you find wasted subscriptions. SubTracking is free to use locally, and just $14.99/year to sync everywhere. It pays for itself the moment you find one unused service.
+                            The irony of Rocket Money is that it costs up to $15/month to help you find wasted subscriptions. SubTracking is free (1 local profile & core tracking), and just {pricing.annualPrice} to add multiple profiles and sync everywhere. It pays for itself the moment you find one unused service.
                         </p>
                         <Link
                             href="/dashboard"

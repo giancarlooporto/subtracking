@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Shield, Lock, ArrowRight, Check, X, Users, RefreshCcw, Sparkles } from 'lucide-react';
 import { Footer } from "../../../components/Footer";
 import { ShareButton } from '../../../components/ShareButton';
+import { pricing } from '../../../lib/pricing';
 
 export const metadata: Metadata = {
     title: 'The Best Private Monarch Money Alternative | SubTracking',
@@ -89,7 +90,7 @@ export default function MonarchComparisonPage() {
                                         <div className="text-xs text-slate-500 mt-1">Long-term value</div>
                                     </td>
                                     <td className="p-8 text-red-400 font-bold">~$1,000+</td>
-                                    <td className="p-8 text-emerald-400 font-bold">$0 or $14.99/year</td>
+                                    <td className="p-8 text-emerald-400 font-bold">Free (1 local profile and core tracking) / Pro for {pricing.annualPrice} (Multiple Profiles + End-to-End Encrypted Cloud Sync)</td>
                                 </tr>
                                 <tr>
                                     <td className="p-8">

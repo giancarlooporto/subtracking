@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Shield, Lock, ArrowRight, Check, X, Smartphone, Globe, Sparkles } from 'lucide-react';
 import { Footer } from "../../../components/Footer";
 import { ShareButton } from '../../../components/ShareButton';
+import { pricing } from '../../../lib/pricing';
 
 export const metadata: Metadata = {
     title: 'Copilot Money Alternative for Web & Privacy | SubTracking',
@@ -76,7 +77,7 @@ export default function CopilotComparisonPage() {
                             <Check className="w-6 h-6" />
                         </div>
                         <h3 className="text-xl font-bold">Simple Pricing</h3>
-                        <p className="text-slate-400 text-sm">Copilot costs $95/year or $13/month. SubTracking is free to start locally, and just $14.99/yr for Cloud Sync. Own your data, own your tool.</p>
+                        <p className="text-slate-400 text-sm">Copilot costs $95/year or $13/month. SubTracking is free (1 local profile), and just {pricing.annualPrice} for Pro (Multiple Profiles + E2E Cloud Sync). Own your data, own your tool.</p>
                     </div>
                 </div>
             </section>
@@ -102,7 +103,7 @@ export default function CopilotComparisonPage() {
                                     { feature: 'Bank Linking Required', copilot: true, subtracking: false },
                                     { feature: 'Web Browser Support', copilot: 'Limited', subtracking: 'Native / Full' },
                                     { feature: 'Privacy Model', copilot: 'Cloud-Based', subtracking: 'Local (On-Device)' },
-                                    { feature: 'Pricing', copilot: '$95/year', subtracking: '$0 or $14.99/yr' },
+                                    { feature: 'Pricing', copilot: '$95/year', subtracking: `Free (1 local profile and core tracking) / Pro for ${pricing.annualPrice} (Multiple Profiles + End-to-End Encrypted Cloud Sync)` },
                                     { feature: 'Android Support', copilot: false, subtracking: true },
                                     { feature: 'Ghost Cost Projection', copilot: false, subtracking: true },
                                 ].map((row, i) => (

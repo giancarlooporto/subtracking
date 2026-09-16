@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Shield, Lock, HardDrive, Eye, ArrowRight, Check, X } from 'lucide-react';
 import { ShareButton } from '../../components/ShareButton';
 import { Footer } from '../../components/Footer';
+import { pricing } from '../../lib/pricing';
 export const metadata: Metadata = {
     title: 'Privacy-First Subscription Tracker | No Cloud, No Tracking',
     description: 'Track your subscriptions without compromising privacy. All data stays on your device. No bank logins, no forced cloud storage, no tracking. Free to use forever.',
@@ -148,7 +149,7 @@ export default function PrivacySubscriptionTrackerPage() {
                                     { feature: 'Tracking Cookies', subtracking: false, others: true },
                                     { feature: 'Data Sold to 3rd Parties', subtracking: false, others: 'Often' },
                                     { feature: 'Works Offline', subtracking: true, others: false },
-                                    { feature: 'Pricing', subtracking: '$0 or $14.99/yr', others: '$6-12/month' },
+                                    { feature: 'Pricing', subtracking: `Free (1 local profile and core tracking) / Pro for ${pricing.annualPrice} (Multiple Profiles + End-to-End Encrypted Cloud Sync)`, others: '$6-12/month' },
                                 ].map((row, i) => (
                                     <tr key={i}>
                                         <td className="p-4 font-medium">{row.feature}</td>

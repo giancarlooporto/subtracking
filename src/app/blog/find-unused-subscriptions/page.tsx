@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import { Footer } from "../../../components/Footer";
 import { ShareButton } from '../../../components/ShareButton';
+import { pricing } from '../../../lib/pricing';
 
 export const metadata: Metadata = {
     title: 'How to Find Unused Subscriptions Without Linking Your Bank Account',
@@ -210,7 +211,7 @@ export default function FindUnusedSubscriptionsPost() {
                         <ul>
                             <li>Stores data locally on your device (no cloud)</li>
                             <li>Never asks for bank login credentials</li>
-                            <li>Free local app, optional $14.99/yr for Cloud Sync</li>
+                            <li>Free (1 local profile and core tracking), optional Pro for {pricing.annualPrice} (Multiple Profiles + End-to-End Encrypted Cloud Sync)</li>
                             <li>Shows you Ghost Cost projections</li>
                             <li>Sends renewal alerts so you never miss a cancellation window</li>
                         </ul>
