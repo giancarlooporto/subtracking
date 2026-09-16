@@ -345,8 +345,8 @@ export default function LandingPage() {
                             <p className="text-xs text-slate-400 leading-relaxed font-medium">Privacy is the feature. We don't sell data, show ads, or harvest your credentials.</p>
                         </div>
                         <div className="p-6 rounded-3xl bg-white/5 border border-white/5 text-center space-y-2 group hover:border-indigo-500/30 transition-all">
-                            <div className="text-indigo-400 font-black text-xs tracking-widest uppercase">Why It's Free</div>
-                            <p className="text-xs text-slate-400 leading-relaxed font-medium">Local-first design means near-$0 server costs. Funded by optional Pro Cloud Sync & voluntary coffee tips.</p>
+                            <div className="text-indigo-400 font-black text-xs tracking-widest uppercase">The Model</div>
+                            <p className="text-xs text-slate-400 leading-relaxed font-medium">100% independent. Funded by optional Pro Cloud Sync and community tips—never by selling data.</p>
                         </div>
                         <div className="p-6 rounded-3xl bg-white/5 border border-white/5 text-center space-y-2 group hover:border-indigo-500/30 transition-all">
                             <div className="text-indigo-400 font-black text-xs tracking-widest uppercase">The Data</div>
