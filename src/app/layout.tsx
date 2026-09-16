@@ -149,60 +149,21 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/context/AuthContext";
+import { getSubTrackingAppSchema, generateFaqSchema, JsonLdScript } from "@/lib/jsonld_schemas";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Enhanced Structured Data for Google (SEO)
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "SubTracking",
-    "operatingSystem": "Web",
-    "applicationCategory": "FinanceApplication",
-    "description": "A privacy-first subscription tracking and audit tool that helps users manage digital spending without linking bank accounts. Track subscriptions, find unused services, and save money with complete privacy.",
-    "url": "https://www.subtracking.app",
-    "offers": {
-      "@type": "Offer",
-      "price": "19.00",
-      "priceCurrency": "USD",
-      "priceValidUntil": "2026-12-31",
-      "availability": "https://schema.org/InStock",
-      "seller": {
-        "@type": "Organization",
-        "name": "SubTracking"
-      }
-    },
-
-    "featureList": [
-      "Privacy-first (no bank login required)",
-      "Ghost Cost 10-year projections",
-      "Visual renewal timeline and calendar",
-      "Subscription audit wizard",
-      "Multi-profile support (Personal, Business, Family with Pro)",
-      "Trial Shield - free trial reminders",
-      "Local-first storage with optional encrypted Cloud Sync",
-      "Export to CSV",
-      "Calendar integration"
-    ],
-    "softwareVersion": "1.0",
-    "screenshot": "https://www.subtracking.app/og-image.png",
-    "author": {
-      "@type": "Organization",
-      "name": "SubTracking",
-      "url": "https://www.subtracking.app"
-    }
-  };
+  const appSchema = getSubTrackingAppSchema();
+  const faqSchema = generateFaqSchema();
 
   return (
     <html lang="en">
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <JsonLdScript schema={appSchema} id="software-app-jsonld" />
+        <JsonLdScript schema={faqSchema} id="faq-page-jsonld" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

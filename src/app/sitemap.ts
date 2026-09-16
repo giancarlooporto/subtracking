@@ -25,6 +25,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/compare/copilot',
         '/compare/monarch-money',
         '/compare/excel-vs-subtracking',
+        '/compare/bobby-app',
+        '/compare/mint-replacements',
         '/blog/subscription-tracker-template',
         '/privacy',
         '/terms',
