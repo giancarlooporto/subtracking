@@ -28,11 +28,11 @@ const faqs = [
         questions: [
             {
                 q: "Is SubTracking really free?",
-                a: "Yes, 100%. The core SubTracking app is completely free, private, and unlimited forever. You get unlimited subscriptions, custom categories, trial alerts, split bills, multi-profiles, and local Data Vault exports without paying a cent."
+                a: "Yes, 100%. The core SubTracking app is completely free, private, and unlimited forever. You get unlimited subscriptions, custom categories, trial alerts, split bills, a single private vault profile, and local Data Vault exports without paying a cent."
             },
             {
                 q: "Why do you charge for Cloud Sync?",
-                a: "Running private, encrypted cloud database servers costs money. If you want the convenience of automatic, real-time synchronization between your phone and laptop, you can subscribe to Cloud Sync for just $8.99/year (less than $1/month) or $0.99/month. Otherwise, you can use the free local Vault backup to transfer data manually at zero cost."
+                a: "Running private, encrypted cloud database servers costs money. If you want the convenience of automatic, real-time synchronization between your phone and laptop, plus unlimited multi-profile vaults (Personal, Business, Family), you can upgrade to the Pro Pass for just $8.99/year (less than $1/month) or $0.99/month. Otherwise, you can use the free local Vault backup to transfer data manually at zero cost."
             },
             {
                 q: "Does Cloud Sync work on all my devices?",

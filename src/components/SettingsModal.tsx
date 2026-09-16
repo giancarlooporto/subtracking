@@ -133,9 +133,24 @@ export function SettingsModal({
                                         <Users className="w-4 h-4" />
                                         <span className="text-xs font-bold uppercase tracking-widest">Active Profile</span>
                                     </div>
-                                    <span className="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2.5 py-0.5 rounded-full font-bold">
-                                        {profileCount} {profileCount === 1 ? 'Profile' : 'Profiles'}
-                                    </span>
+                                    <div className="flex items-center gap-1.5">
+                                        {!isPro && (
+                                            <button
+                                                onClick={() => {
+                                                    onClose();
+                                                    onActivatePro();
+                                                }}
+                                                className="text-[9px] bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-extrabold uppercase tracking-wider flex items-center gap-1 transition-all cursor-pointer"
+                                                title="Upgrade to unlock multiple profiles & cloud sync"
+                                            >
+                                                <Zap className="w-2.5 h-2.5 fill-amber-300" />
+                                                Unlock Multi-Profiles
+                                            </button>
+                                        )}
+                                        <span className="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2.5 py-0.5 rounded-full font-bold">
+                                            {profileCount} {profileCount === 1 ? 'Profile' : 'Profiles'}
+                                        </span>
+                                    </div>
                                 </div>
                                 
                                 <div className="flex items-center justify-between bg-slate-950/80 p-3 rounded-xl border border-slate-900">

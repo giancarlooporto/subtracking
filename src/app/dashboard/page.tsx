@@ -1028,6 +1028,13 @@ function HomeContent() {
 
   // Profile Management Handlers
   const handleCreateProfile = (profileData: { name: string; city: string; timezone: string; currency: string }) => {
+    // Gate multiple profiles behind Pro plan
+    if (!isPro && allProfiles.length >= 1) {
+      setShowProfileSettings(false);
+      setShowPaywallModal(true);
+      return;
+    }
+
     lastLocalAction.current = Date.now();
     const newProfile = createProfile(profileData.name, profileData.city, profileData.timezone, profileData.currency);
     setAllProfiles(getProfiles());

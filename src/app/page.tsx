@@ -534,14 +534,19 @@ export default function LandingPage() {
                         </div>
 
                         {/* Feature 8 - Multi-Profile Vaults (New) */}
-                        <div className="glass-panel p-6 rounded-3xl space-y-4 border border-white/5 hover:border-indigo-500/20 transition-all group">
-                            <div className="bg-indigo-500/10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform relative">
-                                <Layers className="w-6 h-6 text-indigo-400" />
+                        <div className="glass-panel p-6 rounded-3xl space-y-4 border border-white/5 hover:border-indigo-500/20 transition-all group relative">
+                            <div className="flex items-center justify-between">
+                                <div className="bg-indigo-500/10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform relative">
+                                    <Layers className="w-6 h-6 text-indigo-400" />
+                                </div>
+                                <span className="text-[10px] uppercase tracking-wider font-extrabold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-full flex items-center gap-1">
+                                    <Zap className="w-3 h-3 fill-indigo-300" /> PRO
+                                </span>
                             </div>
                             <div className="space-y-2">
                                 <h3 className="text-lg font-bold">Multi-Profile Vaults</h3>
                                 <p className="text-slate-400 text-sm leading-relaxed">
-                                    Separate "Personal", "Business", and "Family" expenses. Switch contexts instantly with one click.
+                                    Separate "Personal", "Business", and "Family" expenses with encrypted cloud sync across all your devices.
                                 </p>
                             </div>
                         </div>
@@ -647,7 +652,7 @@ export default function LandingPage() {
                                 <ul className="space-y-4 pt-10">
                                     {[
                                         "Unlimited Subscriptions",
-                                        "Unlimited Profiles (Personal / Business)",
+                                        "Single Profile (Personal Vault)",
                                         "Trial Shield Alerts & Split Billing",
                                         "Ghost Meter Projections & Audit Wizard",
                                         "Reports Export (CSV & Calendar .ICS)",
@@ -666,15 +671,15 @@ export default function LandingPage() {
                             </Link>
                         </div>
 
-                        {/* Cloud Sync Tier */}
+                        {/* Cloud Sync & Multi-Profiles Tier */}
                         <div className="glass-panel p-10 rounded-[40px] border-2 border-indigo-500/30 bg-indigo-500/[0.02] flex flex-col relative overflow-hidden group">
                             <div className="absolute top-4 right-4 bg-indigo-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-indigo-500/20">
-                                Cloud Add-on
+                                Pro Cloud Pass
                             </div>
 
                             <div className="space-y-2 flex-1">
                                 <h3 className="text-2xl font-bold text-white flex items-center gap-2">
-                                    Cloud Sync
+                                    Pro + Cloud Sync
                                     <Zap className="w-5 h-5 text-indigo-400 fill-indigo-400" />
                                 </h3>
 
@@ -686,7 +691,8 @@ export default function LandingPage() {
 
                                 <ul className="space-y-4 pt-10">
                                     {[
-                                        "Encrypted Multi-Device Sync",
+                                        "Unlimited Multi-Profile Vaults (Personal, Business, Family)",
+                                        "Encrypted Multi-Device Cloud Sync",
                                         "Real-time Cloud Backups",
                                         "Instant Cross-Browser Restore",
                                         "Phone to Desktop Live Synchronization",
@@ -701,7 +707,7 @@ export default function LandingPage() {
                             </div>
 
                             <Link href="/dashboard?upgrade=true" className="mt-10 w-full py-4 rounded-2xl bg-indigo-600 text-white font-black text-center hover:bg-indigo-500 shadow-xl shadow-indigo-600/20 group-hover:scale-105 transition-all active:scale-95">
-                                Enable Cloud Sync
+                                Upgrade to Pro
                             </Link>
                         </div>
                     </div>

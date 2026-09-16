@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, GlobeLock, Key, ShoppingBag } from 'lucide-react';
+import { X, GlobeLock, Key, ShoppingBag, Layers, Check, Zap } from 'lucide-react';
 import { GUMROAD_CONFIG } from '../lib/gumroad';
 
 interface PaywallModalProps {
@@ -37,7 +37,7 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                     >
                         <div className="flex justify-between items-center p-6 border-b border-slate-800 sm:p-8 bg-slate-900/50 backdrop-blur-md">
                             <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-                                Unlock <span className="text-indigo-400">Cloud Sync</span>
+                                Unlock <span className="text-indigo-400">Pro & Cloud</span>
                             </h2>
                             <button
                                 onClick={onClose}
@@ -48,14 +48,35 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                         </div>
 
                         <div className="p-6 sm:p-8 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
-                            <div className="text-center space-y-4 pt-4">
-                                <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 text-indigo-400 mx-auto flex items-center justify-center">
+                            <div className="text-center space-y-4 pt-2">
+                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 text-indigo-400 mx-auto flex items-center justify-center border border-indigo-500/30">
                                     <GlobeLock className="w-8 h-8" />
                                 </div>
-                                <h3 className="text-lg font-bold text-white">Encrypted Multi-Device Sync</h3>
-                                <p className="text-sm text-slate-400">
-                                    Sync your financial dashboard seamlessly between your phone, tablet, and laptop with end-to-end encrypted cloud storage.
-                                </p>
+                                <div>
+                                    <h3 className="text-lg font-bold text-white">Multi-Profile Vaults + Cloud Sync</h3>
+                                    <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto leading-relaxed">
+                                        Organize separate vaults for Personal, Business, and Family with instant encrypted cloud sync across all your devices.
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-2 text-left pt-2">
+                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800">
+                                        <Layers className="w-4 h-4 text-indigo-400 shrink-0" />
+                                        <span className="text-[11px] font-bold text-slate-200">Unlimited Profiles</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800">
+                                        <GlobeLock className="w-4 h-4 text-indigo-400 shrink-0" />
+                                        <span className="text-[11px] font-bold text-slate-200">Encrypted Cloud Sync</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800">
+                                        <Zap className="w-4 h-4 text-indigo-400 shrink-0" />
+                                        <span className="text-[11px] font-bold text-slate-200">Real-Time Backup</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800">
+                                        <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                                        <span className="text-[11px] font-bold text-slate-200">Cross-Device Restore</span>
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="pt-2 space-y-3">
@@ -71,9 +92,9 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                                         <div>
                                             <h4 className="font-bold text-white text-base flex items-center gap-2">
                                                 <ShoppingBag className="w-4 h-4 text-indigo-400" />
-                                                Annual Cloud Pass
+                                                Annual Pro Pass
                                             </h4>
-                                            <p className="text-xs text-slate-400 mt-0.5">$8.99/year (just ~$0.75/month) • Real-time cloud sync</p>
+                                            <p className="text-xs text-slate-400 mt-0.5">$8.99/year (~$0.75/month) • Multi-profiles & cloud sync</p>
                                         </div>
                                         <div className="text-right">
                                             <span className="text-lg font-black text-indigo-400">$8.99</span>
@@ -91,7 +112,7 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                                         <div>
                                             <h4 className="font-bold text-white text-base flex items-center gap-2">
                                                 <ShoppingBag className="w-4 h-4 text-slate-400" />
-                                                Monthly Cloud Pass
+                                                Monthly Pro Pass
                                             </h4>
                                             <p className="text-xs text-slate-400 mt-0.5">$0.99/month • Cancel anytime</p>
                                         </div>

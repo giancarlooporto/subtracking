@@ -181,9 +181,9 @@ export default function RootLayout({
       "Ghost Cost 10-year projections",
       "Visual renewal timeline and calendar",
       "Subscription audit wizard",
-      "Multi-profile support (Personal, Business, Family)",
+      "Multi-profile support (Personal, Business, Family with Pro)",
       "Trial Shield - free trial reminders",
-      "Local storage only - no cloud sync",
+      "Local-first storage with optional encrypted Cloud Sync",
       "Export to CSV",
       "Calendar integration"
     ],

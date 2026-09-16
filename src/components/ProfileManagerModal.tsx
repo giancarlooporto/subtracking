@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Edit, Check, MapPin, DollarSign, Zap } from 'lucide-react';
+import { X, Plus, Trash2, Edit, Check, MapPin, DollarSign, Zap, Lock } from 'lucide-react';
 import { Profile, getCurrencySymbol } from '../types';
 
 interface ProfileManagerModalProps {
@@ -47,6 +47,13 @@ export function ProfileManagerModal({
     };
 
     const handleCreateClick = () => {
+        // Free tier users can only have 1 profile ("Main Profile")
+        // Creating multiple profiles requires Pro with Cloud Sync
+        if (!isPro && profiles.length >= 1) {
+            onClose();
+            onUnlockPro();
+            return;
+        }
         onCreateProfile();
     };
 
@@ -187,14 +194,35 @@ export function ProfileManagerModal({
                         </div>
 
                         {/* Footer */}
-                        <div className="p-6 border-t border-slate-800 bg-slate-900/50">
+                        <div className="p-6 border-t border-slate-800 bg-slate-900/50 space-y-3">
                             <button
                                 onClick={handleCreateClick}
-                                className="w-full px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+                                className={`w-full px-6 py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                                    !isPro && profiles.length >= 1
+                                        ? 'bg-slate-800 hover:bg-slate-700 border border-indigo-500/30 text-white shadow-lg shadow-indigo-500/10'
+                                        : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25'
+                                }`}
                             >
-                                <Plus className="w-5 h-5" />
-                                Create New Profile
+                                {!isPro && profiles.length >= 1 ? (
+                                    <>
+                                        <Lock className="w-4 h-4 text-indigo-400" />
+                                        <span>Create New Profile</span>
+                                        <span className="text-[10px] uppercase tracking-wider font-extrabold bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/30 flex items-center gap-1">
+                                            <Zap className="w-2.5 h-2.5 fill-indigo-300" /> Pro & Cloud
+                                        </span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Plus className="w-5 h-5" />
+                                        <span>Create New Profile</span>
+                                    </>
+                                )}
                             </button>
+                            {!isPro && profiles.length >= 1 && (
+                                <p className="text-center text-[11px] text-slate-500">
+                                    Free plan includes 1 profile. Unlock unlimited profiles (Personal, Business, Family) with <span className="text-indigo-400 font-semibold">Cloud Sync</span>.
+                                </p>
+                            )}
                         </div>
                     </motion.div>
                 </>
