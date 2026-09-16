@@ -139,10 +139,10 @@ export default function RocketMoneyComparisonPage() {
                             </div>
                             <h2 className="text-3xl font-black">Why people are switching away from Rocket Money</h2>
                             <p className="text-slate-400 leading-relaxed text-lg">
-                                Rocket Money uses Plaid to link your bank account. While Plaid is a standard industry tool, it means you are <strong>storing your bank credentials</strong> with a third-party and giving an app access to see every single coffee purchase and paycheck.
+                                Rocket Money connects to third-party financial aggregators like Plaid to link your bank account. While aggregation is common industry practice, it involves granting <strong>continuous third-party data access</strong> and ongoing transaction monitoring across all your account activity.
                             </p>
                             <p className="text-slate-400 leading-relaxed">
-                                SubTracking takes a different approach. We believe tracking your finances shouldn't mean sacrificing your privacy. We offer a manual, sleek alternative that keeps your data where it belongs—on your device.
+                                SubTracking takes a different approach. We believe tracking your finances shouldn't require third-party data sharing. We offer a manual, sleek alternative that keeps your data where it belongs—on your device.
                             </p>
                         </div>
                         <div className="bg-slate-900/50 p-8 rounded-[40px] border border-white/5 space-y-6">
@@ -198,6 +198,7 @@ export default function RocketMoneyComparisonPage() {
                     </div>
                 </div>
             </section>
+            <Footer />
         </div>
     );
 }

@@ -150,6 +150,7 @@ export default function CopilotComparisonPage() {
                     </div>
                 </div>
             </section>
+            <Footer />
         </div>
     );
 }

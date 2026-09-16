@@ -120,6 +120,7 @@ export default function CancelDisneyGuide() {
 
                 </div>
             </article>
+            <Footer />
         </div>
     );
 }

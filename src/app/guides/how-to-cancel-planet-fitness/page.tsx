@@ -114,6 +114,7 @@ export default function CancelPlanetFitnessGuide() {
 
                 </div>
             </article>
+            <Footer />
         </div>
     );
 }

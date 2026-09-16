@@ -121,6 +121,7 @@ export default function CancelPrimeGuide() {
 
                 </div>
             </article>
+            <Footer />
         </div>
     );
 }

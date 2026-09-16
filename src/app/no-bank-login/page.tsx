@@ -1,9 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import {
-    ShieldOff, Lock, AlertCircle, CheckCircle, ArrowRight, X, Check
+    ShieldOff, Lock, AlertCircle, ArrowRight, X, Check
 } from 'lucide-react';
-import { ShareButton } from '../../components/ShareButton';
 import { Footer } from '../../components/Footer';
 import { pricing } from '../../lib/pricing';
 
@@ -86,22 +85,22 @@ export default function NoBankLoginPage() {
                         {[
                             {
                                 icon: <AlertCircle className="w-6 h-6" />,
-                                title: 'Security Risk',
-                                description: 'Services like Plaid store your bank credentials. If they\'re hacked, your entire financial history is exposed.',
+                                title: 'Third-Party Data Access',
+                                description: 'Services connecting to financial aggregators enable continuous third-party access to your sensitive financial account data.',
                                 color: 'red',
                             },
                             {
                                 icon: <Lock className="w-6 h-6" />,
-                                title: 'Terms of Service Violations',
-                                description: 'Many banks explicitly forbid sharing login credentials. You could void fraud protection.',
+                                title: 'Continuous Monitoring',
+                                description: 'Third-party integrations maintain ongoing background access to monitor and sync transaction history across your accounts.',
                                 color: 'orange',
                             },
                             {
                                 icon: <ShieldOff className="w-6 h-6" />,
-                                title: 'Privacy Concerns',
+                                title: 'Broad Access Scope',
                                 description: (
                                     <>
-                                        Connected apps can see ALL transactions, not just subscriptions. {' '}
+                                        Connected services often receive access to full transaction feeds, not just recurring subscriptions. {' '}
                                         <Link href="/privacy-subscription-tracker" className="text-yellow-400 hover:underline">Read about our privacy-first approach.</Link>
                                     </>
                                 ),
@@ -179,11 +178,11 @@ export default function NoBankLoginPage() {
                             <h3 className="text-2xl font-bold mb-6 text-red-400">Apps with Bank Login</h3>
                             <ul className="space-y-4">
                                 {[
-                                    'Requires bank credentials',
-                                    'Third-party access to ALL transactions',
-                                    'Potential ToS violations',
-                                    'Security breach risk',
-                                    'Data sold to advertisers',
+                                    'Requires third-party bank linking',
+                                    'Continuous third-party transaction monitoring',
+                                    'Broad access to full account activity',
+                                    'Data shared with cloud aggregators',
+                                    'Third-party cloud storage policies',
                                     'Monthly subscription fees',
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-start gap-3 text-slate-300">

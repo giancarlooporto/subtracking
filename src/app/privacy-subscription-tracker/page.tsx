@@ -147,7 +147,7 @@ export default function PrivacySubscriptionTrackerPage() {
                                     { feature: 'Data Storage', subtracking: 'Your Device Only', others: 'Company Servers' },
                                     { feature: 'Bank Login Required', subtracking: false, others: true },
                                     { feature: 'Tracking Cookies', subtracking: false, others: true },
-                                    { feature: 'Data Sold to 3rd Parties', subtracking: false, others: 'Often' },
+                                    { feature: 'Data Sharing', subtracking: 'None (Local-first)', others: 'Subject to third-party cloud policies & data monetization terms' },
                                     { feature: 'Works Offline', subtracking: true, others: false },
                                     { feature: 'Pricing', subtracking: `Free (1 local profile and core tracking) / Pro for ${pricing.annualPrice} (Multiple Profiles + End-to-End Encrypted Cloud Sync)`, others: '$6-12/month' },
                                 ].map((row, i) => (

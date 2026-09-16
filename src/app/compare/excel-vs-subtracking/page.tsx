@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Table, Zap, ShieldCheck, Clock, AlertCircle, CheckCircle, XCircle, Sparkles } from 'lucide-react';
+import { Footer } from '../../../components/Footer';
 
 export const metadata: Metadata = {
     title: 'Excel vs. SubTracking: Why Spreadsheets Fail for Subscription Tracking',
@@ -153,6 +154,7 @@ export default function ExcelComparison() {
 
                 </div>
             </article>
+            <Footer />
         </div>
     );
 }

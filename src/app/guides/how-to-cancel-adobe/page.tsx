@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, User, AlertTriangle, CheckCircle, Info } from 'lucide-react';
+import { ArrowLeft, Calendar, User, AlertTriangle, Info } from 'lucide-react';
 import { Footer } from "../../../components/Footer";
 import { ShareButton } from '../../../components/ShareButton';
 
@@ -55,33 +55,40 @@ export default function CancelAdobeGuide() {
 
                     <div className="prose prose-invert prose-lg max-w-none">
                         <p className="text-xl text-slate-300 leading-relaxed mb-8">
-                            Adobe is notorious for its "Annual Plan, Paid Monthly" trap. If you try to cancel mid-year, you're often hit with a bill for 50% of your remaining balance. Here is how to escape.
+                            Adobe offers "Annual Plan, Paid Monthly" subscriptions. If you attempt to cancel mid-contract, an early termination fee amounting to 50% of the remaining contract obligation is typically assessed under their standard terms. Here is how users navigate cancellation options.
                         </p>
 
                         <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 my-8 flex gap-4">
                             <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
                             <div>
-                                <p className="font-bold text-amber-500 mb-1">The "Adobe Trap"</p>
-                                <p className="text-slate-300 text-sm mb-0">Most users think they are on a monthly plan, but it's actually an annual contract. Canceling at month 6 could cost you over $100 in fees.</p>
+                                <p className="font-bold text-amber-500 mb-1">Annual Commitment Terms</p>
+                                <p className="text-slate-300 text-sm mb-0">Many subscribers choose the monthly billing option without realizing it commits to a full 12-month agreement. Canceling mid-contract may incur early termination fees.</p>
                             </div>
                         </div>
 
-                        <h2 className="text-3xl font-black mt-16 mb-6">The "Plan Change" Hack</h2>
+                        <h2 className="text-3xl font-black mt-16 mb-6">Understanding Adobe's 14-Day Plan Modification Window</h2>
                         <p>
-                            There is a legendary (and still working) way to bypass the fee:
+                            Under Adobe's subscription policy, switching to a different plan resets the standard 14-day cancellation window:
                         </p>
                         <ol className="space-y-4">
                             <li><strong>Log in</strong> to your Adobe account.</li>
                             <li>Navigate to <strong>"Manage Plan."</strong></li>
                             <li>Choose <strong>"Change Plan"</strong> instead of cancel.</li>
-                            <li>Pick a completely different plan (e.g., the "Photography" plan if you're on "All Apps").</li>
-                            <li>Confirm the change. This starts a <strong>new 14-day cooling-off period</strong>.</li>
-                            <li>Wait 10 minutes, then <strong>Cancel the new plan</strong>. Since you're in the new 14-day window, you'll get a full refund and NO termination fee.</li>
+                            <li>Select an alternative plan option (e.g., the "Photography" plan if you're on "All Apps").</li>
+                            <li>Confirm the change. This initiates a <strong>new 14-day modification window</strong>.</li>
+                            <li>Within that 14-day window, you can <strong>cancel the modified plan</strong> for a full refund of the new plan charge with no early termination fee assessed.</li>
                         </ol>
+
+                        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 my-8 flex gap-4 text-xs text-slate-400">
+                            <Info className="w-5 h-5 text-slate-400 shrink-0" />
+                            <p className="mb-0">
+                                <strong>Safe-Harbor Notice:</strong> Cancellation policies, refund eligibility periods, and fee structures are subject to change at any time by Adobe Inc. Always review the latest terms of service and subscription agreements on Adobe's official website prior to making account modifications.
+                            </p>
+                        </div>
 
                         <h2 className="text-3xl font-black mt-16 mb-6">Transitioning to Manual Tracking</h2>
                         <p>
-                            Once you've escaped the Adobe ecosystem, you might switch to one-time purchase tools like <strong>Affinity Photo</strong> or <strong>DaVinci Resolve</strong>.
+                            Once you've adjusted or canceled your Adobe subscription, you might switch to one-time purchase tools like <strong>Affinity Photo</strong> or <strong>DaVinci Resolve</strong>.
                         </p>
                         <p>
                             Managing these "one-off" licenses alongside your remaining subscriptions is where most people lose track of their spending.
@@ -108,7 +115,7 @@ export default function CancelAdobeGuide() {
 
                         <div className="mt-16 pt-12 border-t border-white/10">
                             <h3 className="text-2xl font-bold mb-4">Did this help?</h3>
-                            <p className="text-slate-400 mb-6">Share this guide with other creatives who are feeling trapped by subscription fees.</p>
+                            <p className="text-slate-400 mb-6">Share this guide with other creatives who are auditing their subscription fees.</p>
                             <div className="flex flex-col sm:flex-row items-center gap-4">
                                 <ShareButton variant="default" />
                             </div>
@@ -117,6 +124,7 @@ export default function CancelAdobeGuide() {
 
                 </div>
             </article>
+            <Footer />
         </div>
     );
 }

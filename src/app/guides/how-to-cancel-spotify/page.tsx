@@ -122,6 +122,7 @@ export default function CancelSpotifyGuide() {
 
                 </div>
             </article>
+            <Footer />
         </div>
     );
 }

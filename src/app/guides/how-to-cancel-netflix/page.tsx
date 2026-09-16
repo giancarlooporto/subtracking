@@ -112,6 +112,7 @@ export default function CancelNetflixGuide() {
 
                 </div>
             </article>
+            <Footer />
         </div>
     );
 }

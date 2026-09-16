@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { siteConfig } from '../../siteConfig';
-import { Zap } from 'lucide-react';
 import { ShareButton } from './ShareButton';
 import { GUMROAD_CONFIG } from '../lib/gumroad';
 
@@ -35,6 +34,13 @@ export function Footer({ isPro, onUnlockPro, minimal = false }: FooterProps) {
                         <Link href="/terms" className="text-xs text-slate-500 hover:text-indigo-400 transition-colors">Terms</Link>
                         <a href="mailto:support@subtracking.app" className="text-xs text-slate-500 hover:text-indigo-400 transition-colors">Support</a>
                     </div>
+                </div>
+
+                {/* Legal Disclaimer */}
+                <div className="max-w-4xl mx-auto px-6 mt-8 pt-6 border-t border-slate-900/50 text-center">
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                        All product names, logos, and brands are property of their respective owners. All company, product, and service names used in this website are for identification purposes only. Use of these names, logos, and brands does not imply endorsement or affiliation.
+                    </p>
                 </div>
             </footer>
         );
@@ -123,14 +129,12 @@ export function Footer({ isPro, onUnlockPro, minimal = false }: FooterProps) {
                     </div>
                 </div>
 
-                {/* Subtle Legal Footnote */}
-                {!minimal && (
-                    <div className="mt-12 text-center">
-                        <p className="text-[9px] text-slate-800 leading-relaxed max-w-2xl mx-auto lowercase opacity-50">
-                            Disclaimer: subtracking is an independent tool for informational purposes. all product names, logos, and brands are property of their respective owners. use of these names does not imply affiliation or endorsement. we are not a financial advisor.
-                        </p>
-                    </div>
-                )}
+                {/* Legal Footnote */}
+                <div className="mt-12 text-center">
+                    <p className="text-xs text-slate-500 leading-relaxed max-w-2xl mx-auto">
+                        All product names, logos, and brands are property of their respective owners. All company, product, and service names used in this website are for identification purposes only. Use of these names, logos, and brands does not imply endorsement or affiliation.
+                    </p>
+                </div>
             </div>
         </footer>
     );

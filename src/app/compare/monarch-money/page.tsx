@@ -151,6 +151,7 @@ export default function MonarchComparisonPage() {
                     </div>
                 </div>
             </section>
+            <Footer />
         </div>
     );
 }

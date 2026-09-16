@@ -120,6 +120,7 @@ export default function CancelHuluGuide() {
 
                 </div>
             </article>
+            <Footer />
         </div>
     );
 }

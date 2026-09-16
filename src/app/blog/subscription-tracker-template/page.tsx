@@ -135,6 +135,7 @@ export default function TemplateGuide() {
 
                 </div>
             </article>
+            <Footer />
         </div>
     );
 }

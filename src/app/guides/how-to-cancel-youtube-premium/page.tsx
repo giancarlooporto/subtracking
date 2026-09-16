@@ -121,6 +121,7 @@ export default function CancelYoutubeGuide() {
 
                 </div>
             </article>
+            <Footer />
         </div>
     );
 }

@@ -262,6 +262,7 @@ export default function FindUnusedSubscriptionsPost() {
                     </div>
                 </div>
             </article>
+            <Footer />
         </div>
     );
 }
