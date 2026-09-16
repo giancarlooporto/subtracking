@@ -30,7 +30,6 @@ import { BillingPulse } from '../../components/BillingPulse';
 import { ToastProvider, useToast } from '../../hooks/useToast';
 import ToastContainer from '../../components/ToastContainer';
 import { Footer } from '../../components/Footer';
-import { InstallBanner } from '../../components/InstallBanner';
 import { ShareButton } from '../../components/ShareButton';
 import { generateICSFile, generateBulkICSFile } from '../../lib/calendar';
 
@@ -1469,7 +1468,6 @@ function HomeContent() {
           )}
         </div>
       </motion.div>
-      <InstallBanner onOpenGuide={() => setShowInstallGuide(true)} />
       <InstallGuideModal isOpen={showInstallGuide} onClose={() => setShowInstallGuide(false)} />
 
       {/* 📱 Mobile Status Bar Shield: Prevents content from peeking behind status bar icons */}

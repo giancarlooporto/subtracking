@@ -22,10 +22,11 @@ export function InstallBanner({ onOpenGuide }: InstallBannerProps) {
         }
 
         const isDismissed = localStorage.getItem('install-banner-dismissed') === 'true';
-        if (!isDismissed) {
+        // Only show floating banner on mobile iOS devices, not desktop or Mac
+        if (!isDismissed && isIOS) {
             setDismissed(false);
         }
-    }, [isStandalone]);
+    }, [isStandalone, isIOS]);
 
     const handleDismiss = (e: React.MouseEvent) => {
         e.stopPropagation();
