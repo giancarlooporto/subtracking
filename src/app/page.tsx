@@ -22,10 +22,6 @@ export default function LandingPage() {
     const [isInstallGuideOpen, setIsInstallGuideOpen] = useState(false);
     const [isVideoOpen, setIsVideoOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [pullDistance, setPullDistance] = useState(0);
-    const [isRefreshing, setIsRefreshing] = useState(false);
-    const touchStartRef = React.useRef(0);
-    const PULL_THRESHOLD = 80;
 
     useEffect(() => {
         // 1. Skip landing page if running as an installed Standalone App (Home Screen or Mac Dock)
@@ -56,56 +52,9 @@ export default function LandingPage() {
             } catch (e) { }
         }
     }, [router]);
-    const handleRefresh = async () => {
-        setIsRefreshing(true);
-        // On landing page, "refresh" just reloads or checks sync
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        window.location.reload();
-    };
 
     return (
-        <div
-            className="min-h-screen bg-slate-950 text-slate-100 font-[family-name:var(--font-geist-sans)] selection:bg-indigo-500/30 overflow-x-hidden"
-            style={{ touchAction: 'pan-y' }}
-            onTouchStart={(e) => {
-                if (window.scrollY === 0) touchStartRef.current = e.touches[0].clientY;
-            }}
-            onTouchMove={(e) => {
-                if (touchStartRef.current > 0 && window.scrollY === 0) {
-                    const currentY = e.touches[0].clientY;
-                    const distance = Math.max(0, currentY - touchStartRef.current);
-                    const dampen = distance > PULL_THRESHOLD ? PULL_THRESHOLD + (distance - PULL_THRESHOLD) * 0.4 : distance;
-                    setPullDistance(dampen);
-                }
-            }}
-            onTouchEnd={() => {
-                if (pullDistance > PULL_THRESHOLD && !isRefreshing) {
-                    handleRefresh();
-                } else {
-                    setPullDistance(0);
-                }
-                touchStartRef.current = 0;
-            }}
-        >
-            {/* 🔄 Pull-to-Refresh Indicator */}
-            <motion.div
-                className="fixed top-0 left-0 w-full flex justify-center z-[100] pointer-events-none"
-                style={{
-                    y: Math.min(pullDistance - 40, PULL_THRESHOLD - 20),
-                    opacity: pullDistance / PULL_THRESHOLD
-                }}
-                animate={{
-                    y: isRefreshing ? 40 : Math.min(pullDistance - 40, PULL_THRESHOLD - 20),
-                    opacity: isRefreshing || pullDistance > 0 ? 1 : 0
-                }}
-            >
-                <div className="bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-full p-2 shadow-2xl flex items-center gap-2">
-                    <div className={cn(
-                        "w-8 h-8 rounded-full border-2 border-indigo-500/30 border-t-indigo-500",
-                        (isRefreshing || pullDistance >= PULL_THRESHOLD) && "animate-spin"
-                    )} />
-                </div>
-            </motion.div>
+        <div className="min-h-screen bg-slate-950 text-slate-100 font-[family-name:var(--font-geist-sans)] selection:bg-indigo-500/30 overflow-x-hidden">
 
             <VideoModal
                 isOpen={isVideoOpen}
@@ -204,7 +153,7 @@ export default function LandingPage() {
             <section className="relative pt-28 sm:pt-40 pb-20 px-6">
                 <div className="max-w-7xl mx-auto text-center space-y-8 relative z-10">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 1, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-xs font-black uppercase tracking-widest"
@@ -214,7 +163,7 @@ export default function LandingPage() {
                     </motion.div>
 
                     <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 1, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
                         className="text-5xl md:text-8xl font-black tracking-tight leading-[1.1]"
@@ -224,7 +173,7 @@ export default function LandingPage() {
                     </motion.h1>
 
                     <motion.p
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 1, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="max-w-2xl mx-auto text-slate-400 text-lg md:text-xl font-medium"
@@ -233,12 +182,13 @@ export default function LandingPage() {
                     </motion.p>
 
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
+                        initial={{ opacity: 1, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5, delay: 0.3 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+                        className="flex flex-col items-center gap-4 pt-4"
                     >
-                        <Link
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
+                            <Link
                             href="/dashboard"
                             className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white px-10 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 group transition-all shadow-2xl shadow-indigo-600/20 cursor-pointer"
                         >
@@ -256,12 +206,16 @@ export default function LandingPage() {
                                 <span>Install on Phone / Mac</span>
                             </button>
                         )}
+                        </div>
+                        <p className="text-xs text-slate-500 font-medium mt-2">
+                            Free to use • No account or credit card required • Offline & 100% private
+                        </p>
                     </motion.div>
                 </div>
 
                 {/* WHAT ARE YOU TRACKING? TICKER */}
                 <motion.div
-                    initial={{ opacity: 0 }}
+                    initial={{ opacity: 1 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 1, delay: 0.6 }}
                     className="max-w-5xl mx-auto mt-16 px-6"
@@ -289,7 +243,7 @@ export default function LandingPage() {
 
                 {/* Hero App Preview */}
                 <motion.div
-                    initial={{ opacity: 0, y: 40 }}
+                    initial={{ opacity: 1, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, delay: 0.5 }}
                     className="max-w-6xl mx-auto mt-20 relative group"

@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+import Image from 'next/image';
 
 const IMAGES = [
     '/screenshots/Screenshot-1.jpeg',
@@ -35,18 +37,27 @@ export function ImageCarousel() {
     return (
         <div className="relative w-full h-full bg-slate-900 overflow-hidden group">
             {/* Images */}
-            <AnimatePresence mode='wait'>
-                <motion.img
-                    key={index}
-                    src={IMAGES[index]}
-                    alt={`Dashboard Screenshot ${index + 1}`}
-                    initial={{ opacity: 0, scale: 1.05 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
+            {IMAGES.map((src, i) => (
+                <motion.div
+                    key={src}
+                    initial={false}
+                    animate={{
+                        opacity: i === index ? 1 : 0,
+                        scale: i === index ? 1 : 1.05,
+                        zIndex: i === index ? 10 : 0
+                    }}
                     transition={{ duration: 0.5 }}
-                    className="absolute inset-0 w-full h-full object-cover object-top"
-                />
-            </AnimatePresence>
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                >
+                    <Image
+                        src={src}
+                        alt={`Dashboard Screenshot ${i + 1}`}
+                        fill
+                        priority={i === 0}
+                        className="object-cover object-top"
+                    />
+                </motion.div>
+            ))}
 
             {/* Gradient Overlay for Fade Effect at bottom */}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent pointer-events-none" />
