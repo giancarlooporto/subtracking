@@ -47,14 +47,29 @@ export function ImageCarousel() {
                         zIndex: i === index ? 10 : 0
                     }}
                     transition={{ duration: 0.5 }}
-                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center"
                 >
+                    {/* Ambient glow behind vertical screenshot */}
+                    {i === 4 && (
+                        <div className="absolute inset-0 flex items-center justify-center opacity-25 blur-3xl pointer-events-none scale-125">
+                            <Image
+                                src={src}
+                                alt="Backdrop glow"
+                                fill
+                                className="object-cover"
+                            />
+                        </div>
+                    )}
                     <Image
                         src={src}
                         alt={`Dashboard Screenshot ${i + 1}`}
                         fill
                         priority={i === 0}
-                        className="object-cover object-top"
+                        className={cn(
+                            i === 4
+                                ? "object-contain object-center drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)] py-3 px-6"
+                                : "object-cover object-top"
+                        )}
                     />
                 </motion.div>
             ))}
