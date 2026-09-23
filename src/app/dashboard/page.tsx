@@ -761,6 +761,10 @@ function HomeContent() {
       .sort((a, b) => b.value - a.value);
   }, [filteredSubscriptions, financeViewMode, viewMode]);
 
+  const totalCategorySpend = useMemo(() => {
+    return categorySpending.reduce((s, c) => s + c.value, 0);
+  }, [categorySpending]);
+
   const isPaidThisCycle = useCallback((sub: Subscription) => {
     if (!sub.lastPaidDate) return false;
     const todayStr = formatLocalDate(new Date());
@@ -1793,9 +1797,14 @@ function HomeContent() {
               {categorySpending.length > 0 ? (
                 <>
                   <div className="flex-1 w-full flex items-center justify-center relative min-h-[180px]">
-                    <svg viewBox="0 0 100 100" className="transform -rotate-90 h-full max-h-[220px]">
+                    <svg
+                      role="img"
+                      aria-label="Spend by category donut chart"
+                      viewBox="0 0 100 100"
+                      className="transform -rotate-90 h-full max-h-[220px]"
+                    >
                       {categorySpending.reduce((acc: any[], cat, i) => {
-                        const total = categorySpending.reduce((s, c) => s + c.value, 0);
+                        const total = totalCategorySpend;
                         const isSingleCategory = categorySpending.length === 1;
                         const angle = total > 0 ? (cat.value / total) * 360 : (isSingleCategory ? 360 : 0);
                         const percent = total > 0 ? (cat.value / total) * 100 : (isSingleCategory ? 100 : 0);
@@ -1842,6 +1851,7 @@ function HomeContent() {
                           d={slice.pathData}
                           fill={slice.color}
                           fillRule="evenodd"
+                          aria-label={`${slice.name}: ${getCurrencySymbol(activeProfile?.currency || 'USD')}${slice.value.toFixed(2)} (${slice.percent.toFixed(1)}%)`}
                           className="opacity-90 hover:opacity-100 transition-all duration-300 hover:scale-105 cursor-pointer stroke-slate-900 stroke-[0.5]"
                         >
                           <title>{slice.name}: {getCurrencySymbol(activeProfile?.currency || 'USD')}{slice.value.toFixed(2)} ({slice.percent.toFixed(1)}%)</title>
@@ -1853,7 +1863,7 @@ function HomeContent() {
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                       <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Total</span>
                       <span className="text-xl font-bold text-white">
-                        {getCurrencySymbol(activeProfile?.currency || 'USD')}{categorySpending.reduce((s, c) => s + c.value, 0).toFixed(0)}
+                        {getCurrencySymbol(activeProfile?.currency || 'USD')}{totalCategorySpend.toFixed(0)}
                       </span>
                       <span className="text-[9px] text-slate-600">
                         {viewMode === 'monthly' ? '/mo' : '/yr'}
