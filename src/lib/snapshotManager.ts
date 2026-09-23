@@ -250,3 +250,38 @@ export function restorePreRestoreBackup(): boolean {
     return false;
   }
 }
+
+/**
+ * Downloads a snapshot as a standalone .json backup file.
+ * The exported JSON is 100% compatible with SubTracking's standard vault import tool.
+ */
+export function downloadSnapshotJSON(snapshot: VaultSnapshot): void {
+  if (typeof window === 'undefined') return;
+
+  const exportPayload = {
+    version: 1,
+    snapshotSlot: snapshot.slotKey,
+    snapshotLabel: snapshot.label,
+    snapshotDate: snapshot.formattedDate,
+    snapshotTimestamp: snapshot.actualTimestamp,
+    profiles: snapshot.profiles,
+    activeProfileId: snapshot.activeProfileId,
+    exportedAt: new Date().toISOString()
+  };
+
+  const jsonStr = JSON.stringify(exportPayload, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  // Format date for filename: YYYY-MM-DD
+  const dateStr = new Date(snapshot.actualTimestamp).toISOString().split('T')[0];
+  const filename = `subtracking-snapshot-${snapshot.slotKey}-${dateStr}.json`;
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}

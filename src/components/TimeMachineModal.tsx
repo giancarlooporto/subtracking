@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { History, RotateCcw, X, Zap, Lock, ShieldCheck, Calendar, DollarSign, Layers, CheckCircle2, AlertTriangle, ArrowRight, Undo2 } from 'lucide-react';
+import { History, RotateCcw, X, Zap, Lock, ShieldCheck, Calendar, DollarSign, Layers, CheckCircle2, AlertTriangle, ArrowRight, Undo2, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getRollingSnapshots, restoreVaultSnapshot, restorePreRestoreBackup, VaultSnapshot, formatSnapshotDateTime } from '../lib/snapshotManager';
+import { getRollingSnapshots, restoreVaultSnapshot, restorePreRestoreBackup, downloadSnapshotJSON, VaultSnapshot, formatSnapshotDateTime } from '../lib/snapshotManager';
 import { getCurrencySymbol } from '../types';
 
 interface TimeMachineModalProps {
@@ -47,6 +47,18 @@ export function TimeMachineModal({
         }
         setSelectedSnapshot(snap);
         setIsConfirming(true);
+    };
+
+    const handleDownloadClick = (snap: VaultSnapshot) => {
+        if (!isPro) {
+            onActivatePro();
+            return;
+        }
+        downloadSnapshotJSON(snap);
+        setStatusMessage({
+            type: 'success',
+            text: `Downloaded ${snap.label} snapshot JSON backup file!`
+        });
     };
 
     const handleConfirmRestore = () => {
@@ -296,10 +308,23 @@ export function TimeMachineModal({
                                                 </div>
                                             </div>
 
-                                            <div className="w-full sm:w-auto flex items-center justify-end">
+                                            <div className="w-full sm:w-auto flex items-center justify-end gap-2 shrink-0">
+                                                <button
+                                                    onClick={() => handleDownloadClick(snap)}
+                                                    title={`Download ${snap.label} JSON backup file`}
+                                                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                                                        isPro
+                                                            ? 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 hover:border-slate-700'
+                                                            : 'bg-slate-900/40 text-slate-500 border border-slate-900 hover:text-amber-300 hover:border-amber-500/30'
+                                                    }`}
+                                                >
+                                                    <Download className="w-3.5 h-3.5 text-indigo-400" />
+                                                    <span>JSON</span>
+                                                </button>
+
                                                 <button
                                                     onClick={() => handleRestoreClick(snap)}
-                                                    className={`w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                                                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                                                         isPro
                                                             ? 'bg-slate-800 hover:bg-indigo-600 text-slate-200 hover:text-white border border-slate-700 hover:border-indigo-500 shadow-sm'
                                                             : 'bg-slate-900 text-slate-400 hover:text-amber-300 border border-slate-800 hover:border-amber-500/30'
