@@ -57,12 +57,15 @@ export function CalendarView({ subscriptions, isPro, onUnlockPro, onEdit, onDele
             const diffTime = checkDate.getTime() - baseDate.getTime();
             const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
+            // Do not display upcoming recurring dots for dates before the subscription start date
+            if (diffDays < 0) return false;
+
             switch (sub.billingCycle) {
                 case 'weekly':
-                    return Math.abs(diffDays) % 7 === 0;
+                    return diffDays % 7 === 0;
 
                 case 'biweekly':
-                    return Math.abs(diffDays) % 14 === 0;
+                    return diffDays % 14 === 0;
 
                 case 'monthly': {
                     const maxDayInMonth = daysInMonth(year, month);
