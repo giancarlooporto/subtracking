@@ -174,6 +174,12 @@ function HomeContent() {
 
   // Stats
   const [cancelledSavings, setCancelledSavings] = useState(0);
+  const [isDemoData, setIsDemoData] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('subtracking_is_demo') === 'true';
+    }
+    return false;
+  });
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
   const [showUrgentBanner, setShowUrgentBanner] = useState(true);
@@ -973,6 +979,14 @@ function HomeContent() {
       }
     }
 
+    // If previously in demo mode, clear demo flag
+    if (isDemoData) {
+      setIsDemoData(false);
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('subtracking_is_demo');
+      }
+    }
+
     // Update local state
     setSubscriptions(updatedSubscriptions);
 
@@ -981,6 +995,121 @@ function HomeContent() {
 
     // 🛡️ Mark local change immediately to prevent race conditions
     localStorage.setItem('subtracking-last-sync', new Date().toISOString());
+  };
+
+  const POPULAR_PRESETS = [
+    { name: 'Netflix', price: 15.99, category: 'Streaming', cycle: 'monthly' as const },
+    { name: 'Spotify', price: 11.99, category: 'Streaming', cycle: 'monthly' as const },
+    { name: 'Gym Membership', price: 35.00, category: 'Health & Wellness', cycle: 'monthly' as const },
+    { name: 'iCloud Storage', price: 2.99, category: 'Software & Apps', cycle: 'monthly' as const },
+    { name: 'Amazon Prime', price: 14.99, category: 'Shopping & Retail', cycle: 'monthly' as const },
+    { name: 'Phone Bill', price: 65.00, category: 'Utility Bills', cycle: 'monthly' as const },
+  ];
+
+  const handleQuickAddPreset = (preset: typeof POPULAR_PRESETS[0]) => {
+    lastLocalAction.current = Date.now();
+    if (!activeProfile) return;
+    const nextMonth = new Date();
+    nextMonth.setDate(nextMonth.getDate() + 30);
+    const renewalDate = nextMonth.toISOString().split('T')[0];
+
+    const newSub: Subscription = {
+      id: generateId(),
+      name: preset.name,
+      price: preset.price,
+      category: preset.category,
+      billingCycle: preset.cycle,
+      renewalDate: renewalDate,
+      hasEverBeenPaid: true,
+      isEssential: preset.category === 'Utility Bills'
+    };
+
+    const updated = [...subscriptions, newSub];
+    setSubscriptions(updated);
+    updateProfile(activeProfile.id, { subscriptions: updated });
+    setIsDemoData(false);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('subtracking_is_demo');
+    }
+    showToast(`Added ${preset.name}! Tap card to customize amount or date.`, 'success');
+  };
+
+  const handleLoadDemoData = () => {
+    lastLocalAction.current = Date.now();
+    if (!activeProfile) return;
+    const today = new Date();
+    const addDays = (d: number) => {
+      const target = new Date(today);
+      target.setDate(target.getDate() + d);
+      return target.toISOString().split('T')[0];
+    };
+
+    const demoSubs: Subscription[] = [
+      {
+        id: generateId(),
+        name: 'Netflix Premium',
+        price: 15.99,
+        category: 'Streaming',
+        renewalDate: addDays(4),
+        billingCycle: 'monthly',
+        hasEverBeenPaid: true,
+        lastPaidDate: addDays(-26),
+        isEssential: false
+      },
+      {
+        id: generateId(),
+        name: 'Spotify Family',
+        price: 11.99,
+        category: 'Streaming',
+        renewalDate: addDays(11),
+        billingCycle: 'monthly',
+        hasEverBeenPaid: true,
+        lastPaidDate: addDays(-19),
+        isEssential: false
+      },
+      {
+        id: generateId(),
+        name: 'Gym & Fitness Club',
+        price: 45.00,
+        category: 'Health & Wellness',
+        renewalDate: addDays(17),
+        billingCycle: 'monthly',
+        hasEverBeenPaid: true,
+        lastPaidDate: addDays(-13),
+        isEssential: false
+      },
+      {
+        id: generateId(),
+        name: 'iCloud+ Storage (200GB)',
+        price: 2.99,
+        category: 'Software & Apps',
+        renewalDate: addDays(2),
+        billingCycle: 'monthly',
+        hasEverBeenPaid: true,
+        lastPaidDate: addDays(-28),
+        isEssential: true
+      }
+    ];
+
+    setSubscriptions(demoSubs);
+    updateProfile(activeProfile.id, { subscriptions: demoSubs });
+    setIsDemoData(true);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('subtracking_is_demo', 'true');
+    }
+    showToast('Loaded sample subscriptions! Feel free to explore.', 'info');
+  };
+
+  const handleClearDemoData = () => {
+    lastLocalAction.current = Date.now();
+    if (!activeProfile) return;
+    setSubscriptions([]);
+    updateProfile(activeProfile.id, { subscriptions: [] });
+    setIsDemoData(false);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('subtracking_is_demo');
+    }
+    showToast('Sample data cleared. Ready for your own subscriptions!', 'success');
   };
 
 
@@ -1676,6 +1805,36 @@ function HomeContent() {
           currency={activeProfile?.currency || 'USD'}
         />
 
+        {/* ⚡ Sample / Demo Data Notice Banner */}
+        {isDemoData && subscriptions.length > 0 && (
+          <div className="bg-gradient-to-r from-indigo-500/15 via-purple-500/15 to-indigo-500/15 border border-indigo-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-lg backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center gap-3 text-indigo-200 text-center sm:text-left">
+              <span className="text-xl">👀</span>
+              <div>
+                <div className="font-bold text-white flex items-center justify-center sm:justify-start gap-2">
+                  <span>You're viewing sample demo data</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase font-black tracking-wider">Demo Mode</span>
+                </div>
+                <p className="text-[11px] text-slate-300 mt-0.5">Explore charts, calendar, and Ghost Meter. Add your own data or clear anytime.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => { setEditingId(null); setShowAddModal(true); }}
+                className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xs transition-all active:scale-95 cursor-pointer shadow-md"
+              >
+                + Add Real Sub
+              </button>
+              <button
+                onClick={handleClearDemoData}
+                className="px-3.5 py-1.5 bg-red-500/15 hover:bg-red-500/25 text-red-300 hover:text-red-200 border border-red-500/30 rounded-xl font-bold text-xs transition-all active:scale-95 cursor-pointer"
+              >
+                Clear Sample Data
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* HOUSEHOLD PULSE (Timeline) */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 relative group">
           <BillingPulse subscriptions={filteredSubscriptions} currency={activeProfile?.currency || 'USD'} />
@@ -2247,10 +2406,107 @@ function HomeContent() {
                 </AnimatePresence>
 
                 {sortedSubscriptions.length === 0 && (
-                  <div className="col-span-full py-20 flex flex-col items-center justify-center text-slate-600 space-y-4 border-2 border-dashed border-slate-800 rounded-3xl">
-                    <CreditCard className="w-12 h-12 opacity-20" />
-                    <p>No subscriptions found.</p>
-                  </div>
+                  subscriptions.length === 0 ? (
+                    <div className="col-span-full py-10 px-4 sm:px-10 flex flex-col items-center justify-center text-center bg-gradient-to-b from-slate-900/80 via-slate-900/50 to-slate-950/80 border border-indigo-500/25 rounded-3xl backdrop-blur-xl relative overflow-hidden shadow-2xl space-y-7">
+                      {/* Ambient background glow */}
+                      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
+
+                      {/* Header */}
+                      <div className="space-y-2 max-w-lg z-10">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold tracking-wide">
+                          <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                          <span>Welcome to Your Dashboard</span>
+                        </div>
+                        <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                          Your Vault is Ready to Track
+                        </h3>
+                        <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                          Take control of recurring charges, uncover ghost subscriptions, and track renewal dates with zero bank logins required.
+                        </p>
+                      </div>
+
+                      {/* 3 Main Action Cards */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 w-full max-w-3xl z-10">
+                        {/* 1. Add Custom Sub */}
+                        <button
+                          onClick={() => { setEditingId(null); setShowAddModal(true); }}
+                          className="flex flex-col items-center justify-center p-5 rounded-2xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 hover:border-indigo-400 transition-all duration-200 group text-center space-y-2.5 shadow-lg active:scale-95 cursor-pointer"
+                        >
+                          <div className="w-11 h-11 rounded-xl bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">
+                            <Plus className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-white text-sm">Add First Subscription</h4>
+                            <p className="text-[11px] text-indigo-200/80 mt-0.5">Enter a custom bill or service</p>
+                          </div>
+                        </button>
+
+                        {/* 2. Explore Sample Data */}
+                        <button
+                          onClick={handleLoadDemoData}
+                          className="flex flex-col items-center justify-center p-5 rounded-2xl bg-slate-800/50 hover:bg-slate-800/90 border border-slate-700/60 hover:border-purple-500/40 transition-all duration-200 group text-center space-y-2.5 shadow-lg active:scale-95 cursor-pointer"
+                        >
+                          <div className="w-11 h-11 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform">
+                            <Zap className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-white text-sm">Explore Sample Data</h4>
+                            <p className="text-[11px] text-slate-400 mt-0.5">Preview with 4 realistic demo items</p>
+                          </div>
+                        </button>
+
+                        {/* 3. Run Audit Wizard */}
+                        <button
+                          onClick={() => setShowWizard(true)}
+                          className="flex flex-col items-center justify-center p-5 rounded-2xl bg-slate-800/50 hover:bg-slate-800/90 border border-slate-700/60 hover:border-emerald-500/40 transition-all duration-200 group text-center space-y-2.5 shadow-lg active:scale-95 cursor-pointer"
+                        >
+                          <div className="w-11 h-11 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition-transform">
+                            <Ghost className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-white text-sm">Launch Audit Wizard</h4>
+                            <p className="text-[11px] text-slate-400 mt-0.5">Find forgotten recurring charges</p>
+                          </div>
+                        </button>
+                      </div>
+
+                      {/* ⚡ 1-Click Popular Quick Add Presets */}
+                      <div className="w-full max-w-2xl pt-2 z-10 space-y-3">
+                        <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+                          <span>Or 1-Click Quick-Add Popular Subscriptions</span>
+                        </div>
+                        <div className="flex flex-wrap items-center justify-center gap-2">
+                          {POPULAR_PRESETS.map((preset) => (
+                            <button
+                              key={preset.name}
+                              onClick={() => handleQuickAddPreset(preset)}
+                              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800/70 hover:bg-indigo-600/20 border border-slate-700/70 hover:border-indigo-500/40 text-xs font-semibold text-slate-200 hover:text-white transition-all shadow-sm active:scale-95 cursor-pointer group"
+                            >
+                              <Plus className="w-3.5 h-3.5 text-indigo-400 group-hover:rotate-90 transition-transform" />
+                              <span>{preset.name}</span>
+                              <span className="text-[10px] text-slate-400 font-mono">
+                                {getCurrencySymbol(activeProfile?.currency || 'USD')}{preset.price.toFixed(2)}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="col-span-full py-16 flex flex-col items-center justify-center text-slate-400 space-y-4 border-2 border-dashed border-slate-800/80 rounded-3xl bg-slate-900/20">
+                      <CreditCard className="w-10 h-10 opacity-30 text-indigo-400" />
+                      <div className="text-center space-y-1">
+                        <p className="font-semibold text-slate-300 text-sm">No subscriptions in this category</p>
+                        <p className="text-xs text-slate-500">Try selecting "All" or a different category filter.</p>
+                      </div>
+                      <button
+                        onClick={() => setFilterCategory(['All'])}
+                        className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                      >
+                        Show All Subscriptions
+                      </button>
+                    </div>
+                  )
                 )}
               </div>
             ) : (
