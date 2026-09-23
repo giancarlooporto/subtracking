@@ -33,15 +33,61 @@ export function CalendarView({ subscriptions, isPro, onUnlockPro, onEdit, onDele
     const totalDays = daysInMonth(year, month);
     const offset = firstDayOfMonth(year, month);
 
-    // Get subscriptions for a specific day
+    // Get subscriptions for a specific day by checking recurring schedule
     const getSubsForDay = (day: number) => {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const checkDate = new Date(year, month, day);
+        checkDate.setHours(12, 0, 0, 0);
+
         return subscriptions.filter(sub => {
-            const occurrence = getNextOccurrence(sub.renewalDate, sub.billingCycle);
-            // Simple match for the current view month/day. 
-            // In a real app, we'd calculate all occurrences in the month, 
-            // but for a minimalist view, showing the next occurrence is often enough.
-            return occurrence === dateStr;
+            if (!sub.renewalDate) return false;
+            const [subYear, subMonth, subDay] = sub.renewalDate.split('-').map(Number);
+            const baseDate = new Date(subYear, subMonth - 1, subDay);
+            baseDate.setHours(12, 0, 0, 0);
+
+            if (isNaN(baseDate.getTime())) return false;
+
+            if (sub.isOneTimePayment) {
+                return (
+                    checkDate.getFullYear() === baseDate.getFullYear() &&
+                    checkDate.getMonth() === baseDate.getMonth() &&
+                    checkDate.getDate() === baseDate.getDate()
+                );
+            }
+
+            const diffTime = checkDate.getTime() - baseDate.getTime();
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+            switch (sub.billingCycle) {
+                case 'weekly':
+                    return Math.abs(diffDays) % 7 === 0;
+
+                case 'biweekly':
+                    return Math.abs(diffDays) % 14 === 0;
+
+                case 'monthly': {
+                    const maxDayInMonth = daysInMonth(year, month);
+                    const targetDay = Math.min(baseDate.getDate(), maxDayInMonth);
+                    return checkDate.getDate() === targetDay;
+                }
+
+                case 'quarterly': {
+                    const maxDayInMonth = daysInMonth(year, month);
+                    const targetDay = Math.min(baseDate.getDate(), maxDayInMonth);
+                    if (checkDate.getDate() !== targetDay) return false;
+                    const monthDiff = (checkDate.getFullYear() - baseDate.getFullYear()) * 12 + (checkDate.getMonth() - baseDate.getMonth());
+                    return Math.abs(monthDiff) % 3 === 0;
+                }
+
+                case 'yearly': {
+                    return (
+                        checkDate.getMonth() === baseDate.getMonth() &&
+                        checkDate.getDate() === baseDate.getDate()
+                    );
+                }
+
+                default:
+                    return checkDate.getDate() === baseDate.getDate();
+            }
         });
     };
 
