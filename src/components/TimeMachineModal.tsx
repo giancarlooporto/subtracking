@@ -110,7 +110,7 @@ export function TimeMachineModal({
     return (
         <AnimatePresence>
             <div 
-                className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[110] flex items-center justify-center p-4 overflow-y-auto"
+                className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4 overflow-y-auto"
                 onClick={onClose}
             >
                 <motion.div
@@ -311,14 +311,18 @@ export function TimeMachineModal({
                                             <div className="w-full sm:w-auto flex items-center justify-end gap-2 shrink-0">
                                                 <button
                                                     onClick={() => handleDownloadClick(snap)}
-                                                    title={`Download ${snap.label} JSON backup file`}
+                                                    title={isPro ? `Download ${snap.label} JSON backup file` : 'Unlock JSON downloads with Pro'}
                                                     className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                                                         isPro
                                                             ? 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 hover:border-slate-700'
-                                                            : 'bg-slate-900/40 text-slate-500 border border-slate-900 hover:text-amber-300 hover:border-amber-500/30'
+                                                            : 'bg-slate-900 text-slate-400 hover:text-amber-300 border border-slate-800 hover:border-amber-500/30'
                                                     }`}
                                                 >
-                                                    <Download className="w-3.5 h-3.5 text-indigo-400" />
+                                                    {isPro ? (
+                                                        <Download className="w-3.5 h-3.5 text-indigo-400" />
+                                                    ) : (
+                                                        <Lock className="w-3.5 h-3.5 text-amber-400" />
+                                                    )}
                                                     <span>JSON</span>
                                                 </button>
 

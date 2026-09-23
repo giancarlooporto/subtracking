@@ -18,7 +18,7 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
