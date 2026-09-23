@@ -1796,42 +1796,52 @@ function HomeContent() {
                     <svg viewBox="0 0 100 100" className="transform -rotate-90 h-full max-h-[220px]">
                       {categorySpending.reduce((acc: any[], cat, i) => {
                         const total = categorySpending.reduce((s, c) => s + c.value, 0);
+                        const isSingleCategory = categorySpending.length === 1;
+                        const angle = total > 0 ? (cat.value / total) * 360 : (isSingleCategory ? 360 : 0);
+                        const percent = total > 0 ? (cat.value / total) * 100 : (isSingleCategory ? 100 : 0);
                         const startAngle = acc.length > 0 ? acc[acc.length - 1].endAngle : 0;
-                        const angle = (cat.value / total) * 360;
                         const endAngle = startAngle + angle;
 
                         // Don't render tiny slices that break the math (less than 1 degree)
-                        if (angle < 1) return acc;
+                        if (angle < 1 && !isSingleCategory) return acc;
 
-                        const largeArc = angle > 180 ? 1 : 0;
+                        const isFullCircle = isSingleCategory || angle >= 359.99;
 
-                        // Coordinates for outer radius (45)
-                        const x1 = 50 + 45 * Math.cos(Math.PI * startAngle / 180);
-                        const y1 = 50 + 45 * Math.sin(Math.PI * startAngle / 180);
-                        const x2 = 50 + 45 * Math.cos(Math.PI * endAngle / 180);
-                        const y2 = 50 + 45 * Math.sin(Math.PI * endAngle / 180);
+                        let pathData = '';
+                        if (isFullCircle) {
+                          pathData = 'M 50 5 A 45 45 0 0 0 50 95 A 45 45 0 0 0 50 5 Z M 50 15 A 35 35 0 0 1 50 85 A 35 35 0 0 1 50 15 Z';
+                        } else {
+                          const largeArc = angle > 180 ? 1 : 0;
 
-                        // Coordinates for inner radius (35) - creating the doughnut hole
-                        const x3 = 50 + 35 * Math.cos(Math.PI * endAngle / 180);
-                        const y3 = 50 + 35 * Math.sin(Math.PI * endAngle / 180);
-                        const x4 = 50 + 35 * Math.cos(Math.PI * startAngle / 180);
-                        const y4 = 50 + 35 * Math.sin(Math.PI * startAngle / 180);
+                          // Coordinates for outer radius (45)
+                          const x1 = 50 + 45 * Math.cos(Math.PI * startAngle / 180);
+                          const y1 = 50 + 45 * Math.sin(Math.PI * startAngle / 180);
+                          const x2 = 50 + 45 * Math.cos(Math.PI * endAngle / 180);
+                          const y2 = 50 + 45 * Math.sin(Math.PI * endAngle / 180);
 
-                        const pathData = [
-                          `M ${x1} ${y1}`, // Move to outer start
-                          `A 45 45 0 ${largeArc} 1 ${x2} ${y2}`, // Arc to outer end
-                          `L ${x3} ${y3}`, // Line to inner end
-                          `A 35 35 0 ${largeArc} 0 ${x4} ${y4}`, // Arc to inner start (reverse direction)
-                          `Z` // Close path
-                        ].join(' ');
+                          // Coordinates for inner radius (35) - creating the doughnut hole
+                          const x3 = 50 + 35 * Math.cos(Math.PI * endAngle / 180);
+                          const y3 = 50 + 35 * Math.sin(Math.PI * endAngle / 180);
+                          const x4 = 50 + 35 * Math.cos(Math.PI * startAngle / 180);
+                          const y4 = 50 + 35 * Math.sin(Math.PI * startAngle / 180);
 
-                        acc.push({ pathData, color: getCategoryColorHex(cat.name), endAngle, name: cat.name, value: cat.value, percent: (cat.value / total) * 100 });
+                          pathData = [
+                            `M ${x1} ${y1}`, // Move to outer start
+                            `A 45 45 0 ${largeArc} 1 ${x2} ${y2}`, // Arc to outer end
+                            `L ${x3} ${y3}`, // Line to inner end
+                            `A 35 35 0 ${largeArc} 0 ${x4} ${y4}`, // Arc to inner start (reverse direction)
+                            `Z` // Close path
+                          ].join(' ');
+                        }
+
+                        acc.push({ pathData, color: getCategoryColorHex(cat.name), endAngle, name: cat.name, value: cat.value, percent });
                         return acc;
                       }, []).map((slice: any, i) => (
                         <path
                           key={i}
                           d={slice.pathData}
                           fill={slice.color}
+                          fillRule="evenodd"
                           className="opacity-90 hover:opacity-100 transition-all duration-300 hover:scale-105 cursor-pointer stroke-slate-900 stroke-[0.5]"
                         >
                           <title>{slice.name}: {getCurrencySymbol(activeProfile?.currency || 'USD')}{slice.value.toFixed(2)} ({slice.percent.toFixed(1)}%)</title>

@@ -76,4 +76,30 @@ Ensure all links have consistent hover states, legible contrast, aligned grid co
 
 ### Build & Verification
 - [ ] `npm run build` compiles 100% cleanly with zero broken internal routes or TypeScript errors.
-- [ ] Visual inspection confirms a balanced, modern, human-verified layout across both mobile and desktop screen sizes.
+
+## 2026-09-23T14:53:51Z
+
+This is a single self-contained fix; keep it small and focused.
+
+Fix the "Spend by Category" donut chart in `src/app/dashboard/page.tsx` so that when there is only a single subscription / category (angle = 360° or percent = 100%), it cleanly renders and owns the entire 360-degree donut ring space instead of disappearing due to SVG arc endpoint collision (`startAngle == endAngle`). Do not change how the chart looks or behaves when there are multiple categories.
+
+Working directory: /Users/giancarlooportousa/Documents/Antigravity/Digital Declutter
+Integrity mode: development
+
+## Requirements
+
+### R1. Single Subscription / Category Donut Ring Full Space Ownership
+In `src/app/dashboard/page.tsx`, ensure the "Spend by Category" SVG chart renders a complete, seamless donut ring (e.g. using a 359.99° arc calculation or a dedicated 360° circle element with stroke width 10 / radius 40 or clean full donut path) when there is only 1 category. The single category must own 100% of the circle with its assigned category color, hover effects, tooltip, and center total text.
+
+### R2. Preserve Multi-Category Behavior Exactly
+Do not alter the behavior, animations, styling, colors, legend, or slice interactions when multiple categories exist.
+
+## Acceptance Criteria
+
+### Chart Rendering & Edge Case Verification
+- [ ] When exactly 1 subscription/category exists, the Spend by Category donut chart renders a visible, full 360° colored ring owning the full circular space.
+- [ ] When 2 or more subscriptions exist, the multi-slice donut chart renders normally with exact proportional arcs.
+- [ ] Hover tooltips, category colors, and center total amounts remain 100% functional in all cases.
+
+### Build Verification
+- [ ] `npm run build` compiles cleanly with zero TypeScript errors or broken routes.
