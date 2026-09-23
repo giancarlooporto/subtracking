@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { Shield, Lock, HardDrive, Eye, ArrowRight, Check, X } from 'lucide-react';
-import { ShareButton } from '../../components/ShareButton';
 import { Footer } from '../../components/Footer';
 import { pricing } from '../../lib/pricing';
 export const metadata: Metadata = {
@@ -198,9 +197,6 @@ export default function PrivacySubscriptionTrackerPage() {
                     >
                         Start Free Now
                     </Link>
-                    <div className="pt-4 flex justify-center">
-                        <ShareButton variant="footer" />
-                    </div>
                 </div>
             </section>
             <Footer />

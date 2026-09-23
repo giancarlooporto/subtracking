@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { X, Key, Loader2, CheckCircle, AlertCircle, ShoppingBag, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Key, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GUMROAD_CONFIG } from '../lib/gumroad';
-import { ShareButton } from './ShareButton';
 
 interface LicenseModalProps {
     isOpen: boolean;
@@ -14,12 +13,6 @@ export function LicenseModal({ isOpen, onClose, onSuccess }: LicenseModalProps) 
     const [key, setKey] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const [hasShared, setHasShared] = useState(false);
-
-    useEffect(() => {
-        const shared = localStorage.getItem('subtracking-has-shared');
-        if (shared === 'true') setHasShared(true);
-    }, [isOpen]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

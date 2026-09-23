@@ -3,13 +3,27 @@
 html {
   background: #020617;
   /* Deepest dark for overscroll */
-  scroll-padding-top: 100px;
-  /* Space for the header/notch when scrolling to focused inputs */
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(5.5rem + env(safe-area-inset-top, 0px));
+  /* Space for fixed navigation bar and mobile notch when scrolling to anchor targets */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
 }
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-geist-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-geist-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @theme inline {

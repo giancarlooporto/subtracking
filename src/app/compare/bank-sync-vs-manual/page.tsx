@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Shield, Lock, ArrowRight, Check, X, CreditCard, EyeOff, Sparkles, Database, WifiOff, RefreshCw } from 'lucide-react';
 import { Footer } from '../../../components/Footer';
-import { ShareButton } from '../../../components/ShareButton';
 import { pricing } from '../../../lib/pricing';
 
 export const metadata: Metadata = {
@@ -202,7 +201,6 @@ export default function BankSyncVsManualPage() {
                         >
                             Try SubTracking Free
                         </Link>
-                        <ShareButton variant="footer" />
                     </div>
                 </div>
             </section>

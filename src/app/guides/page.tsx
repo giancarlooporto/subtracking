@@ -32,6 +32,7 @@ const guides = [
 const comparisons = [
     { title: 'SubTracking vs. Excel & Sheets', href: '/compare/excel-vs-subtracking', tag: 'Recommended' },
     { title: 'Bank-Sync vs. Manual Tracking', href: '/compare/bank-sync-vs-manual' },
+    { title: 'Manual vs. Automated Trackers', href: '/manual-vs-automated' },
     { title: 'Why We Avoid Bank Logins', href: '/no-bank-login' },
 ];
 

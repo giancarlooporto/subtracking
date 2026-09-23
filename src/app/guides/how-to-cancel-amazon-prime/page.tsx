@@ -39,9 +39,9 @@ export default function CancelPrimeGuide() {
 
             <article className="pt-32 pb-20 px-6">
                 <div className="max-w-3xl mx-auto">
-                    <Link href="/blog/find-unused-subscriptions" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8">
+                    <Link href="/guides" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8">
                         <ArrowLeft className="w-4 h-4" />
-                        Back to Audit Guide
+                        Back to Cancellation Guides
                     </Link>
 
                     <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-6 leading-tight">

@@ -134,10 +134,10 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                                     Already purchased? Enter License Serial Key
                                 </button>
 
-                                <div className="pt-2 text-center text-[10px] text-slate-500 space-y-2">
+                                <div className="pt-2 text-center text-[10px] text-slate-400 space-y-2">
                                     <div className="flex items-center justify-center gap-4">
-                                        <a href="/terms" target="_blank" className="hover:text-white underline transition-colors">Terms of Use</a>
-                                        <a href="/privacy" target="_blank" className="hover:text-white underline transition-colors">Privacy Policy</a>
+                                        <a href="/terms" target="_blank" rel="noopener noreferrer" className="hover:text-white underline transition-colors">Terms of Use</a>
+                                        <a href="/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-white underline transition-colors">Privacy Policy</a>
                                     </div>
                                 </div>
                             </div>

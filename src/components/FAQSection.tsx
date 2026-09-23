@@ -113,8 +113,12 @@ export function FAQSection() {
                                             )}
                                         >
                                             <button
+                                                type="button"
+                                                id={`faq-trigger-${index}`}
+                                                aria-expanded={isOpen}
+                                                aria-controls={`faq-panel-${index}`}
                                                 onClick={() => setOpenIndex(isOpen ? null : index)}
-                                                className="w-full text-left p-6 flex items-center justify-between gap-4"
+                                                className="w-full text-left p-6 flex items-center justify-between gap-4 cursor-pointer"
                                             >
                                                 <span className={cn(
                                                     "font-bold text-lg transition-colors",
@@ -131,6 +135,9 @@ export function FAQSection() {
                                             <AnimatePresence>
                                                 {isOpen && (
                                                     <motion.div
+                                                        id={`faq-panel-${index}`}
+                                                        role="region"
+                                                        aria-labelledby={`faq-trigger-${index}`}
                                                         initial={{ height: 0, opacity: 0 }}
                                                         animate={{ height: 'auto', opacity: 1 }}
                                                         exit={{ height: 0, opacity: 0 }}

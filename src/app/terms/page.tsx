@@ -1,5 +1,6 @@
 import { siteConfig } from '../../../siteConfig';
 import { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
     title: `Terms of Service | ${siteConfig.siteName}`,
@@ -114,9 +115,9 @@ export default function TermsOfService() {
 
                 {/* Back Button */}
                 <div className="pt-8">
-                    <a href="/" className="text-sm text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-2">
-                        ← Back to App
-                    </a>
+                    <Link href="/" className="text-sm text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-2">
+                        ← Back to SubTracking
+                    </Link>
                 </div>
             </div>
         </div>

@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { Shield, DollarSign, Lock, Zap, Check, X, ArrowRight } from 'lucide-react';
-import { ShareButton } from '../../components/ShareButton';
 import { Footer } from '../../components/Footer';
 
 export const metadata: Metadata = {
@@ -236,9 +235,6 @@ export default function ManualVsAutomatedPage() {
                         Try SubTracking Free
                         <ArrowRight className="w-6 h-6 ml-2" />
                     </Link>
-                    <div className="pt-4 flex justify-center">
-                        <ShareButton variant="footer" />
-                    </div>
                 </div>
             </section>
             <Footer />

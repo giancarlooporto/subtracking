@@ -194,7 +194,7 @@ export function SubTrackingWizard({ isOpen, onClose, subscriptions, onFinish, cu
                                 href={GUMROAD_CONFIG.tipUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-amber-300 font-medium transition-colors"
+                                className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-amber-300 font-medium transition-colors py-1.5 px-2"
                             >
                                 <Heart className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
                                 <span>Saved money? Buy the dev a coffee ☕</span>
