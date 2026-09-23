@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, Edit, Check, MapPin, DollarSign, Zap, Lock } from 'lucide-react';
+import { X, Plus, Trash2, Edit, Check, MapPin, Zap, Lock } from 'lucide-react';
 import { Profile, getCurrencySymbol } from '../types';
 
 interface ProfileManagerModalProps {
@@ -136,9 +136,9 @@ export function ProfileManagerModal({
                                                         {profile.city}
                                                     </span>
                                                     <span className="w-1 h-1 rounded-full bg-slate-600" />
-                                                    <span className="flex items-center gap-1">
-                                                        <DollarSign className="w-4 h-4" />
-                                                        {getCurrencySymbol(profile.currency)} {profile.currency}
+                                                    <span className="flex items-center gap-1.5 font-medium text-slate-300">
+                                                        <span>{getCurrencySymbol(profile.currency)}</span>
+                                                        <span className="text-xs text-slate-500">{profile.currency}</span>
                                                     </span>
                                                     <span className="w-1 h-1 rounded-full bg-slate-600" />
                                                     <span className="text-slate-500">
