@@ -637,8 +637,7 @@ export default function LandingPage() {
                                         "Encrypted Multi-Device Cloud Sync",
                                         "Real-time Cloud Backups",
                                         "Instant Cross-Browser Restore",
-                                        "Phone to Desktop Live Synchronization",
-                                        "Isolated Private Cloud Storage (AES-256)"
+                                        "Phone to Desktop Live Synchronization"
                                     ].map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-slate-200 text-sm font-medium">
                                             <Zap className="w-4 h-4 text-indigo-400 shrink-0" />
