@@ -48,6 +48,7 @@ const ProfileSettingsModal = dynamic(() => import('../../components/ProfileSetti
 const ProfileManagerModal = dynamic(() => import('../../components/ProfileManagerModal').then(mod => mod.ProfileManagerModal), { ssr: false });
 const LoginModal = dynamic(() => import('../../components/LoginModal').then(mod => mod.LoginModal), { ssr: false });
 const InstallGuideModal = dynamic(() => import('../../components/InstallGuideModal'), { ssr: false });
+const TimeMachineModal = dynamic(() => import('../../components/TimeMachineModal').then(mod => mod.TimeMachineModal), { ssr: false });
 import { PasswordModal } from '@/components/PasswordModal';
 import { PaywallModal } from '@/components/PaywallModal';
 import { LicenseModal } from '@/components/LicenseModal';
@@ -55,6 +56,7 @@ import { encryptData, decryptData, EncryptedVault } from '@/lib/crypto';
 import { useAuth } from '@/context/AuthContext';
 import { uploadVault, downloadVault } from '@/lib/supabaseClient';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
+import { recordVaultSnapshot } from '@/lib/snapshotManager';
 
 function HomeContent() {
   const { isStandalone } = usePWAInstall();
@@ -135,6 +137,7 @@ function HomeContent() {
   const [showUserGuide, setShowUserGuide] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [showTimeMachineModal, setShowTimeMachineModal] = useState(false);
 
   // Profile Management Modal State
   const [showProfileManager, setShowProfileManager] = useState(false);
@@ -469,6 +472,10 @@ function HomeContent() {
       }
     }
 
+    if (profiles.length > 0) {
+      recordVaultSnapshot(profiles, active?.id || 'default');
+    }
+
     setIsLoaded(true);
   }, [user]);
 
@@ -538,6 +545,7 @@ function HomeContent() {
       const allProfs = getProfiles();
       if (allProfs.length > 0) {
         saveProfiles(allProfs);
+        recordVaultSnapshot(allProfs, activeProfile?.id || 'default');
       }
 
       // 3. Also update the Legacy Key for backup/redundancy (Optional, but good for safety)
@@ -1368,6 +1376,20 @@ function HomeContent() {
       if (data.cancelledSavings) setCancelledSavings(data.cancelledSavings);
       showToast('Vault restored successfully', 'success');
     }
+  };
+
+  const handleSnapshotRestored = () => {
+    const freshProfiles = getProfiles();
+    const freshActive = getActiveProfile();
+    setAllProfiles(freshProfiles);
+    setActiveProfile(freshActive);
+    if (freshActive) {
+      setSubscriptions(freshActive.subscriptions || []);
+      if (freshActive.categories) {
+        setUserCategories(freshActive.categories);
+      }
+    }
+    showToast('Vault restored to snapshot point!', 'success');
   };
 
   const handlePasswordSubmit = async (password: string) => {
@@ -2589,6 +2611,15 @@ function HomeContent() {
         activeProfileName={activeProfile?.name || 'Main Profile'}
         onOpenLogin={() => setShowLoginModal(true)}
         onOpenInstallGuide={() => setShowInstallGuide(true)}
+        onOpenTimeMachine={() => setShowTimeMachineModal(true)}
+      />
+
+      <TimeMachineModal
+        isOpen={showTimeMachineModal}
+        onClose={() => setShowTimeMachineModal(false)}
+        isPro={isPro}
+        onActivatePro={() => setShowPaywallModal(true)}
+        onRestored={handleSnapshotRestored}
       />
 
       <LoginModal

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, GlobeLock, Key, ShoppingBag, Layers, Check, Zap } from 'lucide-react';
+import { X, GlobeLock, Key, ShoppingBag, Layers, Check, Zap, History } from 'lucide-react';
 import { GUMROAD_CONFIG } from '../lib/gumroad';
 
 interface PaywallModalProps {
@@ -55,11 +55,15 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                                 <div>
                                     <h3 className="text-lg font-bold text-white">Multi-Profile Vaults + Cloud Sync</h3>
                                     <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto leading-relaxed">
-                                        Organize separate vaults for Personal, Business, and Family with instant encrypted cloud sync across all your devices.
+                                        Organize separate vaults for Personal, Business, and Family with instant encrypted cloud sync and rolling 30-day time-machine snapshots.
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-2 text-left pt-2">
+                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800">
+                                        <History className="w-4 h-4 text-indigo-400 shrink-0" />
+                                        <span className="text-[11px] font-bold text-slate-200">Time-Machine Snapshots</span>
+                                    </div>
                                     <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800">
                                         <Layers className="w-4 h-4 text-indigo-400 shrink-0" />
                                         <span className="text-[11px] font-bold text-slate-200">Unlimited Profiles</span>
@@ -67,10 +71,6 @@ export function PaywallModal({ isOpen, onClose, onOpenLicense }: PaywallModalPro
                                     <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800">
                                         <GlobeLock className="w-4 h-4 text-indigo-400 shrink-0" />
                                         <span className="text-[11px] font-bold text-slate-200">Encrypted Cloud Sync</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800">
-                                        <Zap className="w-4 h-4 text-indigo-400 shrink-0" />
-                                        <span className="text-[11px] font-bold text-slate-200">Real-Time Backup</span>
                                     </div>
                                     <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800">
                                         <Check className="w-4 h-4 text-emerald-400 shrink-0" />

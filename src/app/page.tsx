@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock, MousePointer2, X, Play, Globe, HardDrive, ShieldAlert, Menu, Layers, Users, Download, FileSpreadsheet, CalendarRange, Home, Smartphone, Car } from 'lucide-react';
+import { Shield, Sparkles, Ghost, Calendar, Check, Zap, ArrowRight, Wallet, Lock, MousePointer2, X, Play, Globe, HardDrive, ShieldAlert, Menu, Layers, Users, Download, FileSpreadsheet, CalendarRange, Home, Smartphone, Car, History } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 import { VideoModal } from '../components/VideoModal';
@@ -633,6 +633,7 @@ export default function LandingPage() {
                                 <ul className="space-y-4 pt-10">
                                     {[
                                         "Unlimited Multi-Profile Vaults (Personal, Business, Family)",
+                                        "Automatic 30-Day Time-Machine Snapshots (1d, 3d, 1w, 2w, 1m)",
                                         "Encrypted Multi-Device Cloud Sync",
                                         "Real-time Cloud Backups",
                                         "Instant Cross-Browser Restore",

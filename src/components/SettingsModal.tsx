@@ -1,4 +1,4 @@
-import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar, BookOpen, User, Users, Heart, Share2, Smartphone } from 'lucide-react';
+import { Settings, X, Zap, Download, Upload, ShieldCheck, Lock, Key, FileDown, Calendar, BookOpen, User, Users, Heart, Share2, Smartphone, History } from 'lucide-react';
 import { useRef, ChangeEvent, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LoginModal } from './LoginModal';
@@ -26,6 +26,7 @@ interface SettingsModalProps {
     activeProfileName: string;
     onOpenLogin: () => void;
     onOpenInstallGuide?: () => void;
+    onOpenTimeMachine?: () => void;
 }
 
 export function SettingsModal({
@@ -43,7 +44,8 @@ export function SettingsModal({
     profileCount,
     activeProfileName,
     onOpenLogin,
-    onOpenInstallGuide
+    onOpenInstallGuide,
+    onOpenTimeMachine
 }: SettingsModalProps) {
     const { isStandalone } = usePWAInstall();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -213,6 +215,58 @@ export function SettingsModal({
                                 <p className="text-[10px] text-slate-500 text-center leading-relaxed">
                                     Export or import your vault files for free at any time. Keep your data locally.
                                 </p>
+                            </div>
+
+                            {/* Time-Machine Snapshots Section */}
+                            <div className="space-y-3 pt-4 border-t border-slate-900">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-2 text-indigo-400">
+                                        <History className="w-4 h-4" />
+                                        <h3 className="text-xs font-bold uppercase tracking-widest">Time-Machine Snapshots</h3>
+                                    </div>
+                                    {!isPro ? (
+                                        <button
+                                            onClick={() => {
+                                                onClose();
+                                                onActivatePro();
+                                            }}
+                                            className="text-[9px] bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-extrabold uppercase tracking-wider flex items-center gap-1 transition-all cursor-pointer"
+                                        >
+                                            <Zap className="w-2.5 h-2.5 fill-amber-300" />
+                                            Pro Feature
+                                        </button>
+                                    ) : (
+                                        <span className="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2.5 py-0.5 rounded-full font-bold">
+                                            5 Rolling Slots
+                                        </span>
+                                    )}
+                                </div>
+                                
+                                <button
+                                    onClick={() => {
+                                        onClose();
+                                        if (onOpenTimeMachine) onOpenTimeMachine();
+                                    }}
+                                    className="w-full flex items-center justify-between p-4 bg-slate-900/40 border border-slate-900 hover:border-indigo-500/30 hover:bg-slate-900 rounded-2xl transition-all group cursor-pointer"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 group-hover:scale-105 transition-transform">
+                                            <History className="w-5 h-5" />
+                                        </div>
+                                        <div className="text-left">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-sm font-bold text-white block">Restore Past Milestones</span>
+                                                {!isPro && <Lock className="w-3.5 h-3.5 text-amber-400" />}
+                                            </div>
+                                            <span className="text-[10px] text-slate-400 font-medium block">
+                                                Roll back to 1d, 3d, 1w, 2w, or 1m ago
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <span className="text-xs font-bold text-indigo-400 group-hover:translate-x-0.5 transition-transform">
+                                        Open →
+                                    </span>
+                                </button>
                             </div>
 
                             {/* Cloud Sync Section */}
