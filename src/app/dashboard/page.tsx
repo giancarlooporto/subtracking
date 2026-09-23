@@ -41,7 +41,7 @@ const SettingsModal = dynamic(() => import('../../components/SettingsModal').the
 const SubTrackingWizard = dynamic(() => import('../../components/SubTrackingWizard').then(mod => mod.SubTrackingWizard), { ssr: false });
 const GhostMeter = dynamic(() => import('../../components/GhostMeter').then(mod => mod.GhostMeter), { ssr: false });
 const WelcomeModal = dynamic(() => import('../../components/WelcomeModal').then(mod => mod.WelcomeModal), { ssr: false });
-import { POPULAR_WELCOME_PRESETS, PopularPresetItem } from '../../components/WelcomeModal';
+import { POPULAR_WELCOME_PRESETS, PopularPresetItem, CustomizedPresetItem } from '../../components/WelcomeModal';
 const CancellationReviewModal = dynamic(() => import('../../components/CancellationReviewModal').then(mod => mod.default), { ssr: false });
 const UserGuideModal = dynamic(() => import('../../components/UserGuideModal').then(mod => mod.UserGuideModal), { ssr: false });
 const ProfileSettingsModal = dynamic(() => import('../../components/ProfileSettingsModal').then(mod => mod.ProfileSettingsModal), { ssr: false });
@@ -1039,6 +1039,35 @@ function HomeContent() {
       localStorage.setItem('hasSeenWelcome', 'true');
     }
     showToast(`Added ${newSubs.length} subscription${newSubs.length !== 1 ? 's' : ''}!`, 'success');
+  };
+
+  const handleAddCustomizedPresets = (customizedPresets: CustomizedPresetItem[]) => {
+    lastLocalAction.current = Date.now();
+    if (!activeProfile || customizedPresets.length === 0) return;
+
+    const newSubs: Subscription[] = customizedPresets.map((preset) => {
+      return {
+        id: generateId(),
+        name: preset.name,
+        price: preset.price,
+        category: preset.category,
+        billingCycle: preset.billingCycle,
+        renewalDate: preset.renewalDate,
+        hasEverBeenPaid: true,
+        isEssential: preset.category === 'Utility Bills'
+      };
+    });
+
+    const updated = [...subscriptions, ...newSubs];
+    setSubscriptions(updated);
+    updateProfile(activeProfile.id, { subscriptions: updated });
+    setIsDemoData(false);
+    setDashboardSelectedPresets([]);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('subtracking_is_demo');
+      localStorage.setItem('hasSeenWelcome', 'true');
+    }
+    showToast(`Added and configured ${newSubs.length} subscription${newSubs.length !== 1 ? 's' : ''}!`, 'success');
   };
 
   const handleLoadDemoData = () => {
@@ -2582,7 +2611,7 @@ function HomeContent() {
           setShowWelcome(false);
           localStorage.setItem('hasSeenWelcome', 'true');
         }}
-        onAddPresets={(presets) => handleAddMultiplePresets(presets)}
+        onAddCustomizedPresets={(presets) => handleAddCustomizedPresets(presets)}
         onLoadDemoData={handleLoadDemoData}
         onOpenAddModal={() => {
           setEditingId(null);
