@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, DollarSign, Globe } from 'lucide-react';
-import { Profile, SUPPORTED_CURRENCIES } from '../types';
+import { Profile, SUPPORTED_CURRENCIES, POPULAR_CURRENCY_CODES } from '../types';
 import { searchCities, CityData } from '../lib/cities';
 import { TIMEZONES, detectTimezone, formatTimezone } from '../lib/timezones';
 
@@ -212,14 +212,29 @@ export function ProfileSettingsModal({
                                     onChange={(e) => setCurrency(e.target.value)}
                                     className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 >
-                                    {SUPPORTED_CURRENCIES.map((curr) => (
-                                        <option key={curr.code} value={curr.code}>
-                                            {curr.symbol} {curr.code} - {curr.name}
-                                        </option>
-                                    ))}
+                                    <optgroup label="── Popular Currencies ──">
+                                        {POPULAR_CURRENCY_CODES.map((code) => {
+                                            const curr = SUPPORTED_CURRENCIES.find((c) => c.code === code);
+                                            if (!curr) return null;
+                                            return (
+                                                <option key={`pop-${curr.code}`} value={curr.code}>
+                                                    {curr.symbol} {curr.code} — {curr.name}
+                                                </option>
+                                            );
+                                        })}
+                                    </optgroup>
+                                    <optgroup label="── All World Currencies (A-Z) ──">
+                                        {[...SUPPORTED_CURRENCIES]
+                                            .sort((a, b) => a.code.localeCompare(b.code))
+                                            .map((curr) => (
+                                                <option key={`all-${curr.code}`} value={curr.code}>
+                                                    {curr.symbol} {curr.code} — {curr.name}
+                                                </option>
+                                            ))}
+                                    </optgroup>
                                 </select>
                                 <p className="text-xs text-slate-500 mt-1">
-                                    Select your preferred currency
+                                    Select your preferred currency (160+ world currencies supported)
                                 </p>
                             </div>
                         </div>

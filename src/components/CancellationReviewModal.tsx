@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download, Check, Calendar, DollarSign } from 'lucide-react';
-import { Subscription } from '../types';
+import { Subscription, getCurrencySymbol } from '../types';
 
 interface CancellationReviewModalProps {
     subscriptions: Subscription[];
@@ -17,13 +17,6 @@ export default function CancellationReviewModal({
     currency = 'USD'
 }: CancellationReviewModalProps) {
     const [selectedIds, setSelectedIds] = useState<string[]>(subscriptions.map(s => s.id));
-
-    const getCurrencySymbol = (curr: string) => {
-        const symbols: { [key: string]: string } = {
-            USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: 'C$', AUD: 'A$', INR: '₹'
-        };
-        return symbols[curr] || '$';
-    };
 
     const toggleSubscription = (id: string) => {
         setSelectedIds(prev =>
