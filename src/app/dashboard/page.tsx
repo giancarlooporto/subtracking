@@ -41,6 +41,7 @@ const SettingsModal = dynamic(() => import('../../components/SettingsModal').the
 const SubTrackingWizard = dynamic(() => import('../../components/SubTrackingWizard').then(mod => mod.SubTrackingWizard), { ssr: false });
 const GhostMeter = dynamic(() => import('../../components/GhostMeter').then(mod => mod.GhostMeter), { ssr: false });
 const WelcomeModal = dynamic(() => import('../../components/WelcomeModal').then(mod => mod.WelcomeModal), { ssr: false });
+import { POPULAR_WELCOME_PRESETS, PopularPresetItem } from '../../components/WelcomeModal';
 const CancellationReviewModal = dynamic(() => import('../../components/CancellationReviewModal').then(mod => mod.default), { ssr: false });
 const UserGuideModal = dynamic(() => import('../../components/UserGuideModal').then(mod => mod.UserGuideModal), { ssr: false });
 const ProfileSettingsModal = dynamic(() => import('../../components/ProfileSettingsModal').then(mod => mod.ProfileSettingsModal), { ssr: false });
@@ -997,41 +998,47 @@ function HomeContent() {
     localStorage.setItem('subtracking-last-sync', new Date().toISOString());
   };
 
-  const POPULAR_PRESETS = [
-    { name: 'Netflix', price: 15.99, category: 'Streaming', cycle: 'monthly' as const },
-    { name: 'Spotify', price: 11.99, category: 'Streaming', cycle: 'monthly' as const },
-    { name: 'Gym Membership', price: 35.00, category: 'Health & Wellness', cycle: 'monthly' as const },
-    { name: 'iCloud Storage', price: 2.99, category: 'Software & Apps', cycle: 'monthly' as const },
-    { name: 'Amazon Prime', price: 14.99, category: 'Shopping & Retail', cycle: 'monthly' as const },
-    { name: 'Phone Bill', price: 65.00, category: 'Utility Bills', cycle: 'monthly' as const },
-  ];
+  const [dashboardSelectedPresets, setDashboardSelectedPresets] = useState<string[]>([]);
 
-  const handleQuickAddPreset = (preset: typeof POPULAR_PRESETS[0]) => {
+  const toggleDashboardPreset = (name: string) => {
+    setDashboardSelectedPresets(prev =>
+      prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]
+    );
+  };
+
+  const handleAddMultiplePresets = (presetsToAdd?: PopularPresetItem[]) => {
     lastLocalAction.current = Date.now();
     if (!activeProfile) return;
-    const nextMonth = new Date();
-    nextMonth.setDate(nextMonth.getDate() + 30);
-    const renewalDate = nextMonth.toISOString().split('T')[0];
 
-    const newSub: Subscription = {
-      id: generateId(),
-      name: preset.name,
-      price: preset.price,
-      category: preset.category,
-      billingCycle: preset.cycle,
-      renewalDate: renewalDate,
-      hasEverBeenPaid: true,
-      isEssential: preset.category === 'Utility Bills'
-    };
+    const chosen = presetsToAdd || POPULAR_WELCOME_PRESETS.filter(p => dashboardSelectedPresets.includes(p.name));
+    if (chosen.length === 0) return;
 
-    const updated = [...subscriptions, newSub];
+    const newSubs: Subscription[] = chosen.map((preset, index) => {
+      const subDate = new Date();
+      subDate.setDate(subDate.getDate() + ((index * 4) % 25) + 3);
+
+      return {
+        id: generateId(),
+        name: preset.name,
+        price: preset.price,
+        category: preset.category,
+        billingCycle: preset.cycle,
+        renewalDate: subDate.toISOString().split('T')[0],
+        hasEverBeenPaid: true,
+        isEssential: preset.category === 'Utility Bills'
+      };
+    });
+
+    const updated = [...subscriptions, ...newSubs];
     setSubscriptions(updated);
     updateProfile(activeProfile.id, { subscriptions: updated });
     setIsDemoData(false);
+    setDashboardSelectedPresets([]);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('subtracking_is_demo');
+      localStorage.setItem('hasSeenWelcome', 'true');
     }
-    showToast(`Added ${preset.name}! Tap card to customize amount or date.`, 'success');
+    showToast(`Added ${newSubs.length} subscription${newSubs.length !== 1 ? 's' : ''}!`, 'success');
   };
 
   const handleLoadDemoData = () => {
@@ -1835,13 +1842,136 @@ function HomeContent() {
           </div>
         )}
 
-        {/* HOUSEHOLD PULSE (Timeline) */}
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 relative group">
-          <BillingPulse subscriptions={filteredSubscriptions} currency={activeProfile?.currency || 'USD'} />
-        </div>
+        {/* ⚡ If 0 Subscriptions: Render Prominent Onboarding Hub at the TOP */}
+        {subscriptions.length === 0 ? (
+          <div className="py-8 px-4 sm:px-10 flex flex-col items-center justify-center text-center bg-gradient-to-b from-slate-900/80 via-slate-900/50 to-slate-950/80 border border-indigo-500/25 rounded-3xl backdrop-blur-xl relative overflow-hidden shadow-2xl space-y-7 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Ambient background glow */}
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
 
-        {/* ACTION DECK (3-Column Grid) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+            {/* Header */}
+            <div className="space-y-2 max-w-lg z-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold tracking-wide">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Welcome to Your Dashboard</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Your Vault is Ready to Track
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                Select subscriptions below to add them in 1 click, explore sample demo data, or add custom bills from scratch.
+              </p>
+            </div>
+
+            {/* ⚡ 1-Click Multi-Select Popular Quick Add Presets */}
+            <div className="w-full max-w-3xl z-10 space-y-3">
+              <div className="flex items-center justify-between text-xs font-bold px-1 text-slate-300">
+                <span className="uppercase tracking-wider text-[11px]">Select Popular Subscriptions:</span>
+                {dashboardSelectedPresets.length > 0 && (
+                  <span className="text-indigo-400 font-semibold text-[11px]">{dashboardSelectedPresets.length} selected</span>
+                )}
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                {POPULAR_WELCOME_PRESETS.map((preset) => {
+                  const isSelected = dashboardSelectedPresets.includes(preset.name);
+                  return (
+                    <button
+                      key={preset.name}
+                      type="button"
+                      onClick={() => toggleDashboardPreset(preset.name)}
+                      className={`flex flex-col p-2.5 rounded-2xl border text-left transition-all duration-150 cursor-pointer active:scale-95 ${
+                        isSelected
+                          ? 'bg-indigo-600/20 border-indigo-400 text-white shadow-lg shadow-indigo-500/15'
+                          : 'bg-slate-800/60 border-slate-700/60 hover:border-slate-600 text-slate-300 hover:text-white hover:bg-slate-800/80'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <div
+                          className={`w-4 h-4 rounded-md flex items-center justify-center text-[10px] transition-colors ${
+                            isSelected
+                              ? 'bg-indigo-500 text-white'
+                              : 'bg-slate-700/60 text-transparent border border-slate-600'
+                          }`}
+                        >
+                          <Check className="w-3 h-3" />
+                        </div>
+                        <span className="text-[10px] font-mono text-slate-400">
+                          {getCurrencySymbol(activeProfile?.currency || 'USD')}{preset.price.toFixed(2)}
+                        </span>
+                      </div>
+                      <span className="text-xs font-bold truncate">{preset.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {dashboardSelectedPresets.length > 0 && (
+                <div className="pt-2 animate-in fade-in zoom-in-95 duration-200">
+                  <button
+                    type="button"
+                    onClick={() => handleAddMultiplePresets()}
+                    className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold text-xs rounded-2xl shadow-xl shadow-indigo-500/25 inline-flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
+                  >
+                    <span>Add {dashboardSelectedPresets.length} Selected Subscription{dashboardSelectedPresets.length !== 1 ? 's' : ''} to Vault</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* 3 Main Action Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 w-full max-w-3xl z-10 pt-2 border-t border-white/5">
+              {/* 1. Add Custom Sub */}
+              <button
+                onClick={() => { setEditingId(null); setShowAddModal(true); }}
+                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-indigo-600/15 hover:bg-indigo-600/25 border border-indigo-500/30 hover:border-indigo-400 transition-all duration-200 group text-center space-y-2 shadow-lg active:scale-95 cursor-pointer"
+              >
+                <div className="w-9 h-9 rounded-xl bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">
+                  <Plus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-xs">Add Custom Subscription</h4>
+                  <p className="text-[10px] text-indigo-200/80 mt-0.5">Enter a custom bill or service</p>
+                </div>
+              </button>
+
+              {/* 2. Explore Sample Data */}
+              <button
+                onClick={handleLoadDemoData}
+                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-800/50 hover:bg-slate-800/90 border border-slate-700/60 hover:border-purple-500/40 transition-all duration-200 group text-center space-y-2 shadow-lg active:scale-95 cursor-pointer"
+              >
+                <div className="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform">
+                  <Zap className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-xs">Explore Sample Data</h4>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Preview with 4 realistic demo items</p>
+                </div>
+              </button>
+
+              {/* 3. Run Audit Wizard */}
+              <button
+                onClick={() => setShowWizard(true)}
+                className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-800/50 hover:bg-slate-800/90 border border-slate-700/60 hover:border-emerald-500/40 transition-all duration-200 group text-center space-y-2 shadow-lg active:scale-95 cursor-pointer"
+              >
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition-transform">
+                  <Ghost className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-xs">Launch Audit Wizard</h4>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Find forgotten recurring charges</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* HOUSEHOLD PULSE (Timeline) */}
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 relative group">
+              <BillingPulse subscriptions={filteredSubscriptions} currency={activeProfile?.currency || 'USD'} />
+            </div>
+
+            {/* ACTION DECK (3-Column Grid) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
 
           {/* 1. Upcoming Bills Card */}
           <div className="glass-panel rounded-2xl p-6 flex flex-col h-[380px] relative overflow-hidden">
@@ -2050,14 +2180,16 @@ function HomeContent() {
             <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-pink-500/5 rounded-full blur-3xl pointer-events-none" />
           </div>
 
-          <div className="relative group">
-            <GhostMeter
-              subscriptions={financeViewMode === 'focus' ? filteredSubscriptions.filter(s => !s.isEssential) : filteredSubscriptions}
-              currency={activeProfile?.currency || 'USD'}
-            />
-          </div>
+            <div className="relative group">
+              <GhostMeter
+                subscriptions={financeViewMode === 'focus' ? filteredSubscriptions.filter(s => !s.isEssential) : filteredSubscriptions}
+                currency={activeProfile?.currency || 'USD'}
+              />
+            </div>
 
-        </div>
+          </div>
+        </>
+      )}
 
         {/* FULL LIST SECTION */}
         <section id="subscriptions-list" className="py-12 space-y-8">
@@ -2406,107 +2538,25 @@ function HomeContent() {
                 </AnimatePresence>
 
                 {sortedSubscriptions.length === 0 && (
-                  subscriptions.length === 0 ? (
-                    <div className="col-span-full py-10 px-4 sm:px-10 flex flex-col items-center justify-center text-center bg-gradient-to-b from-slate-900/80 via-slate-900/50 to-slate-950/80 border border-indigo-500/25 rounded-3xl backdrop-blur-xl relative overflow-hidden shadow-2xl space-y-7">
-                      {/* Ambient background glow */}
-                      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
-
-                      {/* Header */}
-                      <div className="space-y-2 max-w-lg z-10">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold tracking-wide">
-                          <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-                          <span>Welcome to Your Dashboard</span>
-                        </div>
-                        <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                          Your Vault is Ready to Track
-                        </h3>
-                        <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                          Take control of recurring charges, uncover ghost subscriptions, and track renewal dates with zero bank logins required.
-                        </p>
-                      </div>
-
-                      {/* 3 Main Action Cards */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 w-full max-w-3xl z-10">
-                        {/* 1. Add Custom Sub */}
-                        <button
-                          onClick={() => { setEditingId(null); setShowAddModal(true); }}
-                          className="flex flex-col items-center justify-center p-5 rounded-2xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 hover:border-indigo-400 transition-all duration-200 group text-center space-y-2.5 shadow-lg active:scale-95 cursor-pointer"
-                        >
-                          <div className="w-11 h-11 rounded-xl bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">
-                            <Plus className="w-6 h-6" />
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-white text-sm">Add First Subscription</h4>
-                            <p className="text-[11px] text-indigo-200/80 mt-0.5">Enter a custom bill or service</p>
-                          </div>
-                        </button>
-
-                        {/* 2. Explore Sample Data */}
-                        <button
-                          onClick={handleLoadDemoData}
-                          className="flex flex-col items-center justify-center p-5 rounded-2xl bg-slate-800/50 hover:bg-slate-800/90 border border-slate-700/60 hover:border-purple-500/40 transition-all duration-200 group text-center space-y-2.5 shadow-lg active:scale-95 cursor-pointer"
-                        >
-                          <div className="w-11 h-11 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform">
-                            <Zap className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-white text-sm">Explore Sample Data</h4>
-                            <p className="text-[11px] text-slate-400 mt-0.5">Preview with 4 realistic demo items</p>
-                          </div>
-                        </button>
-
-                        {/* 3. Run Audit Wizard */}
-                        <button
-                          onClick={() => setShowWizard(true)}
-                          className="flex flex-col items-center justify-center p-5 rounded-2xl bg-slate-800/50 hover:bg-slate-800/90 border border-slate-700/60 hover:border-emerald-500/40 transition-all duration-200 group text-center space-y-2.5 shadow-lg active:scale-95 cursor-pointer"
-                        >
-                          <div className="w-11 h-11 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition-transform">
-                            <Ghost className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-white text-sm">Launch Audit Wizard</h4>
-                            <p className="text-[11px] text-slate-400 mt-0.5">Find forgotten recurring charges</p>
-                          </div>
-                        </button>
-                      </div>
-
-                      {/* ⚡ 1-Click Popular Quick Add Presets */}
-                      <div className="w-full max-w-2xl pt-2 z-10 space-y-3">
-                        <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-                          <span>Or 1-Click Quick-Add Popular Subscriptions</span>
-                        </div>
-                        <div className="flex flex-wrap items-center justify-center gap-2">
-                          {POPULAR_PRESETS.map((preset) => (
-                            <button
-                              key={preset.name}
-                              onClick={() => handleQuickAddPreset(preset)}
-                              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800/70 hover:bg-indigo-600/20 border border-slate-700/70 hover:border-indigo-500/40 text-xs font-semibold text-slate-200 hover:text-white transition-all shadow-sm active:scale-95 cursor-pointer group"
-                            >
-                              <Plus className="w-3.5 h-3.5 text-indigo-400 group-hover:rotate-90 transition-transform" />
-                              <span>{preset.name}</span>
-                              <span className="text-[10px] text-slate-400 font-mono">
-                                {getCurrencySymbol(activeProfile?.currency || 'USD')}{preset.price.toFixed(2)}
-                              </span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                  <div className="col-span-full py-12 flex flex-col items-center justify-center text-slate-400 space-y-3 border-2 border-dashed border-slate-800/80 rounded-3xl bg-slate-900/20">
+                    <CreditCard className="w-10 h-10 opacity-30 text-indigo-400" />
+                    <div className="text-center space-y-1">
+                      <p className="font-semibold text-slate-300 text-sm">
+                        {subscriptions.length === 0 ? 'No subscriptions added yet' : 'No subscriptions in this category'}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {subscriptions.length === 0 ? 'Select subscriptions from the quick-start above or click "+ Add Subscription".' : 'Try selecting "All" or a different category filter.'}
+                      </p>
                     </div>
-                  ) : (
-                    <div className="col-span-full py-16 flex flex-col items-center justify-center text-slate-400 space-y-4 border-2 border-dashed border-slate-800/80 rounded-3xl bg-slate-900/20">
-                      <CreditCard className="w-10 h-10 opacity-30 text-indigo-400" />
-                      <div className="text-center space-y-1">
-                        <p className="font-semibold text-slate-300 text-sm">No subscriptions in this category</p>
-                        <p className="text-xs text-slate-500">Try selecting "All" or a different category filter.</p>
-                      </div>
+                    {subscriptions.length > 0 && !filterCategory.includes('All') && (
                       <button
                         onClick={() => setFilterCategory(['All'])}
                         className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition-all cursor-pointer"
                       >
                         Show All Subscriptions
                       </button>
-                    </div>
-                  )
+                    )}
+                  </div>
                 )}
               </div>
             ) : (
@@ -2532,6 +2582,13 @@ function HomeContent() {
           setShowWelcome(false);
           localStorage.setItem('hasSeenWelcome', 'true');
         }}
+        onAddPresets={(presets) => handleAddMultiplePresets(presets)}
+        onLoadDemoData={handleLoadDemoData}
+        onOpenAddModal={() => {
+          setEditingId(null);
+          setShowAddModal(true);
+        }}
+        currency={activeProfile?.currency || 'USD'}
       />
 
       <SubscriptionModal
