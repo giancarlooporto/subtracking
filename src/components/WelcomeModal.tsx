@@ -3,6 +3,8 @@
 import { useState, useMemo } from 'react';
 import { X, Sparkles, Check, Plus, Zap, ArrowRight, ArrowLeft, ShieldCheck, Trash2, Calendar, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { getCurrencySymbol } from '../types';
 
 export interface PopularPresetItem {
@@ -68,12 +70,16 @@ export const WelcomeModal = ({
       .map((preset, index) => {
         const d = new Date(today);
         d.setDate(d.getDate() + ((index * 5) % 25) + 3);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+
         return {
           name: preset.name,
           price: preset.price,
           category: preset.category,
           billingCycle: preset.cycle,
-          renewalDate: d.toISOString().split('T')[0]
+          renewalDate: `${yyyy}-${mm}-${dd}`
         };
       });
 
@@ -348,17 +354,28 @@ export const WelcomeModal = ({
                           </div>
                         </div>
 
-                        {/* Renewal Date Input */}
+                        {/* Renewal Date Picker */}
                         <div>
                           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                             Next Renewal
                           </label>
-                          <input
-                            type="date"
-                            value={item.renewalDate}
-                            onChange={(e) => updateItem(index, { renewalDate: e.target.value })}
-                            className="w-full bg-slate-900/90 border border-slate-700/80 focus:border-indigo-500 rounded-xl py-1.5 px-2.5 text-xs font-semibold text-white outline-none [color-scheme:dark]"
-                          />
+                          <div className="relative">
+                            <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500 pointer-events-none z-10" />
+                            <DatePicker
+                              selected={item.renewalDate ? new Date(item.renewalDate + 'T00:00:00') : new Date()}
+                              onChange={(date: Date | null) => {
+                                if (date) {
+                                  const yyyy = date.getFullYear();
+                                  const mm = String(date.getMonth() + 1).padStart(2, '0');
+                                  const dd = String(date.getDate()).padStart(2, '0');
+                                  updateItem(index, { renewalDate: `${yyyy}-${mm}-${dd}` });
+                                }
+                              }}
+                              dateFormat="MM/dd/yyyy"
+                              popperPlacement="bottom-start"
+                              className="w-full bg-slate-900/90 border border-slate-700/80 focus:border-indigo-500 rounded-xl py-1.5 pl-8 pr-2.5 text-xs font-semibold text-white outline-none cursor-pointer"
+                            />
+                          </div>
                         </div>
 
                         {/* Cycle Selector */}
