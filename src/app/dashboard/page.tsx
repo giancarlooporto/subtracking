@@ -2860,7 +2860,11 @@ function HomeContent() {
       <ProActivatedModal
         isOpen={showProActivatedModal}
         onClose={() => setShowProActivatedModal(false)}
-        onOpenLogin={() => setShowLoginModal(true)}
+        onOpenLogin={() => {
+          setShowTimeMachineModal(false);
+          setShowSettingsModal(false);
+          setShowLoginModal(true);
+        }}
         isLoggedIn={!!user}
         userEmail={user?.email}
       />
