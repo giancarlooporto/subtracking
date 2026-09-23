@@ -66,6 +66,13 @@ export default function CancelPrimeGuide() {
                             </div>
                         </div>
 
+                        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 my-8 flex gap-4 text-xs text-slate-400">
+                            <Info className="w-5 h-5 text-slate-400 shrink-0" />
+                            <p className="mb-0">
+                                <strong>Safe-Harbor Notice:</strong> SubTracking is an independent, local-first finance manager and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Amazon.com, Inc. Membership terms, pricing, and cancellation procedures are subject to change by the respective provider.
+                            </p>
+                        </div>
+
                         <h2 className="text-3xl font-black mt-16 mb-6 text-white text-white">How to Cancel Amazon Prime</h2>
                         <ol className="space-y-4">
                             <li>Log in to your Amazon account and go to <strong>'Account & Lists'</strong>.</li>

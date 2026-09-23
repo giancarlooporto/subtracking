@@ -91,15 +91,14 @@ export function Footer({ isPro, onUnlockPro, minimal = false }: FooterProps) {
                         </ul>
                     </div>
 
-                    {/* Compare & Company (Combined for balance if needed, or separate) */}
+                    {/* Compare & Resources */}
                     <div className="space-y-4">
                         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Compare</h4>
                         <ul className="space-y-3">
-                            <li><Link href="/compare/rocket-money" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">vs Rocket Money</Link></li>
-                            <li><Link href="/compare/copilot" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">vs Copilot</Link></li>
-                            <li><Link href="/compare/monarch-money" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">vs Monarch Money</Link></li>
-                            <li><Link href="/compare/bobby-app" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">vs Bobby App</Link></li>
-                            <li><Link href="/compare/mint-replacements" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">vs Mint Replacements</Link></li>
+                            <li><Link href="/compare/bank-sync-vs-manual" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">Bank-Sync vs. Manual</Link></li>
+                            <li><Link href="/compare/excel-vs-subtracking" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">vs. Spreadsheets (Excel)</Link></li>
+                            <li><Link href="/manual-vs-automated" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">Manual vs. Automated</Link></li>
+                            <li><Link href="/no-bank-login" className="text-xs text-slate-400 hover:text-indigo-400 transition-colors">Why No Bank Login?</Link></li>
                         </ul>
                     </div>
                 </div>

@@ -82,7 +82,7 @@ export default function CancelAdobeGuide() {
                         <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 my-8 flex gap-4 text-xs text-slate-400">
                             <Info className="w-5 h-5 text-slate-400 shrink-0" />
                             <p className="mb-0">
-                                <strong>Safe-Harbor Notice:</strong> Cancellation policies, refund eligibility periods, and fee structures are subject to change at any time by Adobe Inc. Always review the latest terms of service and subscription agreements on Adobe's official website prior to making account modifications.
+                                <strong>Safe-Harbor Notice:</strong> SubTracking is an independent, local-first budgeting tool and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Adobe Inc. Cancellation policies, refund eligibility periods, fee structures, and account workflows are subject to change by the respective provider. Always verify current terms on the official Adobe website.
                             </p>
                         </div>
 

@@ -134,7 +134,7 @@ export function getSubTrackingAppSchema(): SoftwareApplicationSchema {
     operatingSystem: 'Web, iOS, Android, macOS, Windows, Linux',
     applicationCategory: 'FinanceApplication',
     description:
-      'Privacy-first, offline-first subscription tracker. Track recurring expenses and audit subscriptions without linking bank accounts or using Plaid. Free forever locally with optional $8.99/year end-to-end encrypted cloud sync.',
+      'Privacy-first, offline-first subscription tracker. Track recurring expenses and audit subscriptions without linking bank accounts or third-party aggregators. Free forever locally with optional $8.99/year end-to-end encrypted cloud sync.',
     url: 'https://www.subtracking.app',
     image: 'https://www.subtracking.app/og-image.png',
     offers: [
@@ -172,7 +172,7 @@ export function getSubTrackingAppSchema(): SoftwareApplicationSchema {
       },
     ],
     featureList: [
-      'No bank login or Plaid connection required',
+      'No bank login or third-party aggregator connection required',
       '100% client-side zero-knowledge encryption (AES-GCM-256 + PBKDF2)',
       '10-year Ghost Cost wealth projection calculator',
       'SubTracking Audit Wizard with Tinder-style Keep or Toss swipe interface',
@@ -208,12 +208,12 @@ export const canonicalFaqItems: FAQItem[] = [
   {
     question: 'Can I track subscriptions without linking my bank account?',
     answer:
-      'Yes. SubTracking allows you to track and audit all your recurring subscriptions without linking your bank account or sharing credentials with aggregators like Plaid. All data is stored locally in your browser with zero telemetry, ensuring complete privacy.',
+      'Yes. SubTracking allows you to track and audit all your recurring subscriptions without linking your bank account or sharing credentials with third-party aggregators. All data is stored locally in your browser with zero telemetry, ensuring complete privacy.',
   },
   {
-    question: 'Is there a free private alternative to Rocket Money?',
+    question: 'Is there a free private alternative to automated bank-sync apps?',
     answer:
-      'SubTracking provides a free, 100% private alternative to Rocket Money. Unlike Rocket Money, which requires bank linking and charges $7 to $14 per month (or a 35% to 60% fee on bill negotiations), SubTracking is free for local tracking with an optional $8.99/year Pro pass for encrypted multi-device sync.',
+      'SubTracking provides a free, 100% private alternative to automated cloud budget trackers. Unlike bank-connected subscription managers that require persistent account logins and recurring subscriptions ($5 to $15 per month), SubTracking is free for local tracking with an optional $8.99/year Pro pass for encrypted multi-device sync.',
   },
   {
     question: 'How does the SubTracking Ghost Meter calculate lost wealth?',

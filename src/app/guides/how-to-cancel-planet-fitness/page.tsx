@@ -82,6 +82,13 @@ export default function CancelPlanetFitnessGuide() {
                             </div>
                         </div>
 
+                        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 my-8 flex gap-4 text-xs text-slate-400">
+                            <AlertTriangle className="w-5 h-5 text-slate-400 shrink-0" />
+                            <p className="mb-0">
+                                <strong>Safe-Harbor Notice:</strong> SubTracking is an independent tracking tool and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Planet Fitness Franchising LLC. Membership cancellation policies, cutoff dates, and fees are subject to change by the respective provider. Always verify current terms with your local home club.
+                            </p>
+                        </div>
+
                         <h2 className="text-3xl font-black mt-16 mb-6">Stop Chronic Gym Spending</h2>
                         <p>
                             Many people keep their $10 Planet Fitness membership "just in case." But $10/month is $120/year. Add the annual fee, and you're at $170/year for a service you might not be using.

@@ -31,9 +31,9 @@ const guides = [
 
 const comparisons = [
     { title: 'vs. Excel & Sheets', href: '/compare/excel-vs-subtracking', tag: 'Recommended' },
-    { title: 'vs. Rocket Money', href: '/compare/rocket-money' },
-    { title: 'vs. Copilot', href: '/compare/copilot' },
-    { title: 'vs. Monarch Money', href: '/compare/monarch-money' },
+    { title: 'Bank-Sync vs. Manual', href: '/compare/bank-sync-vs-manual' },
+    { title: 'Manual vs. Automated', href: '/manual-vs-automated' },
+    { title: 'Why No Bank Login?', href: '/no-bank-login' },
 ];
 
 export default function GuidesIndex() {

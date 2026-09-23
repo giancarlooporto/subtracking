@@ -178,7 +178,7 @@ export default function LandingPage() {
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="max-w-2xl mx-auto text-slate-400 text-lg md:text-xl font-medium"
                     >
-                        The privacy-first vault for every recurring cost in your life. From Netflix and Spotify to Rent, Utilities, and Car Insurance. See your true monthly "burn rate" in seconds.
+                        The privacy-first vault for every recurring cost in your life. From streaming subscriptions and cloud software to gym memberships, rent, utilities, and insurance. See your true monthly "burn rate" in seconds.
                     </motion.p>
 
                     <motion.div
@@ -443,7 +443,7 @@ export default function LandingPage() {
                             <div className="space-y-2">
                                 <h3 className="text-lg font-bold">Privacy-First Audit</h3>
                                 <p className="text-slate-400 text-sm leading-relaxed">
-                                    No Plaid. No bank connections. Your financial data stays 100% local on your device.
+                                    No third-party aggregators. No bank connections. Your financial data stays 100% local on your device.
                                 </p>
                             </div>
                         </div>

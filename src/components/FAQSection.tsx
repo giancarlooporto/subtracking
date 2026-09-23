@@ -18,8 +18,8 @@ const faqs = [
                 a: "SubTracking is a \"Local-First\" app. If you use the Free tier, your data is stored directly in your device's private storage. It never touches our servers. If you upgrade to PRO for Cloud Sync, your data is securely encrypted and synced via our private servers, but we never sell your data or run ads."
             },
             {
-                q: "Why don't you offer automatic bank syncing (like Rocket Money)?",
-                a: "Security through exclusion. Bank syncing requires you to hand over your primary financial credentials to third-party aggregators. Most \"free\" services then sell your \"anonymized\" data to advertisers. SubTracking gives you 100% privacy and promotes \"intentional spending\"—by manually adding a service, you are forced to acknowledge its value before you pay for it."
+                q: "Why don't you offer automatic bank syncing?",
+                a: "Security through exclusion. Automated bank-sync tools require handing over primary financial credentials to third-party data aggregators. Many apps then monetize user transaction habits. SubTracking provides 100% privacy and promotes intentional spending—by logging subscriptions directly, you stay in total control of your budget without third-party exposure."
             },
             {
                 q: "What happens if I get a new phone?",
