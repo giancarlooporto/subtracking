@@ -28,6 +28,12 @@ export default function ExcelComparison() {
                         <img src="/logo.png" alt="SubTracking" className="w-8 h-8 rounded-lg" />
                         <span className="font-black text-xl">SubTracking</span>
                     </Link>
+                    <Link
+                        href="/dashboard"
+                        className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-500 transition-colors"
+                    >
+                        Try SubTracking
+                    </Link>
                 </div>
             </nav>
 

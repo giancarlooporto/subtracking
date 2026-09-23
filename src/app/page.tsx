@@ -671,7 +671,7 @@ export default function LandingPage() {
                         <div className="pt-10">
                             <Link
                                 href="/dashboard"
-                                className="inline-flex bg-indigo-600 text-white px-12 py-5 rounded-2xl font-black text-xl hover:scale-105 hover:bg-indigo-500 transition-all active:scale-95 shadow-2xl shadow-indigo-500/40 group"
+                                className="inline-flex bg-white text-indigo-700 px-12 py-5 rounded-2xl font-black text-xl hover:scale-105 hover:bg-slate-100 transition-all active:scale-95 shadow-2xl shadow-black/20 group"
                             >
                                 Get Started Free
                                 <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />

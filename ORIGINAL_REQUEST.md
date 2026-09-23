@@ -46,3 +46,34 @@ Provide ready-to-paste community discussion and launch copy:
 - [ ] Google AI Overview guidelines include concrete JSON-LD schema recommendations directly applicable to SubTracking's Next.js metadata.
 - [ ] All pricing mentions consistently reflect SubTracking's $8.99/year Pro tier (or free local 1-profile tier).
 - [ ] Playbook files are created in `/Users/giancarlooportousa/Documents/Antigravity/Digital Declutter/marketing_playbook` categorized clearly by channel.
+
+## 2026-09-23T05:10:06Z
+
+This is a single self-contained fix; keep it small and focused.
+
+Comprehensive professional audit and refactoring of SubTracking's footer, navigation, and landing page to eliminate all redundant links (such as duplicate 'Buy Me a Coffee' buttons, repeated 'Manual vs Automated' links, and duplicate navigation targets), consolidating the footer into a clean, balanced, high-converting professional layout verified to human quality standards.
+
+Working directory: /Users/giancarlooportousa/Documents/Antigravity/Digital Declutter
+Integrity mode: development
+
+## Requirements
+
+### R1. Link & CTA Redundancy Elimination
+Scan and audit all components and pages (especially `src/components/Footer.tsx`, `src/app/page.tsx`, `src/app/dashboard/page.tsx`, `src/app/guides/page.tsx`, and comparison pages) to remove duplicate links and repetitive CTAs. Ensure only a single, well-placed 'Support / Buy Me a Coffee' button or link exists in the footer rather than multiple duplicate occurrences.
+
+### R2. Footer Architecture & Column Streamlining
+Reorganize the site footer into clear, balanced, and non-overlapping categories (e.g., **Product**, **Comparisons & Tools**, **Cancellation Guides**, **Company & Legal**). Ensure every link has a unique destination with descriptive, professional copy.
+
+### R3. Professional Visual Hierarchy & Polish
+Ensure all links have consistent hover states, legible contrast, aligned grid columns, and proper responsive wrapping on mobile and desktop devices.
+
+## Acceptance Criteria
+
+### Redundancy & Link Integrity
+- [ ] No component or section contains duplicate href targets or multiple identical CTA buttons.
+- [ ] Exactly one clean, tasteful 'Buy Me a Coffee' support link exists in the footer.
+- [ ] Comparison links (`/compare/bank-sync-vs-manual`, `/compare/excel-vs-subtracking`, `/manual-vs-automated`, `/no-bank-login`) are organized into distinct, non-repetitive entries.
+
+### Build & Verification
+- [ ] `npm run build` compiles 100% cleanly with zero broken internal routes or TypeScript errors.
+- [ ] Visual inspection confirms a balanced, modern, human-verified layout across both mobile and desktop screen sizes.

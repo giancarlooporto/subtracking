@@ -30,10 +30,9 @@ const guides = [
 ];
 
 const comparisons = [
-    { title: 'vs. Excel & Sheets', href: '/compare/excel-vs-subtracking', tag: 'Recommended' },
-    { title: 'Bank-Sync vs. Manual', href: '/compare/bank-sync-vs-manual' },
-    { title: 'Manual vs. Automated', href: '/manual-vs-automated' },
-    { title: 'Why No Bank Login?', href: '/no-bank-login' },
+    { title: 'SubTracking vs. Excel & Sheets', href: '/compare/excel-vs-subtracking', tag: 'Recommended' },
+    { title: 'Bank-Sync vs. Manual Tracking', href: '/compare/bank-sync-vs-manual' },
+    { title: 'Why We Avoid Bank Logins', href: '/no-bank-login' },
 ];
 
 export default function GuidesIndex() {
@@ -128,7 +127,7 @@ export default function GuidesIndex() {
                                             className="block p-4 rounded-xl bg-slate-900 border border-white/5 hover:border-emerald-500/30 transition-all relative overflow-hidden"
                                         >
                                             <div className="flex items-center justify-between gap-4">
-                                                <span className="font-bold text-sm">SubTracking {item.title}</span>
+                                                <span className="font-bold text-sm text-slate-200 group-hover:text-white transition-colors">{item.title}</span>
                                                 {item.tag && <span className="text-[10px] font-black uppercase text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded">{item.tag}</span>}
                                             </div>
                                         </Link>
