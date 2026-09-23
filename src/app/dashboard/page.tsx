@@ -49,6 +49,7 @@ const ProfileManagerModal = dynamic(() => import('../../components/ProfileManage
 const LoginModal = dynamic(() => import('../../components/LoginModal').then(mod => mod.LoginModal), { ssr: false });
 const InstallGuideModal = dynamic(() => import('../../components/InstallGuideModal'), { ssr: false });
 const TimeMachineModal = dynamic(() => import('../../components/TimeMachineModal').then(mod => mod.TimeMachineModal), { ssr: false });
+const ProActivatedModal = dynamic(() => import('../../components/ProActivatedModal').then(mod => mod.ProActivatedModal), { ssr: false });
 import { PasswordModal } from '@/components/PasswordModal';
 import { PaywallModal } from '@/components/PaywallModal';
 import { LicenseModal } from '@/components/LicenseModal';
@@ -147,6 +148,7 @@ function HomeContent() {
   // Paywall & Billing State
   const [showPaywallModal, setShowPaywallModal] = useState(false);
   const [showLicenseModal, setShowLicenseModal] = useState(false);
+  const [showProActivatedModal, setShowProActivatedModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [activePaymentSub, setActivePaymentSub] = useState<Subscription | null>(null);
 
@@ -2835,6 +2837,7 @@ function HomeContent() {
         onPurchaseSuccess={() => {
           setIsPro(true);
           setShowPaywallModal(false);
+          setShowProActivatedModal(true);
         }}
         onOpenLicense={() => {
           setShowPaywallModal(false);
@@ -2849,8 +2852,17 @@ function HomeContent() {
           setIsPro(true);
           setShowLicenseModal(false);
           setShowPaywallModal(false);
-          showToast('Cloud Sync unlocked successfully! ☁️', 'success');
+          setShowProActivatedModal(true);
+          showToast('Pro unlocked successfully! ⚡', 'success');
         }}
+      />
+
+      <ProActivatedModal
+        isOpen={showProActivatedModal}
+        onClose={() => setShowProActivatedModal(false)}
+        onOpenLogin={() => setShowLoginModal(true)}
+        isLoggedIn={!!user}
+        userEmail={user?.email}
       />
 
       <Footer
